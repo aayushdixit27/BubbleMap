@@ -10,11 +10,13 @@ import { SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
 // mutation verb. Bubble counts are capped in the schema, not the prompt
 // (D16/D18) — §8 stays verbatim, schema constraints are free.
-// seed: exactly 3 SAFE + 3 REAL. descend: exactly 3 candidates (D18/D24 —
-// the human picks one). interrogate: max 3, no minimum — §8 says padding is
-// failure, so a stalled interrogation may return fewer.
-const BUBBLE_CAP: Record<Verb, number> = { seed: 6, descend: 3, interrogate: 3 };
-const BUBBLE_MIN: Record<Verb, number> = { seed: 6, descend: 3, interrogate: 0 };
+// seed: exactly 3 SAFE + 3 REAL. descend: exactly ONE bubble one tier
+// deeper (D25 — the unit of judgment is the descent, so each path carries
+// one RAW; choice happens between descents, not between candidates).
+// interrogate: max 3, no minimum — §8 says padding is failure, so a
+// stalled interrogation may return fewer.
+const BUBBLE_CAP: Record<Verb, number> = { seed: 6, descend: 1, interrogate: 3 };
+const BUBBLE_MIN: Record<Verb, number> = { seed: 6, descend: 1, interrogate: 0 };
 
 function proposeTool(verb: Verb): Anthropic.Tool {
   return {

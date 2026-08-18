@@ -192,6 +192,34 @@ map a spine, and across twenty songs the rejection set is its own signal about w
 the human does not find raw. Store under `rejected: Bubble[]`, never loaded into the
 grid. *18 Aug.*
 
+**D25 — The unit of judgment is the DESCENT, not the bubble. Supersedes D24;
+amends D18 and ARCHITECTURE §7.**
+
+The flow D24 specced put RAW — the product — behind nine-plus clicks: keep a
+REAL, hover it, click descend, three times over. The architect's spec, not the
+build. The fix inverts the gate's position, not its existence:
+
+1. **seed returns → descend fires automatically on all three REAL bubbles, in
+   parallel.** No human gate between verbs. Hard Rule 1 is unchanged — every
+   AI result still arrives `status: 'proposed'`; what moved is *when the human
+   judges*, not *whether*.
+2. **The result presents as three complete descents** — SAFE → REAL → RAW as
+   one unit, in the readings layout. Readings is the judgment surface; the
+   grid remains as a toggle, presentation-only.
+3. **One decision per descent, three total.** Keep commits all three bubbles
+   in the path; kill parks all three in `rejected[]`. A SAFE or REAL that
+   another surviving path still hangs off is spared from parking.
+4. **`descend` proposes exactly ONE bubble one tier deeper** (schema-enforced,
+   was 3-candidates-keep-1). Implied by "keeping commits all three bubbles in
+   that path": one RAW per path. The choice the human exercises moves from
+   *between candidates* to *between descents*. If candidate choice should
+   survive somewhere, that is a new decision — flag it.
+
+Per-bubble keep/kill, the descend button, and Shift+A/Shift+X leave the main
+flow. `interrogate` is untouched server-side and still has no UI.
+
+Target: paste lyrics → RAW on screen in under a minute. *18 Aug.*
+
 ---
 
 ## Open — architect owes an answer

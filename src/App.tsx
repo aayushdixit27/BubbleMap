@@ -73,11 +73,9 @@ export default function App() {
   const running = useMapStore((s) => s.running);
   const loadMaps = useMapStore((s) => s.loadMaps);
   const closeMap = useMapStore((s) => s.closeMap);
-  const acceptAllUngrouped = useMapStore((s) => s.acceptAllUngrouped);
-  const rejectAllProposed = useMapStore((s) => s.rejectAllProposed);
   const [health, setHealth] = useState('server: …');
-  // The grid ⇄ readings toggle — same doc, two presentations (design test).
-  const [view, setView] = useState<'grid' | 'readings'>('grid');
+  // Readings is the judgment surface (D25); the grid stays as a toggle.
+  const [view, setView] = useState<'grid' | 'readings'>('readings');
 
   useEffect(() => {
     void loadMaps();
@@ -88,20 +86,6 @@ export default function App() {
       )
       .catch(() => setHealth('server: offline'));
   }, [loadMaps]);
-
-  // §10: Shift+A accept all (ungrouped), Shift+X reject all.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
-      if (e.shiftKey && (e.key === 'A' || e.key === 'a')) acceptAllUngrouped();
-      if (e.shiftKey && (e.key === 'X' || e.key === 'x')) rejectAllProposed();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [acceptAllUngrouped, rejectAllProposed]);
-
-  const proposedCount = doc?.bubbles.filter((b) => b.status === 'proposed').length ?? 0;
 
   return (
     <div className="app">
@@ -122,16 +106,6 @@ export default function App() {
           >
             {view === 'grid' ? 'readings' : 'grid'}
           </button>
-          {proposedCount > 0 && (
-            <>
-              <button className="text-action" onClick={acceptAllUngrouped}>
-                keep all ungrouped <kbd>⇧A</kbd>
-              </button>
-              <button className="text-action" onClick={rejectAllProposed}>
-                discard all <kbd>⇧X</kbd>
-              </button>
-            </>
-          )}
           {(status || running > 0) && <span className="status">{status}</span>}
           {error && <span className="status status-error">{error}</span>}
           {metrics && <span className="metrics">{metrics}</span>}

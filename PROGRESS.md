@@ -1,6 +1,6 @@
 # PROGRESS
 
-> **Last updated: 18 Aug 2026, end of Phase 1.**
+> **Last updated: 18 Aug 2026, mid–Phase 2 (D25 flow rebuild).**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -11,6 +11,26 @@ spec. Fable updates it at every phase boundary, before committing.
 ---
 
 ## Where we are
+
+**Phase 2 — the loop, rebuilt around D25: the unit of judgment is the
+DESCENT, not the bubble.** Flow: paste title + lyrics → seed (3 SAFE +
+3 REAL, split schema- and server-enforced) → the moment seed returns,
+descend fires on all three REALs in parallel, each returning exactly one
+RAW (D25 changed this from 3-candidates-keep-1) → three complete descents
+present in the READINGS view (SAFE → REAL → RAW vertically, D22 type
+crescendo, sourceLine as a serif citation under each entry) → keep/kill
+per descent: keep commits the whole path, kill parks it in rejected[]
+(shared ancestors spared while another path uses them). Per-bubble
+keep/kill, the descend button, and Shift+A/X are gone. The grid remains
+as a presentation-only toggle. Autosave is immediate (a debounce-starvation
+bug lost whole maps on 18 Aug — fixed, round-trip tested). D23 sourceLine
+validation live. Target being tested: lyrics → RAW on screen < 1 minute.
+**Not yet verified end-to-end on a real song under the new flow.**
+
+Superseded today: D24's per-bubble flow (→ D25), ARCHITECTURE §7's verb
+table (amended in place, note at §7 top).
+
+Earlier state, still true underneath:
 
 **Phase 1 — D20 thread grid with the D22 editorial treatment, verified in
 Chrome. Phase 0 closed (gate passed, D11–D17).**
@@ -139,7 +159,7 @@ Then run PRODUCT §6.5's five-question phase gate in writing before opening Phas
 | 0 — probe v1 | superseded | `a106b70`, `6dda483` | seed-only, 6 songs, title-only. Category spread cleared; RAW untestable by construction |
 | 0 — probe v2 | **closed — gate passed** | `d2a95d1` | RAW implicates the narrator, lyrics grounding worked, no fabrications (architect read). Decisions D11–D18 |
 | 1 — walking skeleton | **built (D20 grid, D22 editorial)** | `474051d`, `bb280b0`, + D22 commit | geometry + 18 tests kept; thread grid + signature (D20/D21); React Flow deleted; editorial restyle (D22). Renders pre-filter firehose; thins at Phase 2 |
-| 2 — the loop | not started | — | first usable version |
+| 2 — the loop | in progress | — | rebuilt around D25 (descent as judgment unit); awaiting first real-song run |
 | 3 — authoring | not started | — | |
 | 4 — depth | not started | — | |
 | 5 — cut list | not started | — | expect to cut most |

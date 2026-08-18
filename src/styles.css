@@ -134,7 +134,8 @@ html, body, #root {
 /* Ghosts (D24, D22): a proposal is set in lighter type with a dashed
    hairline hanging in the gutter — reduced ink, no glow, no colour shift.
    The negative margin keeps ghost text aligned with committed entries. */
-.entry.ghost {
+.entry.ghost,
+.reading-step.ghost {
   opacity: 0.62;
   border-left: 1px dashed var(--ink-dim);
   padding-left: 10px;
@@ -287,4 +288,13 @@ html, body, #root {
   font-family: var(--serif);
   font-size: 14px;
   color: var(--ink-dim);
+}
+
+/* Descent-level keep/kill (D25) — one decision per reading, surfacing on
+   hover or keyboard focus like every other control. */
+.reading-actions { margin-top: 18px; }
+.reading:hover .entry-actions,
+.reading .entry-actions:focus-within {
+  opacity: 1;
+  pointer-events: auto;
 }

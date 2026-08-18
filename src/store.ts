@@ -1,14 +1,14 @@
-// Client state + the Phase 2 loop, serial (dogfood-first):
-//   create → seed streams → ghosts render → human keeps/kills each →
-//   descend is human-triggered per kept REAL entry → 3 RAW candidate
-//   ghosts → human picks one, siblings park in rejected[] (D24).
+// Client state + the Phase 2 loop (D25 — the unit of judgment is the
+// DESCENT, not the bubble):
+//   create → seed streams → the moment seed returns, descend fires on all
+//   three REAL bubbles in parallel, no human gate → three complete
+//   descents (SAFE → REAL → RAW) present in the readings layout → the
+//   human keeps or kills each descent whole. Keep commits all three
+//   bubbles in the path; kill parks all three in rejected[].
 //
-// The parallel pipeline (D17 #3: all descends dispatched on seed
-// completion) is deliberately deferred until the loop has been used on
-// real songs — a slow correct loop beats a fast unused one.
-//
-// AI never mutates the map: proposals arrive status 'proposed' and only
-// accept() commits. Saving strips proposals server-side.
+// AI never mutates the map (Hard Rule 1 unchanged): every proposal
+// arrives status 'proposed' and only keepDescent() commits. Saving
+// strips proposals server-side.
 
 import { create } from 'zustand';
 import {
@@ -32,13 +32,19 @@ const LINK_KINDS: LinkKind[] = ['refines', 'assumes', 'contradicts', 'evidence']
 const provisionalId = (runId: string, ref: string) => `p:${runId}:${ref}`;
 const isProvisional = (id: string) => id.startsWith('p:');
 
+// One descent path, by bubble id. safe/real may be absent when the model
+// skipped a tier; raw is the unit's anchor.
+export interface DescentPath {
+  safe?: string;
+  real?: string;
+  raw: string;
+}
+
 interface MapState {
   maps: MapMeta[];
   doc: BubbleMapDoc | null;
   // Probe-run docs are design-test data: no autosave, no AI verbs.
   readOnly: boolean;
-  // descend runId → proposed RAW candidate ids; keeping one discards the rest (D18)
-  groups: Record<string, string[]>;
   running: number;
   status: string;
   error: string | null;
@@ -49,11 +55,8 @@ interface MapState {
   openProbeRun: () => void;
   closeMap: () => void;
   createAndSeed: (title: string, source: string) => Promise<void>;
-  runDescend: (focusId: string) => Promise<void>;
-  accept: (id: string) => void;
-  reject: (id: string) => void;
-  acceptAllUngrouped: () => void;
-  rejectAllProposed: () => void;
+  keepDescent: (path: DescentPath) => void;
+  killDescent: (path: DescentPath) => void;
 }
 
 // Autosave state. This was an 800ms trailing debounce that RESET on every
@@ -152,7 +155,7 @@ export const useMapStore = create<MapState>((set, get) => {
   };
 
   // Swap a run's provisional ghosts for the server-resolved proposal.
-  const finalizeRun = (runId: string, proposal: Proposal, verb: 'seed' | 'descend' | 'interrogate') => {
+  const finalizeRun = (runId: string, proposal: Proposal) => {
     const doc = get().doc;
     if (!doc) return;
     set({
@@ -161,9 +164,6 @@ export const useMapStore = create<MapState>((set, get) => {
         bubbles: [...doc.bubbles.filter((b) => !b.id.startsWith(`p:${runId}:`)), ...proposal.bubbles],
         links: [...doc.links.filter((l) => !l.id.startsWith(`p:${runId}:`)), ...proposal.links],
       },
-      ...(verb === 'descend' && proposal.bubbles.length
-        ? { groups: { ...get().groups, [runId]: proposal.bubbles.map((b) => b.id) } }
-        : {}),
     });
   };
 
@@ -207,7 +207,6 @@ export const useMapStore = create<MapState>((set, get) => {
     maps: [],
     doc: null,
     readOnly: false,
-    groups: {},
     running: 0,
     status: '',
     error: null,
@@ -223,7 +222,7 @@ export const useMapStore = create<MapState>((set, get) => {
 
     openMap: async (id) => {
       try {
-        set({ doc: await fetchMap(id), readOnly: false, groups: {}, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), readOnly: false, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -232,112 +231,98 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), readOnly: true, groups: {}, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), readOnly: true, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
-      set({ doc: null, readOnly: false, groups: {}, status: '', metrics: null });
+      set({ doc: null, readOnly: false, status: '', metrics: null });
       void get().loadMaps();
     },
 
-    // Create, then seed — serial. Descend is human-triggered per kept
-    // REAL entry; nothing is dispatched speculatively this side of the
-    // dogfood milestone.
+    // D25: create → seed → the moment seed returns, descend on every REAL
+    // in parallel. No human gate between verbs; the gate is the descent-
+    // level keep/kill that follows.
     createAndSeed: async (title, source) => {
+      const t0 = performance.now();
       try {
         const doc = await apiCreateMap(title, source);
-        set({ doc, groups: {}, error: null, metrics: null, status: 'seeding…', running: 1 });
+        set({ doc, readOnly: false, error: null, metrics: null, status: 'seeding…', running: 1 });
         const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) =>
           applySnapshot('seed', snapshot),
         );
-        finalizeRun('seed', seedProposal, 'seed');
-        set({ status: '', running: 0 });
+        finalizeRun('seed', seedProposal);
+
+        const reals = seedProposal.bubbles.filter((b) => b.tier === 'real');
+        if (!reals.length) {
+          set({
+            status: '',
+            running: 0,
+            error: 'seed returned no REAL bubbles — check the server log for rejections',
+          });
+          return;
+        }
+
+        set({ status: `descending ${reals.length} threads…`, running: reals.length });
+        const results = await Promise.allSettled(
+          reals.map(async (real) => {
+            const runId = `descend:${real.id}`;
+            const proposal = await streamVerb('descend', get().doc!, real.id, (snapshot) =>
+              applySnapshot(runId, snapshot),
+            );
+            finalizeRun(runId, proposal);
+            set((s) => ({ running: Math.max(0, s.running - 1) }));
+          }),
+        );
+
+        const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+        set({
+          status: '',
+          running: 0,
+          metrics: `RAW on screen in ${((performance.now() - t0) / 1000).toFixed(0)}s`,
+          error: failures.length
+            ? `${failures.length} descend call(s) failed: ${failures[0].reason instanceof Error ? failures[0].reason.message : String(failures[0].reason)}`
+            : null,
+        });
       } catch (e) {
         set({ status: '', running: 0, error: e instanceof Error ? e.message : String(e) });
       }
     },
 
-    // On-demand descend (a row that stalls). Never speculative.
-    runDescend: async (focusId) => {
+    // D25: keeping a descent commits every bubble in its path, surface
+    // first so refines links flip committed as their endpoints do.
+    keepDescent: ({ safe, real, raw }) => {
       const doc = get().doc;
-      if (!doc || get().readOnly) return;
-      const runId = `descend:${focusId}:${Date.now()}`;
-      set((s) => ({ running: s.running + 1, status: 'descending…', error: null }));
-      try {
-        const proposal = await streamVerb('descend', doc, focusId, (snapshot) =>
-          applySnapshot(runId, snapshot),
-        );
-        finalizeRun(runId, proposal, 'descend');
-        scheduleSave();
-      } catch (e) {
-        set({ error: e instanceof Error ? e.message : String(e) });
-      } finally {
-        set((s) => ({ running: Math.max(0, s.running - 1), status: '' }));
-      }
-    },
-
-    accept: (id) => {
-      const doc = get().doc;
-      const bubble = doc?.bubbles.find((b) => b.id === id);
-      if (!doc || !bubble || bubble.status !== 'proposed' || isProvisional(id)) return;
-
+      if (!doc || get().readOnly || isProvisional(raw)) return;
       let next = doc;
-      const groups = { ...get().groups };
-      const groupEntry = Object.entries(groups).find(([, ids]) => ids.includes(id));
-      if (groupEntry) {
-        // D24 (amends D18): keep one, park the unpicked siblings.
-        const [runId, ids] = groupEntry;
-        next = parkInRejected(next, new Set(ids.filter((otherId) => otherId !== id)));
-        delete groups[runId];
-      }
-      next = commitInto(next, id);
-      set({ doc: next, groups });
-      scheduleSave();
-    },
-
-    reject: (id) => {
-      const doc = get().doc;
-      if (!doc || isProvisional(id)) return;
-      // A killed grouped candidate is an unpicked RAW reading — parked
-      // (D24). A killed seed ghost vanishes (D24 step 2).
-      const grouped = Object.values(get().groups).some((ids) => ids.includes(id));
-      const groups = Object.fromEntries(
-        Object.entries(get().groups)
-          .map(([runId, ids]) => [runId, ids.filter((i) => i !== id)] as const)
-          .filter(([, ids]) => ids.length > 0),
-      );
-      const ids = new Set([id]);
-      set({ doc: grouped ? parkInRejected(doc, ids) : removeBubbles(doc, ids), groups });
-      scheduleSave();
-    },
-
-    // Shift+A (§10): accepts every ungrouped proposal. Descend candidate
-    // groups are left alone — keeping 1 of 3 is an explicit choice (D18).
-    acceptAllUngrouped: () => {
-      const doc = get().doc;
-      if (!doc) return;
-      const grouped = new Set(Object.values(get().groups).flat());
-      let next = doc;
-      for (const bubble of doc.bubbles) {
-        if (bubble.status === 'proposed' && !isProvisional(bubble.id) && !grouped.has(bubble.id)) {
-          next = commitInto(next, bubble.id);
-        }
+      for (const id of [safe, real, raw]) {
+        if (!id) continue;
+        const bubble = next.bubbles.find((b) => b.id === id);
+        if (bubble?.status === 'proposed') next = commitInto(next, id);
       }
       set({ doc: next });
       scheduleSave();
     },
 
-    rejectAllProposed: () => {
+    // D25: killing a descent parks its whole path in rejected[]. A SAFE
+    // or REAL that another surviving path still hangs off is spared —
+    // paths may share ancestors, and a kill must not amputate a sibling.
+    killDescent: ({ safe, real, raw }) => {
       const doc = get().doc;
-      if (!doc) return;
-      const grouped = new Set(Object.values(get().groups).flat());
-      const proposed = doc.bubbles.filter((b) => b.status === 'proposed' && !isProvisional(b.id));
-      // Same split as reject(): candidates park (D24), seed ghosts vanish.
-      const next = removeBubbles(
-        parkInRejected(doc, new Set(proposed.filter((b) => grouped.has(b.id)).map((b) => b.id))),
-        new Set(proposed.filter((b) => !grouped.has(b.id)).map((b) => b.id)),
-      );
-      set({ doc: next, groups: {} });
+      if (!doc || get().readOnly || isProvisional(raw)) return;
+      const toPark = new Set([raw]);
+      const proposed = (id: string) =>
+        doc.bubbles.find((b) => b.id === id)?.status === 'proposed';
+      const hasOtherChild = (id: string) =>
+        doc.links.some(
+          (l) =>
+            l.kind === 'refines' &&
+            l.source === id &&
+            !toPark.has(l.target) &&
+            doc.bubbles.some((b) => b.id === l.target),
+        );
+      if (real && proposed(real) && !hasOtherChild(real)) toPark.add(real);
+      if (safe && proposed(safe) && !hasOtherChild(safe)) toPark.add(safe);
+      set({ doc: parkInRejected(doc, toPark) });
       scheduleSave();
     },
   };

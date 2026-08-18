@@ -3,11 +3,10 @@
 // small-caps marginalia above each ENTRY (cross-category reads
 // "Love → Identity"). DOI: only the selected row expands to full notes.
 //
-// Phase 2: AI proposals render as ghosts — dashed hairline in the margin,
-// reduced ink, no glow, no colour shift (D22). Streaming (provisional)
-// ghosts show "arriving…"; keep / kill surfaces on hover or row selection,
-// never permanently. Keeping one RAW candidate parks its siblings in
-// doc.rejected (D24). Labels never clip.
+// Phase 2 (D25): the grid is a presentation, not a judgment surface —
+// keep/kill happens per DESCENT in the readings view. Proposals render
+// as ghosts (dashed hairline, reduced ink — D22); streaming ghosts show
+// "arriving…". Labels never clip.
 
 import { useMemo, useState } from 'react';
 import { useMapStore } from '../store';
@@ -29,18 +28,11 @@ function Entry({
   bubble,
   parent,
   expanded,
-  grouped,
 }: {
   bubble: Bubble;
   parent?: Bubble;
   expanded: boolean;
-  grouped: boolean;
 }) {
-  const accept = useMapStore((s) => s.accept);
-  const reject = useMapStore((s) => s.reject);
-  const runDescend = useMapStore((s) => s.runDescend);
-  const readOnly = useMapStore((s) => s.readOnly);
-
   const category = bubble.category;
   const cross = Boolean(parent?.category && category && parent.category !== category);
   const pending = isProvisional(bubble.id);
@@ -58,33 +50,14 @@ function Entry({
       )}
       <div className="entry-label">{bubble.label}</div>
       {expanded && bubble.note && <div className="entry-note">{bubble.note}</div>}
-      {proposed && !pending && (
-        <div className="entry-actions" onClick={(e) => e.stopPropagation()}>
-          <button className="text-action" onClick={() => accept(bubble.id)}>
-            {grouped ? 'keep this one' : 'keep'}
-          </button>
-          <button className="text-action" onClick={() => reject(bubble.id)}>
-            discard
-          </button>
-        </div>
-      )}
-      {!proposed && !readOnly && bubble.tier === 'real' && (
-        <div className="entry-actions" onClick={(e) => e.stopPropagation()}>
-          <button className="text-action" onClick={() => void runDescend(bubble.id)}>
-            descend
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
 export function ThreadGrid() {
   const doc = useMapStore((s) => s.doc);
-  const groups = useMapStore((s) => s.groups);
   const grid = useMemo(() => (doc ? buildGrid(doc) : null), [doc]);
   const [selected, setSelected] = useState<string | null>(null);
-  const groupedIds = useMemo(() => new Set(Object.values(groups).flat()), [groups]);
 
   if (!doc || !grid) return null;
 
@@ -113,7 +86,6 @@ export function ThreadGrid() {
                     bubble={bubble}
                     parent={grid.parentOf.get(bubble.id)}
                     expanded={expanded}
-                    grouped={groupedIds.has(bubble.id)}
                   />
                 ))}
               </div>

@@ -327,6 +327,22 @@ where a 15px label renders at ~10px — too small to read. So:
 
 ## 7. AI operations
 
+> **Superseded in part — see DECISIONS D15–D18, D23, D25.** What still holds
+> below: proposals-only, the one-tool schema shape, ref resolution, §7.2
+> routing, and §7.3. What changed:
+> - `relink` is **cut** (D15). Three verbs, not four.
+> - Counts are **schema-enforced**, not prose: seed exactly 3 SAFE + 3 REAL
+>   (split validated server-side), `descend` exactly **one** bubble one tier
+>   deeper, `interrogate` max 3 (D16, D18, D25).
+> - Every bubble carries a required **`sourceLine`**, validated against
+>   `doc.source`; non-occurring lines are rejected (D23).
+> - **The verb chain is automatic** (D25): seed returns → `descend` fires on
+>   all three REAL bubbles in parallel, no human gate between verbs. The
+>   human judgment moved to the end of the chain and its unit is the
+>   **descent** — keep/kill an entire SAFE → REAL → RAW path, one decision
+>   per descent. `descend` and `interrogate` as user-triggered verbs are gone
+>   from the flow; `interrogate` remains server-side, unwired.
+
 Four verbs. Every one returns **proposals only**.
 
 | Verb | Trigger | Input | Returns |
