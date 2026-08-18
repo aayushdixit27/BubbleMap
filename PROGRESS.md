@@ -1,6 +1,6 @@
 # PROGRESS
 
-> **Last updated: 17 Aug 2026, after Phase 0 probe runs.**
+> **Last updated: 17 Aug 2026, after the Phase 0 chain run.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -12,73 +12,108 @@ spec. Fable updates it at every phase boundary, before committing.
 
 ## Where we are
 
-**Phase 0 — built and run on six songs; gate still open pending the human read.**
+**Phase 0 — chain run complete on Mr. Brightside, lyrics-grounded. Gate open:
+the RAW bubbles have not been read by a human.**
 
-Probe output for all six songs is in `probe-runs/*.json` (raw model output
-included); mechanical counts are in `probe-runs/SUMMARY.md`. Nobody has yet
-judged the output against the two tests below.
+The probe runs `seed` → `descend` on every REAL → `interrogate` on every REAL →
+`relink` once, on **one song**, grounded in human-pasted lyrics
+(`probe-runs/lyrics/Mr. Brightside Lyrics.md` — lyrics files are `.md` now). It
+hard-refuses to run on missing/empty lyrics.
 
-Committed as `a106b70` — "Phase 0: prompt probe — types, verbatim §8 prompt, seed
-via tool use, CLI". 425 lines across four files. No React, no Vite, no canvas,
-which is correct.
+The run: 38 bubbles (6 SAFE / 5 REAL / 27 RAW), 79 accepted links, 21 rejections
+(20 of them in `relink`, 16 of those re-proposals of links it wasn't shown),
+32.2k in / 36.4k out tokens, 9.0 min. Full chain with per-bubble provenance in
+`probe-runs/mr-brightside.json`; mechanical facts in `probe-runs/SUMMARY.md`.
+Answer to the open interrogate question: **the model tiered 18 of 19 assumption
+bubbles RAW** (1 REAL, 0 SAFE) — see SUMMARY for the geometry implication data
+(27 RAW bubbles on a canvas whose RAW ring holds 2–3 per quadrant).
 
-| file | lines | job |
-|---|---|---|
-| `src/types.ts` | 49 | ARCHITECTURE §5 types, single source of truth |
-| `server/prompts.ts` | 81 | the §8 system prompt, verbatim |
-| `server/ai.ts` | 218 | Anthropic client, §7.1 tool schema, ref resolution |
-| `scripts/probe.ts` | 77 | `npm run probe -- "<song> — <artist>"` |
+### The gate — one question
 
-**The gate is not passed.** Building the probe was the easy half. Phase 0 only
-clears when the *output* has been read by a human against the two tests below.
+Read the RAW bubbles. **Does any of them make you uncomfortable to have written
+down?** Binary. That's PRODUCT §2's flinch test and it is the whole reason the
+project exists.
 
----
+Read in this order, because judgment degrades and the most important question
+deserves the freshest attention:
 
-## The open question — everything is blocked on this
+1. RAW bubbles only. Ignore everything else.
+2. What tier `interrogate` assigned its assumption bubbles — see open questions below.
+3. Everything else, **only if 1 and 2 went well.**
 
-Run the probe on six songs, at least two expected **not** to be LOVE. Then judge:
-
-1. **Does RAW implicate the narrator**, or is it REAL wearing a bigger coat?
-   (PRODUCT.md §4 #1 — the fatal risk.)
-2. **Do categories spread**, or does everything come back LOVE because it's a song?
-   (PRODUCT.md §4 #2 — invalidates the target geometry if it fails.)
-
-Suggested set: Mr. Brightside · Runaway (Kanye — the cross-category test) ·
-Super Rich Kids · Landslide · two of your own.
-
-**Both failures are prompt problems and belong to the architect, not the
-implementer.** Do not fix them in code. Do not soften the tests to make the output
-pass.
+If RAW is soft, that is a §8 prompt problem and it belongs to the architect. Do not
+fix it in code.
 
 ---
 
-## Decisions already made — do not relitigate
+## What the superseded run taught us
 
-- Target geometry (4 quadrants × 3 rings, RAW at centre) over horizontal lanes.
-  Contingent on test #2 above passing.
-- React Flow v12 over tldraw/Excalidraw. Nodes must be real DOM for editable text.
-- Local Express proxy holding the key; no direct-from-browser API calls.
-- JSON files in `maps/`, no database.
-- Build order is pre-mortem-driven, not engineering-convenience-driven.
-  See ARCHITECTURE §12 — the reasoning matters more than the sequence.
+The first probe (commit `a106b70`, six songs, `seed` only, title-only) is kept as
+evidence but does **not** clear the gate — `seed` stops at REAL by contract, so it
+could never test RAW. Three things survive from it:
 
-## Known gaps in the spec, accepted for now
+- **Categories spread.** love 11, identity 11, fitness 10, earnings 9 across 41
+  bubbles; every song touched at least three quadrants. Nothing collapsed into LOVE.
+  PRODUCT §4 #2 is provisionally cleared.
+- **SAFE→REAL is not paraphrase.** Human read: 9 of 12 descents add information
+  that could be wrong. This is the *easy* jump, so treat it as a ceiling estimate
+  for RAW, not a floor.
+- **Probable fabrication under title-only running.** "Explain the emails" appeared
+  in a Runaway descent; there are no emails in that song. This is why the rebuilt
+  probe requires lyrics. ARCHITECTURE §7.3.
 
-- **No expected keep-rate for proposals.** If `seed` returns 6 and you kill 5 every
-  time, nothing tells us whether that's the tool working or failing. Phase 0's
-  output is the data that sets this number — record it.
-- **No accuracy pass.** A beautifully self-implicating RAW bubble about a lyric that
-  doesn't exist passes every gate we wrote. See ARCHITECTURE §7.3.
+Mr. Brightside was run title-only in that batch, so re-running it with lyrics gives
+an **unplanned controlled comparison on identical material** — the cleanest way to
+separate "weak prompt" from "model working off recall."
+
+---
+
+## Open architectural questions — architect owns these, do not patch
+
+- **`interrogate`'s assumption bubbles have no defined tier.** An assumption isn't
+  SAFE, REAL or RAW; it's orthogonal to the axis. The schema forces a tier anyway,
+  so the model picks arbitrarily. Geometry makes it worse: a RAW quadrant holds 2–3
+  bubbles and `interrogate` can produce twelve for one song. **Deliberately left
+  unresolved so the raw behaviour is visible in this run.** Outcome decides whether
+  assumptions get their own tier, sit outside the rings, or get cut.
+- **The target canvas: cheap to build, expensive to undo.** The architect first
+  argued against it on build cost — "2–3 sessions" — which was wrong. Agent build
+  time is hours, so *construction* cost is not a reason to defer anything, and any
+  future argument resting on it should be rejected.
+
+  What remains is lock-in, not labour. Ring capacity (2–3 RAW per quadrant), a
+  forced `tier` on every bubble including assumptions, and drag-to-reassign
+  semantics are **data-model commitments**. Once maps exist in that shape, changing
+  them means migrating maps — a cost that does not fall as codegen gets faster.
+  So: build the canvas, but settle the assumption-tier question above *first*,
+  because it's the one that would force a migration.
+
+---
+
+## Decisions reversed on 17 Aug — do not restore without reading why
+
+- Phase 0 was `seed`-only → now all four verbs. A partial chain cannot test RAW.
+- Phase 0 was six songs → **one**. ~27 bubbles is readable; ~160 is not, and an
+  unread pass that says "fine" is worse than no pass.
+- Phase 0 was title-only → **lyrics required**, enforced mechanically.
+- `interrogate` input was "focus + source" → **focus + all committed bubbles +
+  source**. It cannot propose `contradicts` links against bubbles it cannot see.
+  (Caught by the implementer, not the architect.)
+
+## Decisions holding — do not relitigate
+
+React Flow v12 over tldraw/Excalidraw. Local Express proxy holding the key. JSON
+files in `maps/`, no database. Build order driven by the pre-mortem. AI never
+mutates the map.
 
 ---
 
 ## Next
 
-Read the probe output. Report back to the architect with the **raw JSON**, not a
-summary — the whole question is whether the words are good, so the words have to
-survive the trip.
+Read the RAW bubbles in `probe-runs/mr-brightside.json` → answer the one
+question. (Lyrics and run are done.)
 
-Then: Phase 1, walking skeleton. Not before.
+Then run PRODUCT §6.5's five-question phase gate in writing before opening Phase 1.
 
 ---
 
@@ -86,8 +121,9 @@ Then: Phase 1, walking skeleton. Not before.
 
 | phase | status | commit | note |
 |---|---|---|---|
-| 0 — prompt probe | runs done, **gate open** | `a106b70` + probe-runs commit | 6 songs seeded, title-only. Category spread: love 11, identity 11, fitness 10, earnings 9 (41 bubbles; every song touched ≥3 quadrants). Tiers: 25 SAFE, 16 REAL, 0 RAW (seed doesn't request RAW). Needs human read of output — see `probe-runs/SUMMARY.md` |
-| 1 — walking skeleton | not started | — | |
+| 0 — probe v1 | superseded | `a106b70`, `6dda483` | seed-only, 6 songs, title-only. Category spread cleared; RAW untestable by construction |
+| 0 — probe v2 | run done, **gate open** | see "full chain" commit | four-verb chain, Mr. Brightside, lyrics-grounded. 38 bubbles: seed 6 SAFE + 3 REAL, descend 9 RAW, interrogate 20 (18 RAW / 2 REAL). interrogate exceeded its 3–5 contract on all 3 calls (6/8/6). Needs human read of RAW |
+| 1 — walking skeleton | not started | — | scope contingent on the canvas-vs-columns call |
 | 2 — the loop | not started | — | first usable version |
 | 3 — authoring | not started | — | |
 | 4 — depth | not started | — | |

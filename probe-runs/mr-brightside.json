@@ -1,0 +1,2637 @@
+{
+  "title": "Mr. Brightside — The Killers",
+  "model": "claude-opus-5",
+  "ranAt": "2026-08-18T04:38:51.902Z",
+  "lyricsFile": "probe-runs/lyrics/Mr. Brightside Lyrics.md",
+  "lyricsChars": 1551,
+  "totals": {
+    "input_tokens": 32200,
+    "output_tokens": 36390,
+    "wallClockMs": 537586,
+    "rejections": 21
+  },
+  "bubbles": [
+    {
+      "id": "XrC1b4slWRJuP9Oum3kur",
+      "verb": "seed",
+      "tier": "safe",
+      "category": "love",
+      "label": "Jealousy runs the night when the person you want leaves with someone else",
+      "note": "The stated subject: a man watching a woman he wants go home with another man.",
+      "parent": null,
+      "crossCategory": false
+    },
+    {
+      "id": "23d5uKTzt_KTqiiBVp6iG",
+      "verb": "seed",
+      "tier": "safe",
+      "category": "love",
+      "label": "Repeating it was only a kiss keeps the loss small enough to hold",
+      "note": "The refrain shrinks the event every time it comes back, and never succeeds.",
+      "parent": null,
+      "crossCategory": false
+    },
+    {
+      "id": "HoR9wXOG_nayqQwNjt6bX",
+      "verb": "seed",
+      "tier": "safe",
+      "category": "fitness",
+      "label": "The mind plays the scene in full detail and will not stop",
+      "note": "Cab, smoke, drag, chest, dress. Sleeplessness with a soundtrack.",
+      "parent": null,
+      "crossCategory": false
+    },
+    {
+      "id": "MzMYmYIA8d6TtMaYKkg03",
+      "verb": "seed",
+      "tier": "safe",
+      "category": "fitness",
+      "label": "Announcing recovery at the exact moment the spiral restarts",
+      "note": "Coming out of my cage and I've been doing just fine, sung twice, identically, going nowhere.",
+      "parent": null,
+      "crossCategory": false
+    },
+    {
+      "id": "2syx1HX15lrnFoAobADJe",
+      "verb": "seed",
+      "tier": "safe",
+      "category": "identity",
+      "label": "He names himself the optimist and keeps the name on",
+      "note": "Mr. Brightside is a title he awards himself mid-collapse. Eager eyes, open on purpose.",
+      "parent": null,
+      "crossCategory": false
+    },
+    {
+      "id": "C8zQ3LOnHMDkGsAQtCIjW",
+      "verb": "seed",
+      "tier": "safe",
+      "category": "earnings",
+      "label": "Wanting everything gets called destiny rather than appetite",
+      "note": "Gotta be down because I want it all; destiny is calling me. Ambition language borrowed to dignify want.",
+      "parent": null,
+      "crossCategory": false
+    },
+    {
+      "id": "GP5ZCymDy4JfDvhJZE9eE",
+      "verb": "seed",
+      "tier": "real",
+      "category": "love",
+      "label": "One kiss, and he has been grieving a relationship she never entered",
+      "note": "It started out with a kiss is the whole history. He is the only one who thought it started anything.",
+      "parent": {
+        "id": "23d5uKTzt_KTqiiBVp6iG",
+        "label": "Repeating it was only a kiss keeps the loss small enough to hold",
+        "tier": "safe",
+        "category": "love"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Names what the minimising is protecting: not a broken relationship but a claim he never actually had.",
+      "crossCategory": false
+    },
+    {
+      "id": "7Xtqp8Ffz3evWk04gPpID",
+      "verb": "seed",
+      "tier": "real",
+      "category": "fitness",
+      "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "note": "It's all in my head is an admission, not a defence. Nobody is showing him this. He keeps the projector running because stopping would mean she is simply gone.",
+      "parent": {
+        "id": "HoR9wXOG_nayqQwNjt6bX",
+        "label": "The mind plays the scene in full detail and will not stop",
+        "tier": "safe",
+        "category": "fitness"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Turns the intrusive images into something he is doing, with a motive, rather than something happening to him.",
+      "crossCategory": false
+    },
+    {
+      "id": "yMQP5APGBvS3o5fxqQsWz",
+      "verb": "seed",
+      "tier": "real",
+      "category": "identity",
+      "label": "Losing her mostly means being the kind of man who loses her",
+      "note": "The rival gets described with more care than she does. What is unbearable is the ranking, not the absence.",
+      "parent": {
+        "id": "XrC1b4slWRJuP9Oum3kur",
+        "label": "Jealousy runs the night when the person you want leaves with someone else",
+        "tier": "safe",
+        "category": "love"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Moves the wound from LOVE to IDENTITY: the detail lavished on the other man shows this is about his own standing, not about missing her.",
+      "crossCategory": true
+    },
+    {
+      "id": "AxX5eZGlWaoVdSBuXx2IO",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "identity",
+      "label": "I never asked her for anything, so betrayal is the flattering version",
+      "note": "The four unfinished I nevers are the only honest line in the song. Nothing was taken from me because I never put in a claim. If I say she wronged me, I was a man in a story; if I say I said nothing, I was a man in a room. I picked the story.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Deeper than mourning a relationship she never entered: he chose the mourning because the alternative admission is about him, not her — he never spoke, so this stops being a love story and becomes what he can stand to be",
+      "crossCategory": true
+    },
+    {
+      "id": "6zNz764v7a179F7BP3P4O",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "love",
+      "label": "I run the bedroom scene nightly because it is our only remaining contact",
+      "note": "The cab, the smoke, the dress — I direct all of it, in that order, every time. It's all in my head, and I keep the head running, because when the film stops she isn't thinking about me at all. Being sick to my stomach over her is the closest I get to being with her.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Stays in love, but implicates him: the grief isn't happening to him, he is manufacturing it frame by frame because the imagined betrayal is the only relationship still running",
+      "crossCategory": false
+    },
+    {
+      "id": "vGUDzKt0rCAK7dEHQ0zE7",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "identity",
+      "label": "I named myself Mr. Brightside so being passed over reads as personality",
+      "note": "Destiny is calling me, eager eyes, coming out of my cage doing just fine — I gave myself a brand name and a comeback arc for an evening that, from her side, contained one kiss and no sequel. The whole persona is scaffolding around a thing that was never big enough to need it.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "The grieving needs a griever; he built a titled self out of one kiss, which moves the honest reading from what he lost to who he needs to be seen as",
+      "crossCategory": true
+    },
+    {
+      "id": "xc5FjfSc3lxbLbfQIwyap",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "love",
+      "label": "I keep rewinding to the dress because part of me enjoys it",
+      "note": "The camera in my head does not linger on his face or their conversation. It goes to the drag of the cigarette, the hand on the chest, the dress coming off. I am directing this. I call it being sick to my stomach because the other word for what I feel watching her get undressed by someone else is unbearable to hold. I have imagined her more vividly since she left than I ever managed while she was in the room.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Moves from supplying the scene to wanting the scene. Naming which frames he chooses turns self-inflicted torture into appetite, and the category shifts to love because it is his own desire he is feeding, not his sanity he is losing.",
+      "crossCategory": true
+    },
+    {
+      "id": "2JBitpIjktzexoXSpwiZi",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "identity",
+      "label": "He simply did the thing I never got round to doing",
+      "note": "I never asked. I never said it. I never made the move that he made in one evening without apparently agonising about it. The film I run isn't really about her betraying me — it's a re-enactment of a man acting while I stood there being decent and patient and invisible. Every time I play it, I lose to him again, which is the only version of the story where I was ever in the running.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Says what the projector is actually screening. Not her leaving but another man's willingness beside his own. That is not a mental-capacity problem, it is a verdict on what kind of man he is, so it sits in identity.",
+      "crossCategory": true
+    },
+    {
+      "id": "WRXIsAfIVZWIYWl5UHZuy",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "identity",
+      "label": "If it was only a kiss then I was never anything to her",
+      "note": "I keep repeating that it was only a kiss like it proves how small the crime was, but the size of the crime is the size of me. A betrayal means I had standing. A kiss she has already forgotten means I was a Tuesday. I would rather be the wronged man in a tragedy than the one she never really considered, so I keep the tragedy funded — the jealousy is the last evidence that we happened at all.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "Keeping the projector running only makes sense if stopping costs him more than watching. What it would cost is his standing in the story, which is identity, not mind.",
+      "crossCategory": true
+    },
+    {
+      "id": "dfKLDLpqiOcGzBSECUMiI",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "love",
+      "label": "It was only a kiss and I built a marriage on it",
+      "note": "He says it twice, like a lawyer weakening his own case. There was no us. He gave one night the weight of a claim so that this night could be a betrayal instead of what it is: someone he barely had going home with someone else. He is grieving a relationship he issued to himself.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "The ranking only stings if he was ever in the running. Deeper than being the man who loses her is admitting he was never chosen at all — he manufactured the standing he is now defending. Sits in LOVE because the lie is about the relationship itself, not about his rank among men.",
+      "crossCategory": true
+    },
+    {
+      "id": "uw2LtxbkJLtte7HcnK-O4",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "identity",
+      "label": "I study him because I would rather be him than have her",
+      "note": "The smoke, the drag, the hand on the chest, the dress coming off — he has the man's whole evening blocked out shot by shot. She is barely in the frame as a person. What he is watching is a demonstration of how to be a man who gets taken home, and he is taking notes he will never use.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "The focus notices he describes the rival more carefully than her; this names why. It is not comparison, it is wanting. He implicates himself by admitting the envy points at the man, which is why her absence never gets described at all.",
+      "crossCategory": false
+    },
+    {
+      "id": "pTUGJxWNGKUEWKfuU6Eul",
+      "verb": "descend",
+      "tier": "raw",
+      "category": "fitness",
+      "label": "I replay it all night because nothing else makes me feel awake",
+      "note": "It's all in my head — he says it and keeps going anyway, adds detail, undresses her himself. Coming out of my cage, eager eyes: the sickness in his stomach is the strongest signal his body has produced in months. Being destroyed by this is more life than doing just fine ever was, so he keeps feeding it.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "refines",
+      "parentLinkRationale": "Being outranked would end when the night ends. He keeps the night running. Moves to FITNESS because the honest deeper reading is about his own appetite for the pain — a capacity problem, not a status one.",
+      "crossCategory": true
+    },
+    {
+      "id": "0eaem78vSy3hsX2tOcfHN",
+      "verb": "interrogate",
+      "tier": "real",
+      "category": "love",
+      "label": "The kiss registered on her side as the start of something",
+      "note": "Grief requires a thing that was jointly held. He is assuming she filed that night the way he did — as an opening rather than an evening. If she filed it as nothing, there is no ending to be confused by, only a man who kept a receipt.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "You cannot grieve a relationship she never entered unless she at least noticed the door",
+      "crossCategory": false
+    },
+    {
+      "id": "LdqrhS4t0lanPgDajx9Ne",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "fitness",
+      "label": "Tonight actually happened somewhere other than inside my head",
+      "note": "The cab, the smoke, the bedroom — I am not in that room and never was. For this to be grief there has to be an event. I have never checked whether there is a man at all, because checking could take the man away, and then I would have nothing to be destroyed by.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "The grief needs an event tonight to be triggered by, not just a projector",
+      "crossCategory": true
+    },
+    {
+      "id": "Uak4Xm7A4WEYGjOUrV4rf",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "identity",
+      "label": "She would have said yes if I had ever actually asked",
+      "note": "The whole loss depends on her having been available to me and taken by someone quicker. If the honest answer was no, then nothing was taken — I was simply not the one, and the story collapses from tragedy into arithmetic.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "Grieving what never started assumes it could have started and was intercepted",
+      "crossCategory": true
+    },
+    {
+      "id": "GOD-JvABdibc3EIlG0a2y",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "identity",
+      "label": "One kiss is the largest thing that has happened to me",
+      "note": "For a single kiss to fund years of this, the rest of the ledger has to be empty. The size of my grief is a public statement about the size of my life.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "The kiss can only carry this weight if nothing heavier ever arrived",
+      "crossCategory": true
+    },
+    {
+      "id": "xUFzUuNWyM4bIcDePgB8K",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "love",
+      "label": "What I feel is grief and not an appetite I never fed",
+      "note": "Grief is respectable — it means I had her and lost her. Appetite means I wanted her and never said so, which is not a wound, it is a habit. I need the mourning frame because it makes the wanting retrospective and therefore blameless.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "Calling it grief rather than unspoken want is what makes him the injured party",
+      "crossCategory": false
+    },
+    {
+      "id": "JTujTDqzMJIxiJWVIpqYP",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "love",
+      "label": "It is her I want and not the position of being chosen",
+      "note": "I have never described her face. I have described a cab, a cigarette, a chest, a dress and a man. If what I lost was the slot rather than the person, then this was never a relationship she declined to enter — it was a vacancy I never applied for.",
+      "parent": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real",
+        "category": "love"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "A relationship she never entered still assumes she is the thing he was after",
+      "crossCategory": false
+    },
+    {
+      "id": "czIa7Q2QUwqDeNLfQWCZp",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "fitness",
+      "label": "I could shut this off tonight and have decided not to",
+      "note": "Torture needs a torturer somewhere other than this bed. If the pictures arrive uninvited I am ill and blameless; if they arrive because I start them, then at 3am with the lights off I chose the cab, chose the smoke, chose the dress. I have never once tested which it is, because the test would take about four seconds and I would lose it.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "He keeps the projector running only if it is his to stop. Otherwise he is a patient, not an author, and no self-implication survives.",
+      "crossCategory": false
+    },
+    {
+      "id": "ETYZ354-2S1p4yKmYY3DV",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "fitness",
+      "label": "The film is the only thing scheduled for tonight",
+      "note": "For stopping to feel like erasure, the room has to be otherwise empty. If there were a job I cared about tomorrow, a friend expecting me, anything with a start time, the projector would be competing with something. It isn't. That is not her doing.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "Stopping only equals losing her if there is nothing else in the night to move into.",
+      "crossCategory": false
+    },
+    {
+      "id": "EE8ax_QYtezgE9R3PrQZY",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "love",
+      "label": "The only options are this film or never thinking of her again",
+      "note": "I have arranged the choice so that stopping means losing her completely. There is a third version where I sleep, and see her on Thursday, and say the sentence I have never said. I keep that one off the shelf because it requires me to speak while awake, in daylight, to her face, with the possibility of a no.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "The film-or-nothing binary is what makes the torture look forced on him. It is his own arrangement, and it edits out the option that requires him to speak.",
+      "crossCategory": true
+    },
+    {
+      "id": "_8TyKdA6sc-tiHPvcyRXp",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "fitness",
+      "label": "The footage is accurate enough to count as news about her",
+      "note": "I admit I invented it and then I grieve it like a report. If I let myself notice that the drag of the cigarette and the hand on the chest are mine — my staging, my ordering, my choices — the sickness would have no source outside me and I would have to call it something other than what she did to me.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "He can only call invented images torture if he still treats them as reportage about her rather than as his own staging.",
+      "crossCategory": false
+    },
+    {
+      "id": "fctcqIQW3pQ3KzFJ-2s2p",
+      "verb": "interrogate",
+      "tier": "real",
+      "category": "fitness",
+      "label": "The but in it is all in my head reinstates the footage",
+      "note": "And it's all in my head, but she's touching his — chest now. The admission lasts half a line and the conjunction takes it back. He confesses to authorship and then keeps filming, in the same breath, without pausing for the contradiction.",
+      "parent": {
+        "id": "_8TyKdA6sc-tiHPvcyRXp",
+        "label": "The footage is accurate enough to count as news about her",
+        "tier": "raw",
+        "category": "fitness"
+      },
+      "parentLinkKind": "evidence",
+      "parentLinkRationale": "The line admits the head and then overrules it with but in the same breath — the exact mechanism of the assumption.",
+      "crossCategory": false
+    },
+    {
+      "id": "IaZvktCaHMG56VtpwAszF",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "identity",
+      "label": "Nobody in my life would ask me where these pictures come from",
+      "note": "The story holds because I am the only witness and the only source. One person close enough to say you weren't in that cab, were you, and the whole night collapses into a man alone with a habit. I have not built that person into my life. The solitude isn't a symptom of the heartbreak, it is the condition the heartbreak needs.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "The framing survives unchallenged because there is no one in the room to ask where the footage came from — the isolation is load-bearing, not incidental.",
+      "crossCategory": true
+    },
+    {
+      "id": "HFmS308P06AIh9AgdbeT5",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "love",
+      "label": "She is the reason for the film not tonight's casting",
+      "note": "If the same projector would run for the next woman who kissed me once — same cab, same smoke, same dress, different face — then this is not a loss I suffered, it is a facility I have, and it was running before she arrived and will run after.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "If the projector would run for anyone, the torture is a standing capacity of his, not something she caused.",
+      "crossCategory": true
+    },
+    {
+      "id": "ixXqdIhR-q9JlTiBPaG1G",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "love",
+      "label": "The film gives me pain and nothing I go back for",
+      "note": "Torture is the word I have chosen. It only fits if there is nothing in me that returns to the bedroom scene for its own sake. If any part of me looks forward to the dress, then what I am doing at 3am is not being destroyed, it is visiting, and I have been calling it suffering to keep the visit clean.",
+      "parent": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real",
+        "category": "fitness"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "The word torture requires that no part of him returns to the scene willingly.",
+      "crossCategory": true
+    },
+    {
+      "id": "tyFt-ZgbEbxDgo2JIUgZ4",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "identity",
+      "label": "She compared the two of us and I placed second",
+      "note": "A ranking needs a contest. For me to have been outranked, she has to have held both of us in her head at the same moment and picked. I have never checked whether I was in the frame at all. Second place is a much better result than not being entered, so I have awarded myself second place and grieved it.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "There is no second place unless a comparison was actually made by her.",
+      "crossCategory": false
+    },
+    {
+      "id": "rRlLelQLd-dN6sS2G3pvH",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "fitness",
+      "label": "I have never once named the thing he has that I lack",
+      "note": "I know the cab, the smoke, the drag, the dress. I do not know what he has. I keep the deficit vague because a vague deficit is a condition and a specific one is a task. If I said out loud he stood up and spoke, then the difference between us is a sentence long and I could have said it by Thursday, and then tonight is not a verdict, it is a thing I skipped.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "Being the kind of man who loses requires a difference in kind rather than a difference in what I did that night.",
+      "crossCategory": true
+    },
+    {
+      "id": "tZipt8Whs2wp9j8vIB05H",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "earnings",
+      "label": "Her choosing me was the rating I was waiting to be issued",
+      "note": "I have handed one woman on one night the authority to score me, and I accepted the score without appeal. That only makes sense if I had no other evidence of standing to weigh it against — nothing at work, nothing I am good at, no room where I am the one who gets picked. She did not rank me. I asked her to, silently, and then read the result.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "Her verdict only ranks me if I have already accepted her as the judge; the ranking sits in EARNINGS because it is a standing I wanted certified, not a person I wanted.",
+      "crossCategory": true
+    },
+    {
+      "id": "C4-J1AGPM-h50jD6PPBnn",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "identity",
+      "label": "One Tuesday's outcome is a permanent statement about my type",
+      "note": "For this to be about the kind of man I am, tonight has to generalise. She went home with someone; that could be a mood, a week, a room, her business entirely. I have converted a single result into a category and moved into it. Being permanently the losing kind hurts more but explains everything, and I would rather have the explanation than the uncertainty.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "One night only becomes an identity if it is treated as reporting on all nights.",
+      "crossCategory": false
+    },
+    {
+      "id": "OPResddVgmqckJirqdxiK",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "identity",
+      "label": "Someone other than me is keeping the score",
+      "note": "Humiliation needs a room. Being outranked only stings if the ranking is posted somewhere. Nobody watched this, nobody will mention it, no one is comparing us tomorrow. If I am the only person who knows there was a competition, then the ranking is not something done to me — it is a scoreboard I built, staffed and read aloud to myself in the dark.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "Ranking is public by definition; if nobody else is counting, the humiliation is self-issued.",
+      "crossCategory": false
+    },
+    {
+      "id": "4xxWninoaTbGjpKbpOwTt",
+      "verb": "interrogate",
+      "tier": "raw",
+      "category": "identity",
+      "label": "If she had chosen me I would have stopped ranking myself",
+      "note": "The whole grievance assumes there is a top of this thing and that arriving there is restful. I have never tested it. If I had put her in the cab, I would have been in that bedroom counting the men before me, checking her phone in my head. The ranking is not something he won. It is the machine I run, and she was only tonight's occasion for it.",
+      "parent": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real",
+        "category": "identity"
+      },
+      "parentLinkKind": "assumes",
+      "parentLinkRationale": "The ranking only hurts if winning it would have ended it.",
+      "crossCategory": false
+    }
+  ],
+  "links": [
+    {
+      "verb": "seed",
+      "kind": "refines",
+      "source": "23d5uKTzt_KTqiiBVp6iG",
+      "sourceLabel": "Repeating it was only a kiss keeps the loss small enough to hold",
+      "target": "GP5ZCymDy4JfDvhJZE9eE",
+      "targetLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "crossCategory": false,
+      "rationale": "Names what the minimising is protecting: not a broken relationship but a claim he never actually had."
+    },
+    {
+      "verb": "seed",
+      "kind": "refines",
+      "source": "HoR9wXOG_nayqQwNjt6bX",
+      "sourceLabel": "The mind plays the scene in full detail and will not stop",
+      "target": "7Xtqp8Ffz3evWk04gPpID",
+      "targetLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "crossCategory": false,
+      "rationale": "Turns the intrusive images into something he is doing, with a motive, rather than something happening to him."
+    },
+    {
+      "verb": "seed",
+      "kind": "refines",
+      "source": "XrC1b4slWRJuP9Oum3kur",
+      "sourceLabel": "Jealousy runs the night when the person you want leaves with someone else",
+      "target": "yMQP5APGBvS3o5fxqQsWz",
+      "targetLabel": "Losing her mostly means being the kind of man who loses her",
+      "crossCategory": true,
+      "rationale": "Moves the wound from LOVE to IDENTITY: the detail lavished on the other man shows this is about his own standing, not about missing her."
+    },
+    {
+      "verb": "seed",
+      "kind": "contradicts",
+      "source": "MzMYmYIA8d6TtMaYKkg03",
+      "sourceLabel": "Announcing recovery at the exact moment the spiral restarts",
+      "target": "7Xtqp8Ffz3evWk04gPpID",
+      "targetLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "crossCategory": false,
+      "rationale": "Doing just fine cannot survive the fact that he is the one keeping the scene running all night."
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "AxX5eZGlWaoVdSBuXx2IO",
+      "targetLabel": "I never asked her for anything, so betrayal is the flattering version",
+      "crossCategory": true,
+      "rationale": "Deeper than mourning a relationship she never entered: he chose the mourning because the alternative admission is about him, not her — he never spoke, so this stops being a love story and becomes what he can stand to be"
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "6zNz764v7a179F7BP3P4O",
+      "targetLabel": "I run the bedroom scene nightly because it is our only remaining contact",
+      "crossCategory": false,
+      "rationale": "Stays in love, but implicates him: the grief isn't happening to him, he is manufacturing it frame by frame because the imagined betrayal is the only relationship still running"
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "vGUDzKt0rCAK7dEHQ0zE7",
+      "targetLabel": "I named myself Mr. Brightside so being passed over reads as personality",
+      "crossCategory": true,
+      "rationale": "The grieving needs a griever; he built a titled self out of one kiss, which moves the honest reading from what he lost to who he needs to be seen as"
+    },
+    {
+      "verb": "descend",
+      "kind": "assumes",
+      "source": "6zNz764v7a179F7BP3P4O",
+      "sourceLabel": "I run the bedroom scene nightly because it is our only remaining contact",
+      "target": "AxX5eZGlWaoVdSBuXx2IO",
+      "targetLabel": "I never asked her for anything, so betrayal is the flattering version",
+      "crossCategory": true,
+      "rationale": "He only has to imagine the bedroom because he never made a real bid; if he had asked and been refused, there would be an answer instead of a loop"
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "xc5FjfSc3lxbLbfQIwyap",
+      "targetLabel": "I keep rewinding to the dress because part of me enjoys it",
+      "crossCategory": true,
+      "rationale": "Moves from supplying the scene to wanting the scene. Naming which frames he chooses turns self-inflicted torture into appetite, and the category shifts to love because it is his own desire he is feeding, not his sanity he is losing."
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "2JBitpIjktzexoXSpwiZi",
+      "targetLabel": "He simply did the thing I never got round to doing",
+      "crossCategory": true,
+      "rationale": "Says what the projector is actually screening. Not her leaving but another man's willingness beside his own. That is not a mental-capacity problem, it is a verdict on what kind of man he is, so it sits in identity."
+    },
+    {
+      "verb": "descend",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "WRXIsAfIVZWIYWl5UHZuy",
+      "targetLabel": "If it was only a kiss then I was never anything to her",
+      "crossCategory": true,
+      "rationale": "Keeping the projector running only makes sense if stopping costs him more than watching. What it would cost is his standing in the story, which is identity, not mind."
+    },
+    {
+      "verb": "descend",
+      "kind": "contradicts",
+      "source": "xc5FjfSc3lxbLbfQIwyap",
+      "sourceLabel": "I keep rewinding to the dress because part of me enjoys it",
+      "target": "HoR9wXOG_nayqQwNjt6bX",
+      "targetLabel": "The mind plays the scene in full detail and will not stop",
+      "crossCategory": true,
+      "rationale": "The outer reading has the mind assaulting him with detail it will not stop supplying. If he is choosing which frames to linger on and getting something from them, the sleeplessness is not being done to him."
+    },
+    {
+      "verb": "descend",
+      "kind": "assumes",
+      "source": "2JBitpIjktzexoXSpwiZi",
+      "sourceLabel": "He simply did the thing I never got round to doing",
+      "target": "WRXIsAfIVZWIYWl5UHZuy",
+      "targetLabel": "If it was only a kiss then I was never anything to her",
+      "crossCategory": false,
+      "rationale": "Losing to him only stings if there was a contest. He needs the kiss to have counted for the defeat to count."
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "dfKLDLpqiOcGzBSECUMiI",
+      "targetLabel": "It was only a kiss and I built a marriage on it",
+      "crossCategory": true,
+      "rationale": "The ranking only stings if he was ever in the running. Deeper than being the man who loses her is admitting he was never chosen at all — he manufactured the standing he is now defending. Sits in LOVE because the lie is about the relationship itself, not about his rank among men."
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "uw2LtxbkJLtte7HcnK-O4",
+      "targetLabel": "I study him because I would rather be him than have her",
+      "crossCategory": false,
+      "rationale": "The focus notices he describes the rival more carefully than her; this names why. It is not comparison, it is wanting. He implicates himself by admitting the envy points at the man, which is why her absence never gets described at all."
+    },
+    {
+      "verb": "descend",
+      "kind": "refines",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "pTUGJxWNGKUEWKfuU6Eul",
+      "targetLabel": "I replay it all night because nothing else makes me feel awake",
+      "crossCategory": true,
+      "rationale": "Being outranked would end when the night ends. He keeps the night running. Moves to FITNESS because the honest deeper reading is about his own appetite for the pain — a capacity problem, not a status one."
+    },
+    {
+      "verb": "descend",
+      "kind": "contradicts",
+      "source": "dfKLDLpqiOcGzBSECUMiI",
+      "sourceLabel": "It was only a kiss and I built a marriage on it",
+      "target": "XrC1b4slWRJuP9Oum3kur",
+      "targetLabel": "Jealousy runs the night when the person you want leaves with someone else",
+      "crossCategory": false,
+      "rationale": "The stated subject assumes a person he wanted was lost to someone else. If there was only a kiss, nothing left with anyone; the jealousy has no object and he built one."
+    },
+    {
+      "verb": "descend",
+      "kind": "assumes",
+      "source": "pTUGJxWNGKUEWKfuU6Eul",
+      "sourceLabel": "I replay it all night because nothing else makes me feel awake",
+      "target": "uw2LtxbkJLtte7HcnK-O4",
+      "targetLabel": "I study him because I would rather be him than have her",
+      "crossCategory": true,
+      "rationale": "He can only keep the film rolling because the man in it is worth watching. If the rival were nothing to him, there would be no scene to run."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "0eaem78vSy3hsX2tOcfHN",
+      "targetLabel": "The kiss registered on her side as the start of something",
+      "crossCategory": false,
+      "rationale": "You cannot grieve a relationship she never entered unless she at least noticed the door"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "LdqrhS4t0lanPgDajx9Ne",
+      "targetLabel": "Tonight actually happened somewhere other than inside my head",
+      "crossCategory": true,
+      "rationale": "The grief needs an event tonight to be triggered by, not just a projector"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "Uak4Xm7A4WEYGjOUrV4rf",
+      "targetLabel": "She would have said yes if I had ever actually asked",
+      "crossCategory": true,
+      "rationale": "Grieving what never started assumes it could have started and was intercepted"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "GOD-JvABdibc3EIlG0a2y",
+      "targetLabel": "One kiss is the largest thing that has happened to me",
+      "crossCategory": true,
+      "rationale": "The kiss can only carry this weight if nothing heavier ever arrived"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "xUFzUuNWyM4bIcDePgB8K",
+      "targetLabel": "What I feel is grief and not an appetite I never fed",
+      "crossCategory": false,
+      "rationale": "Calling it grief rather than unspoken want is what makes him the injured party"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "JTujTDqzMJIxiJWVIpqYP",
+      "targetLabel": "It is her I want and not the position of being chosen",
+      "crossCategory": false,
+      "rationale": "A relationship she never entered still assumes she is the thing he was after"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "WRXIsAfIVZWIYWl5UHZuy",
+      "sourceLabel": "If it was only a kiss then I was never anything to her",
+      "target": "0eaem78vSy3hsX2tOcfHN",
+      "targetLabel": "The kiss registered on her side as the start of something",
+      "crossCategory": true,
+      "rationale": "If it was only a kiss on her side he was a Tuesday, and nothing registered at all"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "AxX5eZGlWaoVdSBuXx2IO",
+      "sourceLabel": "I never asked her for anything, so betrayal is the flattering version",
+      "target": "0eaem78vSy3hsX2tOcfHN",
+      "targetLabel": "The kiss registered on her side as the start of something",
+      "crossCategory": true,
+      "rationale": "The four unfinished I nevers say no claim was ever put in for her to receive"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "LdqrhS4t0lanPgDajx9Ne",
+      "targetLabel": "Tonight actually happened somewhere other than inside my head",
+      "crossCategory": false,
+      "rationale": "He supplies the cab, the smoke and the dress himself — the event is authored, not witnessed"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "dfKLDLpqiOcGzBSECUMiI",
+      "sourceLabel": "It was only a kiss and I built a marriage on it",
+      "target": "Uak4Xm7A4WEYGjOUrV4rf",
+      "targetLabel": "She would have said yes if I had ever actually asked",
+      "crossCategory": true,
+      "rationale": "Someone he barely had going home with someone else implies she was never his to intercept"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "C8zQ3LOnHMDkGsAQtCIjW",
+      "sourceLabel": "Wanting everything gets called destiny rather than appetite",
+      "target": "xUFzUuNWyM4bIcDePgB8K",
+      "targetLabel": "What I feel is grief and not an appetite I never fed",
+      "crossCategory": true,
+      "rationale": "I want it all is appetite stated in the first verse, before any loss occurs"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "xc5FjfSc3lxbLbfQIwyap",
+      "sourceLabel": "I keep rewinding to the dress because part of me enjoys it",
+      "target": "xUFzUuNWyM4bIcDePgB8K",
+      "targetLabel": "What I feel is grief and not an appetite I never fed",
+      "crossCategory": false,
+      "rationale": "Mourners do not rewind to the dress; the pleasure in the replay exposes want, not loss"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "uw2LtxbkJLtte7HcnK-O4",
+      "sourceLabel": "I study him because I would rather be him than have her",
+      "target": "JTujTDqzMJIxiJWVIpqYP",
+      "targetLabel": "It is her I want and not the position of being chosen",
+      "crossCategory": true,
+      "rationale": "The camera stays on the man's evening — the envy is for his position, not for her"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "JTujTDqzMJIxiJWVIpqYP",
+      "targetLabel": "It is her I want and not the position of being chosen",
+      "crossCategory": true,
+      "rationale": "What is unbearable is the ranking, which means the slot was always the object"
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "czIa7Q2QUwqDeNLfQWCZp",
+      "targetLabel": "I could shut this off tonight and have decided not to",
+      "crossCategory": false,
+      "rationale": "He keeps the projector running only if it is his to stop. Otherwise he is a patient, not an author, and no self-implication survives."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "ETYZ354-2S1p4yKmYY3DV",
+      "targetLabel": "The film is the only thing scheduled for tonight",
+      "crossCategory": false,
+      "rationale": "Stopping only equals losing her if there is nothing else in the night to move into."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "EE8ax_QYtezgE9R3PrQZY",
+      "targetLabel": "The only options are this film or never thinking of her again",
+      "crossCategory": true,
+      "rationale": "The film-or-nothing binary is what makes the torture look forced on him. It is his own arrangement, and it edits out the option that requires him to speak."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "_8TyKdA6sc-tiHPvcyRXp",
+      "targetLabel": "The footage is accurate enough to count as news about her",
+      "crossCategory": false,
+      "rationale": "He can only call invented images torture if he still treats them as reportage about her rather than as his own staging."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "IaZvktCaHMG56VtpwAszF",
+      "targetLabel": "Nobody in my life would ask me where these pictures come from",
+      "crossCategory": true,
+      "rationale": "The framing survives unchallenged because there is no one in the room to ask where the footage came from — the isolation is load-bearing, not incidental."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "HFmS308P06AIh9AgdbeT5",
+      "targetLabel": "She is the reason for the film not tonight's casting",
+      "crossCategory": true,
+      "rationale": "If the projector would run for anyone, the torture is a standing capacity of his, not something she caused."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "ixXqdIhR-q9JlTiBPaG1G",
+      "targetLabel": "The film gives me pain and nothing I go back for",
+      "crossCategory": true,
+      "rationale": "The word torture requires that no part of him returns to the scene willingly."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "evidence",
+      "source": "_8TyKdA6sc-tiHPvcyRXp",
+      "sourceLabel": "The footage is accurate enough to count as news about her",
+      "target": "fctcqIQW3pQ3KzFJ-2s2p",
+      "targetLabel": "The but in it is all in my head reinstates the footage",
+      "crossCategory": false,
+      "rationale": "The line admits the head and then overrules it with but in the same breath — the exact mechanism of the assumption."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "_8TyKdA6sc-tiHPvcyRXp",
+      "sourceLabel": "The footage is accurate enough to count as news about her",
+      "target": "LdqrhS4t0lanPgDajx9Ne",
+      "targetLabel": "Tonight actually happened somewhere other than inside my head",
+      "crossCategory": false,
+      "rationale": "Treating the footage as news presupposes an actual event outside his head, which he has never verified because verifying could remove it."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "ETYZ354-2S1p4yKmYY3DV",
+      "sourceLabel": "The film is the only thing scheduled for tonight",
+      "target": "GOD-JvABdibc3EIlG0a2y",
+      "targetLabel": "One kiss is the largest thing that has happened to me",
+      "crossCategory": true,
+      "rationale": "The night is only empty without the film if the whole ledger is empty — one kiss funding years means nothing else was booked."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "evidence",
+      "source": "czIa7Q2QUwqDeNLfQWCZp",
+      "sourceLabel": "I could shut this off tonight and have decided not to",
+      "target": "MzMYmYIA8d6TtMaYKkg03",
+      "targetLabel": "Announcing recovery at the exact moment the spiral restarts",
+      "crossCategory": false,
+      "rationale": "Coming out of my cage and I've been doing just fine is his own claim that the machine is under his management — he only says it at the moment he restarts it."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "uw2LtxbkJLtte7HcnK-O4",
+      "sourceLabel": "I study him because I would rather be him than have her",
+      "target": "HFmS308P06AIh9AgdbeT5",
+      "targetLabel": "She is the reason for the film not tonight's casting",
+      "crossCategory": true,
+      "rationale": "The camera spends its time on the man's evening, shot by shot, and never on her face. If he is studying the rival, she is casting, not cause."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "xc5FjfSc3lxbLbfQIwyap",
+      "sourceLabel": "I keep rewinding to the dress because part of me enjoys it",
+      "target": "ixXqdIhR-q9JlTiBPaG1G",
+      "targetLabel": "The film gives me pain and nothing I go back for",
+      "crossCategory": false,
+      "rationale": "He rewinds to the dress specifically. Something in him goes back for it, which is the one thing torture cannot allow."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "tyFt-ZgbEbxDgo2JIUgZ4",
+      "targetLabel": "She compared the two of us and I placed second",
+      "crossCategory": false,
+      "rationale": "There is no second place unless a comparison was actually made by her."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "rRlLelQLd-dN6sS2G3pvH",
+      "targetLabel": "I have never once named the thing he has that I lack",
+      "crossCategory": true,
+      "rationale": "Being the kind of man who loses requires a difference in kind rather than a difference in what I did that night."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "tZipt8Whs2wp9j8vIB05H",
+      "targetLabel": "Her choosing me was the rating I was waiting to be issued",
+      "crossCategory": true,
+      "rationale": "Her verdict only ranks me if I have already accepted her as the judge; the ranking sits in EARNINGS because it is a standing I wanted certified, not a person I wanted."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "C4-J1AGPM-h50jD6PPBnn",
+      "targetLabel": "One Tuesday's outcome is a permanent statement about my type",
+      "crossCategory": false,
+      "rationale": "One night only becomes an identity if it is treated as reporting on all nights."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "OPResddVgmqckJirqdxiK",
+      "targetLabel": "Someone other than me is keeping the score",
+      "crossCategory": false,
+      "rationale": "Ranking is public by definition; if nobody else is counting, the humiliation is self-issued."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "assumes",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "4xxWninoaTbGjpKbpOwTt",
+      "targetLabel": "If she had chosen me I would have stopped ranking myself",
+      "crossCategory": false,
+      "rationale": "The ranking only hurts if winning it would have ended it."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "dfKLDLpqiOcGzBSECUMiI",
+      "sourceLabel": "It was only a kiss and I built a marriage on it",
+      "target": "tyFt-ZgbEbxDgo2JIUgZ4",
+      "targetLabel": "She compared the two of us and I placed second",
+      "crossCategory": true,
+      "rationale": "If the whole relationship was one kiss he issued to himself, she never convened a comparison for him to lose."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "2JBitpIjktzexoXSpwiZi",
+      "sourceLabel": "He simply did the thing I never got round to doing",
+      "target": "rRlLelQLd-dN6sS2G3pvH",
+      "targetLabel": "I have never once named the thing he has that I lack",
+      "crossCategory": true,
+      "rationale": "He already knows exactly what the other man had: he asked. The deficit is named, one sentence long, and therefore fixable — which is why it is kept vague elsewhere."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "IaZvktCaHMG56VtpwAszF",
+      "sourceLabel": "Nobody in my life would ask me where these pictures come from",
+      "target": "OPResddVgmqckJirqdxiK",
+      "targetLabel": "Someone other than me is keeping the score",
+      "crossCategory": false,
+      "rationale": "There is nobody close enough to have witnessed any of this; he is sole witness, sole scorer and sole audience."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "contradicts",
+      "source": "HFmS308P06AIh9AgdbeT5",
+      "sourceLabel": "She is the reason for the film not tonight's casting",
+      "target": "4xxWninoaTbGjpKbpOwTt",
+      "targetLabel": "If she had chosen me I would have stopped ranking myself",
+      "crossCategory": true,
+      "rationale": "If the projector would run for the next woman too, winning her would have moved him up one place in a machine that never stops."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "evidence",
+      "source": "tZipt8Whs2wp9j8vIB05H",
+      "sourceLabel": "Her choosing me was the rating I was waiting to be issued",
+      "target": "C8zQ3LOnHMDkGsAQtCIjW",
+      "targetLabel": "Wanting everything gets called destiny rather than appetite",
+      "crossCategory": false,
+      "rationale": "Gotta be down because I want it all, destiny is calling me — the appetite is already phrased as career language before she appears."
+    },
+    {
+      "verb": "interrogate",
+      "kind": "evidence",
+      "source": "uw2LtxbkJLtte7HcnK-O4",
+      "sourceLabel": "I study him because I would rather be him than have her",
+      "target": "rRlLelQLd-dN6sS2G3pvH",
+      "targetLabel": "I have never once named the thing he has that I lack",
+      "crossCategory": true,
+      "rationale": "He blocks out the other man's evening shot by shot and still never says what the man has; the study never produces a finding."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "XrC1b4slWRJuP9Oum3kur",
+      "sourceLabel": "Jealousy runs the night when the person you want leaves with someone else",
+      "target": "GP5ZCymDy4JfDvhJZE9eE",
+      "targetLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "crossCategory": false,
+      "rationale": "The jealousy has a stated object, but the relationship it defends turns out to be one kiss he alone recorded as a beginning."
+    },
+    {
+      "verb": "relink",
+      "kind": "evidence",
+      "source": "dfKLDLpqiOcGzBSECUMiI",
+      "sourceLabel": "It was only a kiss and I built a marriage on it",
+      "target": "23d5uKTzt_KTqiiBVp6iG",
+      "targetLabel": "Repeating it was only a kiss keeps the loss small enough to hold",
+      "crossCategory": false,
+      "rationale": "Saying it twice, identically, is the lyric moment where the case weakens itself."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "GP5ZCymDy4JfDvhJZE9eE",
+      "sourceLabel": "One kiss, and he has been grieving a relationship she never entered",
+      "target": "dfKLDLpqiOcGzBSECUMiI",
+      "targetLabel": "It was only a kiss and I built a marriage on it",
+      "crossCategory": false,
+      "rationale": "Not just that she never entered it, but that he issued himself the marriage so that tonight could qualify as betrayal."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "C8zQ3LOnHMDkGsAQtCIjW",
+      "sourceLabel": "Wanting everything gets called destiny rather than appetite",
+      "target": "tZipt8Whs2wp9j8vIB05H",
+      "targetLabel": "Her choosing me was the rating I was waiting to be issued",
+      "crossCategory": false,
+      "rationale": "Destiny is calling me is ambition with no work attached; the only scoring body he ever submitted to was her."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "6zNz764v7a179F7BP3P4O",
+      "targetLabel": "I run the bedroom scene nightly because it is our only remaining contact",
+      "crossCategory": true,
+      "rationale": "He keeps the projector running because the film is the last place the two of them are still in contact."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "7Xtqp8Ffz3evWk04gPpID",
+      "sourceLabel": "He supplies the cab, the smoke, the dress himself and calls it torture",
+      "target": "pTUGJxWNGKUEWKfuU6Eul",
+      "targetLabel": "I replay it all night because nothing else makes me feel awake",
+      "crossCategory": false,
+      "rationale": "The torture is being fed because the sickness is the strongest signal his body has produced in months."
+    },
+    {
+      "verb": "relink",
+      "kind": "contradicts",
+      "source": "HoR9wXOG_nayqQwNjt6bX",
+      "sourceLabel": "The mind plays the scene in full detail and will not stop",
+      "target": "czIa7Q2QUwqDeNLfQWCZp",
+      "targetLabel": "I could shut this off tonight and have decided not to",
+      "crossCategory": false,
+      "rationale": "The mind that will not stop is undercut by never having spent four seconds testing whether it would."
+    },
+    {
+      "verb": "relink",
+      "kind": "assumes",
+      "source": "pTUGJxWNGKUEWKfuU6Eul",
+      "sourceLabel": "I replay it all night because nothing else makes me feel awake",
+      "target": "ETYZ354-2S1p4yKmYY3DV",
+      "targetLabel": "The film is the only thing scheduled for tonight",
+      "crossCategory": false,
+      "rationale": "The replay can only be the most alive thing in the night if nothing else in his life has a start time to compete with it."
+    },
+    {
+      "verb": "relink",
+      "kind": "contradicts",
+      "source": "pTUGJxWNGKUEWKfuU6Eul",
+      "sourceLabel": "I replay it all night because nothing else makes me feel awake",
+      "target": "HFmS308P06AIh9AgdbeT5",
+      "targetLabel": "She is the reason for the film not tonight's casting",
+      "crossCategory": true,
+      "rationale": "If the point is the sensation rather than her, the projector was running before she arrived and she is only tonight's casting."
+    },
+    {
+      "verb": "relink",
+      "kind": "assumes",
+      "source": "6zNz764v7a179F7BP3P4O",
+      "sourceLabel": "I run the bedroom scene nightly because it is our only remaining contact",
+      "target": "LdqrhS4t0lanPgDajx9Ne",
+      "targetLabel": "Tonight actually happened somewhere other than inside my head",
+      "crossCategory": true,
+      "rationale": "Nightly contact with her requires there to have been a real cab and a real man, which he has never checked because checking could take them away."
+    },
+    {
+      "verb": "relink",
+      "kind": "assumes",
+      "source": "LdqrhS4t0lanPgDajx9Ne",
+      "sourceLabel": "Tonight actually happened somewhere other than inside my head",
+      "target": "IaZvktCaHMG56VtpwAszF",
+      "targetLabel": "Nobody in my life would ask me where these pictures come from",
+      "crossCategory": true,
+      "rationale": "The unchecked version survives only because there is nobody close enough to ask him where the footage came from."
+    },
+    {
+      "verb": "relink",
+      "kind": "assumes",
+      "source": "6zNz764v7a179F7BP3P4O",
+      "sourceLabel": "I run the bedroom scene nightly because it is our only remaining contact",
+      "target": "EE8ax_QYtezgE9R3PrQZY",
+      "targetLabel": "The only options are this film or never thinking of her again",
+      "crossCategory": false,
+      "rationale": "The film is only the last contact if the alternative to it is total erasure, which quietly deletes the option of speaking to her on Thursday."
+    },
+    {
+      "verb": "relink",
+      "kind": "assumes",
+      "source": "6zNz764v7a179F7BP3P4O",
+      "sourceLabel": "I run the bedroom scene nightly because it is our only remaining contact",
+      "target": "JTujTDqzMJIxiJWVIpqYP",
+      "targetLabel": "It is her I want and not the position of being chosen",
+      "crossCategory": false,
+      "rationale": "Calling this contact with her assumes she is who he is missing, though he has never once described her face."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "MzMYmYIA8d6TtMaYKkg03",
+      "sourceLabel": "Announcing recovery at the exact moment the spiral restarts",
+      "target": "pTUGJxWNGKUEWKfuU6Eul",
+      "targetLabel": "I replay it all night because nothing else makes me feel awake",
+      "crossCategory": false,
+      "rationale": "Doing just fine is announced at the top of every relapse because being destroyed is more life than fine ever was."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "2syx1HX15lrnFoAobADJe",
+      "sourceLabel": "He names himself the optimist and keeps the name on",
+      "target": "vGUDzKt0rCAK7dEHQ0zE7",
+      "targetLabel": "I named myself Mr. Brightside so being passed over reads as personality",
+      "crossCategory": false,
+      "rationale": "The self-awarded title is scaffolding: a brand name and a comeback arc built around one kiss that needed neither."
+    },
+    {
+      "verb": "relink",
+      "kind": "evidence",
+      "source": "vGUDzKt0rCAK7dEHQ0zE7",
+      "sourceLabel": "I named myself Mr. Brightside so being passed over reads as personality",
+      "target": "MzMYmYIA8d6TtMaYKkg03",
+      "targetLabel": "Announcing recovery at the exact moment the spiral restarts",
+      "crossCategory": true,
+      "rationale": "Coming out of my cage and I've been doing just fine, sung identically twice, is the comeback arc with nothing behind it."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "yMQP5APGBvS3o5fxqQsWz",
+      "sourceLabel": "Losing her mostly means being the kind of man who loses her",
+      "target": "2JBitpIjktzexoXSpwiZi",
+      "targetLabel": "He simply did the thing I never got round to doing",
+      "crossCategory": false,
+      "rationale": "The unbearable ranking is specifically that he did in one evening the thing the narrator spent months being patient instead of doing."
+    },
+    {
+      "verb": "relink",
+      "kind": "assumes",
+      "source": "tyFt-ZgbEbxDgo2JIUgZ4",
+      "sourceLabel": "She compared the two of us and I placed second",
+      "target": "Uak4Xm7A4WEYGjOUrV4rf",
+      "targetLabel": "She would have said yes if I had ever actually asked",
+      "crossCategory": false,
+      "rationale": "Placing second assumes he was available to be picked, that a yes was ever on the table if he had asked."
+    },
+    {
+      "verb": "relink",
+      "kind": "assumes",
+      "source": "tyFt-ZgbEbxDgo2JIUgZ4",
+      "sourceLabel": "She compared the two of us and I placed second",
+      "target": "OPResddVgmqckJirqdxiK",
+      "targetLabel": "Someone other than me is keeping the score",
+      "crossCategory": false,
+      "rationale": "A ranking only humiliates if it is posted somewhere, and he is the sole staff of the scoreboard."
+    },
+    {
+      "verb": "relink",
+      "kind": "contradicts",
+      "source": "4xxWninoaTbGjpKbpOwTt",
+      "sourceLabel": "If she had chosen me I would have stopped ranking myself",
+      "target": "tZipt8Whs2wp9j8vIB05H",
+      "targetLabel": "Her choosing me was the rating I was waiting to be issued",
+      "crossCategory": true,
+      "rationale": "If no verdict from her would have ended the scoring, then the rating he was waiting for was never issuable by anyone but him."
+    },
+    {
+      "verb": "relink",
+      "kind": "refines",
+      "source": "0eaem78vSy3hsX2tOcfHN",
+      "sourceLabel": "The kiss registered on her side as the start of something",
+      "target": "Uak4Xm7A4WEYGjOUrV4rf",
+      "targetLabel": "She would have said yes if I had ever actually asked",
+      "crossCategory": true,
+      "rationale": "Assuming she filed the kiss as an opening hardens into the flattering claim that she was his to lose to someone quicker."
+    },
+    {
+      "verb": "relink",
+      "kind": "contradicts",
+      "source": "AxX5eZGlWaoVdSBuXx2IO",
+      "sourceLabel": "I never asked her for anything, so betrayal is the flattering version",
+      "target": "xUFzUuNWyM4bIcDePgB8K",
+      "targetLabel": "What I feel is grief and not an appetite I never fed",
+      "crossCategory": true,
+      "rationale": "Four unfinished I nevers expose the mourning as retrospective cover for a want he declined to declare."
+    }
+  ],
+  "calls": [
+    {
+      "verb": "seed",
+      "focus": null,
+      "bubblesProposed": 9,
+      "linksProposed": 4,
+      "rejections": [],
+      "usage": {
+        "input_tokens": 2234,
+        "output_tokens": 2836
+      },
+      "wallClockMs": 38656,
+      "raw": {
+        "bubbles": [
+          {
+            "ref": "s-jealousy",
+            "tier": "safe",
+            "category": "love",
+            "label": "Jealousy runs the night when the person you want leaves with someone else",
+            "note": "The stated subject: a man watching a woman he wants go home with another man."
+          },
+          {
+            "ref": "s-only-kiss",
+            "tier": "safe",
+            "category": "love",
+            "label": "Repeating it was only a kiss keeps the loss small enough to hold",
+            "note": "The refrain shrinks the event every time it comes back, and never succeeds."
+          },
+          {
+            "ref": "s-movie",
+            "tier": "safe",
+            "category": "fitness",
+            "label": "The mind plays the scene in full detail and will not stop",
+            "note": "Cab, smoke, drag, chest, dress. Sleeplessness with a soundtrack."
+          },
+          {
+            "ref": "s-cage",
+            "tier": "safe",
+            "category": "fitness",
+            "label": "Announcing recovery at the exact moment the spiral restarts",
+            "note": "Coming out of my cage and I've been doing just fine, sung twice, identically, going nowhere."
+          },
+          {
+            "ref": "s-brightside",
+            "tier": "safe",
+            "category": "identity",
+            "label": "He names himself the optimist and keeps the name on",
+            "note": "Mr. Brightside is a title he awards himself mid-collapse. Eager eyes, open on purpose."
+          },
+          {
+            "ref": "s-wantitall",
+            "tier": "safe",
+            "category": "earnings",
+            "label": "Wanting everything gets called destiny rather than appetite",
+            "note": "Gotta be down because I want it all; destiny is calling me. Ambition language borrowed to dignify want."
+          },
+          {
+            "ref": "r-onenight",
+            "tier": "real",
+            "category": "love",
+            "label": "One kiss, and he has been grieving a relationship she never entered",
+            "note": "It started out with a kiss is the whole history. He is the only one who thought it started anything."
+          },
+          {
+            "ref": "r-director",
+            "tier": "real",
+            "category": "fitness",
+            "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+            "note": "It's all in my head is an admission, not a defence. Nobody is showing him this. He keeps the projector running because stopping would mean she is simply gone."
+          },
+          {
+            "ref": "r-loser",
+            "tier": "real",
+            "category": "identity",
+            "label": "Losing her mostly means being the kind of man who loses her",
+            "note": "The rival gets described with more care than she does. What is unbearable is the ranking, not the absence."
+          }
+        ],
+        "links": [
+          {
+            "source": "s-only-kiss",
+            "target": "r-onenight",
+            "kind": "refines",
+            "rationale": "Names what the minimising is protecting: not a broken relationship but a claim he never actually had."
+          },
+          {
+            "source": "s-movie",
+            "target": "r-director",
+            "kind": "refines",
+            "rationale": "Turns the intrusive images into something he is doing, with a motive, rather than something happening to him."
+          },
+          {
+            "source": "s-jealousy",
+            "target": "r-loser",
+            "kind": "refines",
+            "rationale": "Moves the wound from LOVE to IDENTITY: the detail lavished on the other man shows this is about his own standing, not about missing her."
+          },
+          {
+            "source": "s-cage",
+            "target": "r-director",
+            "kind": "contradicts",
+            "rationale": "Doing just fine cannot survive the fact that he is the one keeping the scene running all night."
+          }
+        ]
+      }
+    },
+    {
+      "verb": "descend",
+      "focus": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real"
+      },
+      "bubblesProposed": 3,
+      "linksProposed": 4,
+      "rejections": [],
+      "usage": {
+        "input_tokens": 2435,
+        "output_tokens": 2128
+      },
+      "wallClockMs": 32105,
+      "raw": {
+        "bubbles": [
+          {
+            "ref": "raw_never_asked",
+            "tier": "raw",
+            "category": "identity",
+            "label": "I never asked her for anything, so betrayal is the flattering version",
+            "note": "The four unfinished I nevers are the only honest line in the song. Nothing was taken from me because I never put in a claim. If I say she wronged me, I was a man in a story; if I say I said nothing, I was a man in a room. I picked the story."
+          },
+          {
+            "ref": "raw_nightly_scene",
+            "tier": "raw",
+            "category": "love",
+            "label": "I run the bedroom scene nightly because it is our only remaining contact",
+            "note": "The cab, the smoke, the dress — I direct all of it, in that order, every time. It's all in my head, and I keep the head running, because when the film stops she isn't thinking about me at all. Being sick to my stomach over her is the closest I get to being with her."
+          },
+          {
+            "ref": "raw_brightside_name",
+            "tier": "raw",
+            "category": "identity",
+            "label": "I named myself Mr. Brightside so being passed over reads as personality",
+            "note": "Destiny is calling me, eager eyes, coming out of my cage doing just fine — I gave myself a brand name and a comeback arc for an evening that, from her side, contained one kiss and no sequel. The whole persona is scaffolding around a thing that was never big enough to need it."
+          }
+        ],
+        "links": [
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "raw_never_asked",
+            "kind": "refines",
+            "rationale": "Deeper than mourning a relationship she never entered: he chose the mourning because the alternative admission is about him, not her — he never spoke, so this stops being a love story and becomes what he can stand to be"
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "raw_nightly_scene",
+            "kind": "refines",
+            "rationale": "Stays in love, but implicates him: the grief isn't happening to him, he is manufacturing it frame by frame because the imagined betrayal is the only relationship still running"
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "raw_brightside_name",
+            "kind": "refines",
+            "rationale": "The grieving needs a griever; he built a titled self out of one kiss, which moves the honest reading from what he lost to who he needs to be seen as"
+          },
+          {
+            "source": "raw_nightly_scene",
+            "target": "raw_never_asked",
+            "kind": "assumes",
+            "rationale": "He only has to imagine the bedroom because he never made a real bid; if he had asked and been refused, there would be an answer instead of a loop"
+          }
+        ]
+      }
+    },
+    {
+      "verb": "descend",
+      "focus": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real"
+      },
+      "bubblesProposed": 3,
+      "linksProposed": 5,
+      "rejections": [],
+      "usage": {
+        "input_tokens": 2463,
+        "output_tokens": 2228
+      },
+      "wallClockMs": 35957,
+      "raw": {
+        "bubbles": [
+          {
+            "ref": "raw_dress",
+            "tier": "raw",
+            "category": "love",
+            "label": "I keep rewinding to the dress because part of me enjoys it",
+            "note": "The camera in my head does not linger on his face or their conversation. It goes to the drag of the cigarette, the hand on the chest, the dress coming off. I am directing this. I call it being sick to my stomach because the other word for what I feel watching her get undressed by someone else is unbearable to hold. I have imagined her more vividly since she left than I ever managed while she was in the room."
+          },
+          {
+            "ref": "raw_never",
+            "tier": "raw",
+            "category": "identity",
+            "label": "He simply did the thing I never got round to doing",
+            "note": "I never asked. I never said it. I never made the move that he made in one evening without apparently agonising about it. The film I run isn't really about her betraying me — it's a re-enactment of a man acting while I stood there being decent and patient and invisible. Every time I play it, I lose to him again, which is the only version of the story where I was ever in the running."
+          },
+          {
+            "ref": "raw_wronged",
+            "tier": "raw",
+            "category": "identity",
+            "label": "If it was only a kiss then I was never anything to her",
+            "note": "I keep repeating that it was only a kiss like it proves how small the crime was, but the size of the crime is the size of me. A betrayal means I had standing. A kiss she has already forgotten means I was a Tuesday. I would rather be the wronged man in a tragedy than the one she never really considered, so I keep the tragedy funded — the jealousy is the last evidence that we happened at all."
+          }
+        ],
+        "links": [
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "raw_dress",
+            "kind": "refines",
+            "rationale": "Moves from supplying the scene to wanting the scene. Naming which frames he chooses turns self-inflicted torture into appetite, and the category shifts to love because it is his own desire he is feeding, not his sanity he is losing."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "raw_never",
+            "kind": "refines",
+            "rationale": "Says what the projector is actually screening. Not her leaving but another man's willingness beside his own. That is not a mental-capacity problem, it is a verdict on what kind of man he is, so it sits in identity."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "raw_wronged",
+            "kind": "assumes",
+            "rationale": "Keeping the projector running only makes sense if stopping costs him more than watching. What it would cost is his standing in the story, which is identity, not mind."
+          },
+          {
+            "source": "raw_dress",
+            "target": "HoR9wXOG_nayqQwNjt6bX",
+            "kind": "contradicts",
+            "rationale": "The outer reading has the mind assaulting him with detail it will not stop supplying. If he is choosing which frames to linger on and getting something from them, the sleeplessness is not being done to him."
+          },
+          {
+            "source": "raw_never",
+            "target": "raw_wronged",
+            "kind": "assumes",
+            "rationale": "Losing to him only stings if there was a contest. He needs the kiss to have counted for the defeat to count."
+          }
+        ]
+      }
+    },
+    {
+      "verb": "descend",
+      "focus": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real"
+      },
+      "bubblesProposed": 3,
+      "linksProposed": 5,
+      "rejections": [],
+      "usage": {
+        "input_tokens": 2430,
+        "output_tokens": 2498
+      },
+      "wallClockMs": 38177,
+      "raw": {
+        "bubbles": [
+          {
+            "ref": "raw-only-a-kiss",
+            "tier": "raw",
+            "category": "love",
+            "label": "It was only a kiss and I built a marriage on it",
+            "note": "He says it twice, like a lawyer weakening his own case. There was no us. He gave one night the weight of a claim so that this night could be a betrayal instead of what it is: someone he barely had going home with someone else. He is grieving a relationship he issued to himself."
+          },
+          {
+            "ref": "raw-rather-be-him",
+            "tier": "raw",
+            "category": "identity",
+            "label": "I study him because I would rather be him than have her",
+            "note": "The smoke, the drag, the hand on the chest, the dress coming off — he has the man's whole evening blocked out shot by shot. She is barely in the frame as a person. What he is watching is a demonstration of how to be a man who gets taken home, and he is taking notes he will never use."
+          },
+          {
+            "ref": "raw-replay",
+            "tier": "raw",
+            "category": "fitness",
+            "label": "I replay it all night because nothing else makes me feel awake",
+            "note": "It's all in my head — he says it and keeps going anyway, adds detail, undresses her himself. Coming out of my cage, eager eyes: the sickness in his stomach is the strongest signal his body has produced in months. Being destroyed by this is more life than doing just fine ever was, so he keeps feeding it."
+          }
+        ],
+        "links": [
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "raw-only-a-kiss",
+            "kind": "refines",
+            "rationale": "The ranking only stings if he was ever in the running. Deeper than being the man who loses her is admitting he was never chosen at all — he manufactured the standing he is now defending. Sits in LOVE because the lie is about the relationship itself, not about his rank among men."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "raw-rather-be-him",
+            "kind": "refines",
+            "rationale": "The focus notices he describes the rival more carefully than her; this names why. It is not comparison, it is wanting. He implicates himself by admitting the envy points at the man, which is why her absence never gets described at all."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "raw-replay",
+            "kind": "refines",
+            "rationale": "Being outranked would end when the night ends. He keeps the night running. Moves to FITNESS because the honest deeper reading is about his own appetite for the pain — a capacity problem, not a status one."
+          },
+          {
+            "source": "raw-only-a-kiss",
+            "target": "XrC1b4slWRJuP9Oum3kur",
+            "kind": "contradicts",
+            "rationale": "The stated subject assumes a person he wanted was lost to someone else. If there was only a kiss, nothing left with anyone; the jealousy has no object and he built one."
+          },
+          {
+            "source": "raw-replay",
+            "target": "raw-rather-be-him",
+            "kind": "assumes",
+            "rationale": "He can only keep the film rolling because the man in it is worth watching. If the rival were nothing to him, there would be no scene to run."
+          }
+        ]
+      }
+    },
+    {
+      "verb": "interrogate",
+      "focus": {
+        "id": "GP5ZCymDy4JfDvhJZE9eE",
+        "label": "One kiss, and he has been grieving a relationship she never entered",
+        "tier": "real"
+      },
+      "bubblesProposed": 6,
+      "linksProposed": 14,
+      "rejections": [],
+      "usage": {
+        "input_tokens": 4532,
+        "output_tokens": 5099
+      },
+      "wallClockMs": 75600,
+      "raw": {
+        "bubbles": [
+          {
+            "ref": "a1",
+            "tier": "real",
+            "category": "love",
+            "label": "The kiss registered on her side as the start of something",
+            "note": "Grief requires a thing that was jointly held. He is assuming she filed that night the way he did — as an opening rather than an evening. If she filed it as nothing, there is no ending to be confused by, only a man who kept a receipt."
+          },
+          {
+            "ref": "a2",
+            "tier": "raw",
+            "category": "fitness",
+            "label": "Tonight actually happened somewhere other than inside my head",
+            "note": "The cab, the smoke, the bedroom — I am not in that room and never was. For this to be grief there has to be an event. I have never checked whether there is a man at all, because checking could take the man away, and then I would have nothing to be destroyed by."
+          },
+          {
+            "ref": "a3",
+            "tier": "raw",
+            "category": "identity",
+            "label": "She would have said yes if I had ever actually asked",
+            "note": "The whole loss depends on her having been available to me and taken by someone quicker. If the honest answer was no, then nothing was taken — I was simply not the one, and the story collapses from tragedy into arithmetic."
+          },
+          {
+            "ref": "a4",
+            "tier": "raw",
+            "category": "identity",
+            "label": "One kiss is the largest thing that has happened to me",
+            "note": "For a single kiss to fund years of this, the rest of the ledger has to be empty. The size of my grief is a public statement about the size of my life."
+          },
+          {
+            "ref": "a5",
+            "tier": "raw",
+            "category": "love",
+            "label": "What I feel is grief and not an appetite I never fed",
+            "note": "Grief is respectable — it means I had her and lost her. Appetite means I wanted her and never said so, which is not a wound, it is a habit. I need the mourning frame because it makes the wanting retrospective and therefore blameless."
+          },
+          {
+            "ref": "a6",
+            "tier": "raw",
+            "category": "love",
+            "label": "It is her I want and not the position of being chosen",
+            "note": "I have never described her face. I have described a cab, a cigarette, a chest, a dress and a man. If what I lost was the slot rather than the person, then this was never a relationship she declined to enter — it was a vacancy I never applied for."
+          }
+        ],
+        "links": [
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "a1",
+            "kind": "assumes",
+            "rationale": "You cannot grieve a relationship she never entered unless she at least noticed the door"
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "a2",
+            "kind": "assumes",
+            "rationale": "The grief needs an event tonight to be triggered by, not just a projector"
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "a3",
+            "kind": "assumes",
+            "rationale": "Grieving what never started assumes it could have started and was intercepted"
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "a4",
+            "kind": "assumes",
+            "rationale": "The kiss can only carry this weight if nothing heavier ever arrived"
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "a5",
+            "kind": "assumes",
+            "rationale": "Calling it grief rather than unspoken want is what makes him the injured party"
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "a6",
+            "kind": "assumes",
+            "rationale": "A relationship she never entered still assumes she is the thing he was after"
+          },
+          {
+            "source": "WRXIsAfIVZWIYWl5UHZuy",
+            "target": "a1",
+            "kind": "contradicts",
+            "rationale": "If it was only a kiss on her side he was a Tuesday, and nothing registered at all"
+          },
+          {
+            "source": "AxX5eZGlWaoVdSBuXx2IO",
+            "target": "a1",
+            "kind": "contradicts",
+            "rationale": "The four unfinished I nevers say no claim was ever put in for her to receive"
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a2",
+            "kind": "contradicts",
+            "rationale": "He supplies the cab, the smoke and the dress himself — the event is authored, not witnessed"
+          },
+          {
+            "source": "dfKLDLpqiOcGzBSECUMiI",
+            "target": "a3",
+            "kind": "contradicts",
+            "rationale": "Someone he barely had going home with someone else implies she was never his to intercept"
+          },
+          {
+            "source": "C8zQ3LOnHMDkGsAQtCIjW",
+            "target": "a5",
+            "kind": "contradicts",
+            "rationale": "I want it all is appetite stated in the first verse, before any loss occurs"
+          },
+          {
+            "source": "xc5FjfSc3lxbLbfQIwyap",
+            "target": "a5",
+            "kind": "contradicts",
+            "rationale": "Mourners do not rewind to the dress; the pleasure in the replay exposes want, not loss"
+          },
+          {
+            "source": "uw2LtxbkJLtte7HcnK-O4",
+            "target": "a6",
+            "kind": "contradicts",
+            "rationale": "The camera stays on the man's evening — the envy is for his position, not for her"
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "a6",
+            "kind": "contradicts",
+            "rationale": "What is unbearable is the ranking, which means the slot was always the object"
+          }
+        ]
+      }
+    },
+    {
+      "verb": "interrogate",
+      "focus": {
+        "id": "7Xtqp8Ffz3evWk04gPpID",
+        "label": "He supplies the cab, the smoke, the dress himself and calls it torture",
+        "tier": "real"
+      },
+      "bubblesProposed": 8,
+      "linksProposed": 13,
+      "rejections": [
+        {
+          "reason": "link refines must go strictly deeper",
+          "item": {
+            "source": "a1",
+            "target": "pTUGJxWNGKUEWKfuU6Eul",
+            "kind": "refines",
+            "rationale": "If he could stop and doesn't, the reason is the one he will not say aloud: the sickness is the strongest thing his body has produced in months."
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 5272,
+        "output_tokens": 7240
+      },
+      "wallClockMs": 106826,
+      "raw": {
+        "bubbles": [
+          {
+            "ref": "a1",
+            "tier": "raw",
+            "category": "fitness",
+            "label": "I could shut this off tonight and have decided not to",
+            "note": "Torture needs a torturer somewhere other than this bed. If the pictures arrive uninvited I am ill and blameless; if they arrive because I start them, then at 3am with the lights off I chose the cab, chose the smoke, chose the dress. I have never once tested which it is, because the test would take about four seconds and I would lose it."
+          },
+          {
+            "ref": "a2",
+            "tier": "raw",
+            "category": "fitness",
+            "label": "The film is the only thing scheduled for tonight",
+            "note": "For stopping to feel like erasure, the room has to be otherwise empty. If there were a job I cared about tomorrow, a friend expecting me, anything with a start time, the projector would be competing with something. It isn't. That is not her doing."
+          },
+          {
+            "ref": "a3",
+            "tier": "raw",
+            "category": "love",
+            "label": "The only options are this film or never thinking of her again",
+            "note": "I have arranged the choice so that stopping means losing her completely. There is a third version where I sleep, and see her on Thursday, and say the sentence I have never said. I keep that one off the shelf because it requires me to speak while awake, in daylight, to her face, with the possibility of a no."
+          },
+          {
+            "ref": "a4",
+            "tier": "raw",
+            "category": "fitness",
+            "label": "The footage is accurate enough to count as news about her",
+            "note": "I admit I invented it and then I grieve it like a report. If I let myself notice that the drag of the cigarette and the hand on the chest are mine — my staging, my ordering, my choices — the sickness would have no source outside me and I would have to call it something other than what she did to me."
+          },
+          {
+            "ref": "e1",
+            "tier": "real",
+            "category": "fitness",
+            "label": "The but in it is all in my head reinstates the footage",
+            "note": "And it's all in my head, but she's touching his — chest now. The admission lasts half a line and the conjunction takes it back. He confesses to authorship and then keeps filming, in the same breath, without pausing for the contradiction."
+          },
+          {
+            "ref": "a5",
+            "tier": "raw",
+            "category": "identity",
+            "label": "Nobody in my life would ask me where these pictures come from",
+            "note": "The story holds because I am the only witness and the only source. One person close enough to say you weren't in that cab, were you, and the whole night collapses into a man alone with a habit. I have not built that person into my life. The solitude isn't a symptom of the heartbreak, it is the condition the heartbreak needs."
+          },
+          {
+            "ref": "a6",
+            "tier": "raw",
+            "category": "love",
+            "label": "She is the reason for the film not tonight's casting",
+            "note": "If the same projector would run for the next woman who kissed me once — same cab, same smoke, same dress, different face — then this is not a loss I suffered, it is a facility I have, and it was running before she arrived and will run after."
+          },
+          {
+            "ref": "a7",
+            "tier": "raw",
+            "category": "love",
+            "label": "The film gives me pain and nothing I go back for",
+            "note": "Torture is the word I have chosen. It only fits if there is nothing in me that returns to the bedroom scene for its own sake. If any part of me looks forward to the dress, then what I am doing at 3am is not being destroyed, it is visiting, and I have been calling it suffering to keep the visit clean."
+          }
+        ],
+        "links": [
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a1",
+            "kind": "assumes",
+            "rationale": "He keeps the projector running only if it is his to stop. Otherwise he is a patient, not an author, and no self-implication survives."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a2",
+            "kind": "assumes",
+            "rationale": "Stopping only equals losing her if there is nothing else in the night to move into."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a3",
+            "kind": "assumes",
+            "rationale": "The film-or-nothing binary is what makes the torture look forced on him. It is his own arrangement, and it edits out the option that requires him to speak."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a4",
+            "kind": "assumes",
+            "rationale": "He can only call invented images torture if he still treats them as reportage about her rather than as his own staging."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a5",
+            "kind": "assumes",
+            "rationale": "The framing survives unchallenged because there is no one in the room to ask where the footage came from — the isolation is load-bearing, not incidental."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a6",
+            "kind": "assumes",
+            "rationale": "If the projector would run for anyone, the torture is a standing capacity of his, not something she caused."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "a7",
+            "kind": "assumes",
+            "rationale": "The word torture requires that no part of him returns to the scene willingly."
+          },
+          {
+            "source": "a4",
+            "target": "e1",
+            "kind": "evidence",
+            "rationale": "The line admits the head and then overrules it with but in the same breath — the exact mechanism of the assumption."
+          },
+          {
+            "source": "a4",
+            "target": "LdqrhS4t0lanPgDajx9Ne",
+            "kind": "assumes",
+            "rationale": "Treating the footage as news presupposes an actual event outside his head, which he has never verified because verifying could remove it."
+          },
+          {
+            "source": "a2",
+            "target": "GOD-JvABdibc3EIlG0a2y",
+            "kind": "assumes",
+            "rationale": "The night is only empty without the film if the whole ledger is empty — one kiss funding years means nothing else was booked."
+          },
+          {
+            "source": "a1",
+            "target": "pTUGJxWNGKUEWKfuU6Eul",
+            "kind": "refines",
+            "rationale": "If he could stop and doesn't, the reason is the one he will not say aloud: the sickness is the strongest thing his body has produced in months."
+          },
+          {
+            "source": "a1",
+            "target": "MzMYmYIA8d6TtMaYKkg03",
+            "kind": "evidence",
+            "rationale": "Coming out of my cage and I've been doing just fine is his own claim that the machine is under his management — he only says it at the moment he restarts it."
+          },
+          {
+            "source": "uw2LtxbkJLtte7HcnK-O4",
+            "target": "a6",
+            "kind": "contradicts",
+            "rationale": "The camera spends its time on the man's evening, shot by shot, and never on her face. If he is studying the rival, she is casting, not cause."
+          },
+          {
+            "source": "xc5FjfSc3lxbLbfQIwyap",
+            "target": "a7",
+            "kind": "contradicts",
+            "rationale": "He rewinds to the dress specifically. Something in him goes back for it, which is the one thing torture cannot allow."
+          }
+        ]
+      }
+    },
+    {
+      "verb": "interrogate",
+      "focus": {
+        "id": "yMQP5APGBvS3o5fxqQsWz",
+        "label": "Losing her mostly means being the kind of man who loses her",
+        "tier": "real"
+      },
+      "bubblesProposed": 6,
+      "linksProposed": 12,
+      "rejections": [],
+      "usage": {
+        "input_tokens": 6347,
+        "output_tokens": 5091
+      },
+      "wallClockMs": 80575,
+      "raw": {
+        "bubbles": [
+          {
+            "ref": "audition",
+            "tier": "raw",
+            "category": "identity",
+            "label": "She compared the two of us and I placed second",
+            "note": "A ranking needs a contest. For me to have been outranked, she has to have held both of us in her head at the same moment and picked. I have never checked whether I was in the frame at all. Second place is a much better result than not being entered, so I have awarded myself second place and grieved it."
+          },
+          {
+            "ref": "unnamed-deficit",
+            "tier": "raw",
+            "category": "fitness",
+            "label": "I have never once named the thing he has that I lack",
+            "note": "I know the cab, the smoke, the drag, the dress. I do not know what he has. I keep the deficit vague because a vague deficit is a condition and a specific one is a task. If I said out loud he stood up and spoke, then the difference between us is a sentence long and I could have said it by Thursday, and then tonight is not a verdict, it is a thing I skipped."
+          },
+          {
+            "ref": "credential",
+            "tier": "raw",
+            "category": "earnings",
+            "label": "Her choosing me was the rating I was waiting to be issued",
+            "note": "I have handed one woman on one night the authority to score me, and I accepted the score without appeal. That only makes sense if I had no other evidence of standing to weigh it against — nothing at work, nothing I am good at, no room where I am the one who gets picked. She did not rank me. I asked her to, silently, and then read the result."
+          },
+          {
+            "ref": "verdict",
+            "tier": "raw",
+            "category": "identity",
+            "label": "One Tuesday's outcome is a permanent statement about my type",
+            "note": "For this to be about the kind of man I am, tonight has to generalise. She went home with someone; that could be a mood, a week, a room, her business entirely. I have converted a single result into a category and moved into it. Being permanently the losing kind hurts more but explains everything, and I would rather have the explanation than the uncertainty."
+          },
+          {
+            "ref": "scoreboard",
+            "tier": "raw",
+            "category": "identity",
+            "label": "Someone other than me is keeping the score",
+            "note": "Humiliation needs a room. Being outranked only stings if the ranking is posted somewhere. Nobody watched this, nobody will mention it, no one is comparing us tomorrow. If I am the only person who knows there was a competition, then the ranking is not something done to me — it is a scoreboard I built, staffed and read aloud to myself in the dark."
+          },
+          {
+            "ref": "top-place",
+            "tier": "raw",
+            "category": "identity",
+            "label": "If she had chosen me I would have stopped ranking myself",
+            "note": "The whole grievance assumes there is a top of this thing and that arriving there is restful. I have never tested it. If I had put her in the cab, I would have been in that bedroom counting the men before me, checking her phone in my head. The ranking is not something he won. It is the machine I run, and she was only tonight's occasion for it."
+          }
+        ],
+        "links": [
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "audition",
+            "kind": "assumes",
+            "rationale": "There is no second place unless a comparison was actually made by her."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "unnamed-deficit",
+            "kind": "assumes",
+            "rationale": "Being the kind of man who loses requires a difference in kind rather than a difference in what I did that night."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "credential",
+            "kind": "assumes",
+            "rationale": "Her verdict only ranks me if I have already accepted her as the judge; the ranking sits in EARNINGS because it is a standing I wanted certified, not a person I wanted."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "verdict",
+            "kind": "assumes",
+            "rationale": "One night only becomes an identity if it is treated as reporting on all nights."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "scoreboard",
+            "kind": "assumes",
+            "rationale": "Ranking is public by definition; if nobody else is counting, the humiliation is self-issued."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "top-place",
+            "kind": "assumes",
+            "rationale": "The ranking only hurts if winning it would have ended it."
+          },
+          {
+            "source": "dfKLDLpqiOcGzBSECUMiI",
+            "target": "audition",
+            "kind": "contradicts",
+            "rationale": "If the whole relationship was one kiss he issued to himself, she never convened a comparison for him to lose."
+          },
+          {
+            "source": "2JBitpIjktzexoXSpwiZi",
+            "target": "unnamed-deficit",
+            "kind": "contradicts",
+            "rationale": "He already knows exactly what the other man had: he asked. The deficit is named, one sentence long, and therefore fixable — which is why it is kept vague elsewhere."
+          },
+          {
+            "source": "IaZvktCaHMG56VtpwAszF",
+            "target": "scoreboard",
+            "kind": "contradicts",
+            "rationale": "There is nobody close enough to have witnessed any of this; he is sole witness, sole scorer and sole audience."
+          },
+          {
+            "source": "HFmS308P06AIh9AgdbeT5",
+            "target": "top-place",
+            "kind": "contradicts",
+            "rationale": "If the projector would run for the next woman too, winning her would have moved him up one place in a machine that never stops."
+          },
+          {
+            "source": "credential",
+            "target": "C8zQ3LOnHMDkGsAQtCIjW",
+            "kind": "evidence",
+            "rationale": "Gotta be down because I want it all, destiny is calling me — the appetite is already phrased as career language before she appears."
+          },
+          {
+            "source": "uw2LtxbkJLtte7HcnK-O4",
+            "target": "unnamed-deficit",
+            "kind": "evidence",
+            "rationale": "He blocks out the other man's evening shot by shot and still never says what the man has; the study never produces a finding."
+          }
+        ]
+      }
+    },
+    {
+      "verb": "relink",
+      "focus": null,
+      "bubblesProposed": 0,
+      "linksProposed": 22,
+      "rejections": [
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "XrC1b4slWRJuP9Oum3kur",
+            "target": "yMQP5APGBvS3o5fxqQsWz",
+            "kind": "refines",
+            "rationale": "What looks like wanting her is closer to not being able to be the man she walked past, which moves the wound from love into identity."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "23d5uKTzt_KTqiiBVp6iG",
+            "target": "GP5ZCymDy4JfDvhJZE9eE",
+            "kind": "refines",
+            "rationale": "Shrinking the event is only necessary because the event is all he has; the refrain is measuring the entire relationship, not minimising a wound."
+          }
+        },
+        {
+          "reason": "link refines must go strictly deeper",
+          "item": {
+            "source": "dfKLDLpqiOcGzBSECUMiI",
+            "target": "WRXIsAfIVZWIYWl5UHZuy",
+            "kind": "refines",
+            "rationale": "The invented claim is not sentimental — it is load-bearing, because without it he was a Tuesday she has already forgotten."
+          }
+        },
+        {
+          "reason": "link refines must go strictly deeper",
+          "item": {
+            "source": "WRXIsAfIVZWIYWl5UHZuy",
+            "target": "GOD-JvABdibc3EIlG0a2y",
+            "kind": "refines",
+            "rationale": "Needing that kiss to have made him something admits the ledger behind it is empty enough for one kiss to be the largest entry."
+          }
+        },
+        {
+          "reason": "link refines must go strictly deeper",
+          "item": {
+            "source": "GOD-JvABdibc3EIlG0a2y",
+            "target": "tZipt8Whs2wp9j8vIB05H",
+            "kind": "refines",
+            "rationale": "The empty ledger gets specific in the earnings column: no room where he is picked, so one woman's evening was allowed to issue his rating."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "HoR9wXOG_nayqQwNjt6bX",
+            "target": "7Xtqp8Ffz3evWk04gPpID",
+            "kind": "refines",
+            "rationale": "The scene does not arrive from outside — he supplies every prop in it, which turns an affliction into an authorship."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "xc5FjfSc3lxbLbfQIwyap",
+            "kind": "refines",
+            "rationale": "Naming himself the director raises the question of why the camera always chooses the dress, and the honest answer is that some of him is enjoying this."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "ixXqdIhR-q9JlTiBPaG1G",
+            "kind": "assumes",
+            "rationale": "Calling it torture only holds if no part of him goes back to that bedroom for its own sake."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "xc5FjfSc3lxbLbfQIwyap",
+            "target": "ixXqdIhR-q9JlTiBPaG1G",
+            "kind": "contradicts",
+            "rationale": "If he looks forward to the dress, then at 3am he is visiting rather than suffering, and the word torture was doing cover work."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "_8TyKdA6sc-tiHPvcyRXp",
+            "kind": "assumes",
+            "rationale": "He can only grieve his own footage if he treats the staging he invented as reliable news about her."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "_8TyKdA6sc-tiHPvcyRXp",
+            "target": "fctcqIQW3pQ3KzFJ-2s2p",
+            "kind": "evidence",
+            "rationale": "The conjunction in it's all in my head, but she's touching his chest is the exact half-second where the confession is overruled and filming resumes."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "uw2LtxbkJLtte7HcnK-O4",
+            "target": "JTujTDqzMJIxiJWVIpqYP",
+            "kind": "contradicts",
+            "rationale": "Blocking out the man's evening shot by shot shows the loss was the slot, not the person standing in it."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "uw2LtxbkJLtte7HcnK-O4",
+            "kind": "refines",
+            "rationale": "The ranking obsession resolves into wanting his position rather than her, which is why the man is filmed and she is furniture."
+          }
+        },
+        {
+          "reason": "link refines must go strictly deeper",
+          "item": {
+            "source": "2JBitpIjktzexoXSpwiZi",
+            "target": "rRlLelQLd-dN6sS2G3pvH",
+            "kind": "refines",
+            "rationale": "He keeps the rival's advantage unnamed because a vague deficit is a condition he suffers and a specific one is a task he skipped."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "tyFt-ZgbEbxDgo2JIUgZ4",
+            "kind": "assumes",
+            "rationale": "Being the kind of man who loses her requires her to have held both men in mind and chosen, which he has never verified."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "C4-J1AGPM-h50jD6PPBnn",
+            "kind": "assumes",
+            "rationale": "One night becomes a kind of man only if he converts a single Tuesday result into a permanent category and moves in."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "4xxWninoaTbGjpKbpOwTt",
+            "kind": "assumes",
+            "rationale": "The grievance assumes winning would have been restful, when the ranking machine is his own and she was only its occasion."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "0eaem78vSy3hsX2tOcfHN",
+            "kind": "assumes",
+            "rationale": "Grieving requires the night to have been jointly held, otherwise there is no ending, only a man keeping a receipt."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "xUFzUuNWyM4bIcDePgB8K",
+            "kind": "assumes",
+            "rationale": "The whole mourning frame depends on this being grief rather than an appetite he simply never voiced."
+          }
+        },
+        {
+          "reason": "link duplicate (source, target, kind)",
+          "item": {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "AxX5eZGlWaoVdSBuXx2IO",
+            "kind": "refines",
+            "rationale": "The relationship she never entered is one he never asked her to enter, which makes betrayal the flattering account of his own silence."
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 6487,
+        "output_tokens": 9270
+      },
+      "wallClockMs": 129690,
+      "raw": {
+        "bubbles": [],
+        "links": [
+          {
+            "source": "XrC1b4slWRJuP9Oum3kur",
+            "target": "GP5ZCymDy4JfDvhJZE9eE",
+            "kind": "refines",
+            "rationale": "The jealousy has a stated object, but the relationship it defends turns out to be one kiss he alone recorded as a beginning."
+          },
+          {
+            "source": "XrC1b4slWRJuP9Oum3kur",
+            "target": "yMQP5APGBvS3o5fxqQsWz",
+            "kind": "refines",
+            "rationale": "What looks like wanting her is closer to not being able to be the man she walked past, which moves the wound from love into identity."
+          },
+          {
+            "source": "23d5uKTzt_KTqiiBVp6iG",
+            "target": "GP5ZCymDy4JfDvhJZE9eE",
+            "kind": "refines",
+            "rationale": "Shrinking the event is only necessary because the event is all he has; the refrain is measuring the entire relationship, not minimising a wound."
+          },
+          {
+            "source": "dfKLDLpqiOcGzBSECUMiI",
+            "target": "23d5uKTzt_KTqiiBVp6iG",
+            "kind": "evidence",
+            "rationale": "Saying it twice, identically, is the lyric moment where the case weakens itself."
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "dfKLDLpqiOcGzBSECUMiI",
+            "kind": "refines",
+            "rationale": "Not just that she never entered it, but that he issued himself the marriage so that tonight could qualify as betrayal."
+          },
+          {
+            "source": "dfKLDLpqiOcGzBSECUMiI",
+            "target": "WRXIsAfIVZWIYWl5UHZuy",
+            "kind": "refines",
+            "rationale": "The invented claim is not sentimental — it is load-bearing, because without it he was a Tuesday she has already forgotten."
+          },
+          {
+            "source": "WRXIsAfIVZWIYWl5UHZuy",
+            "target": "GOD-JvABdibc3EIlG0a2y",
+            "kind": "refines",
+            "rationale": "Needing that kiss to have made him something admits the ledger behind it is empty enough for one kiss to be the largest entry."
+          },
+          {
+            "source": "GOD-JvABdibc3EIlG0a2y",
+            "target": "tZipt8Whs2wp9j8vIB05H",
+            "kind": "refines",
+            "rationale": "The empty ledger gets specific in the earnings column: no room where he is picked, so one woman's evening was allowed to issue his rating."
+          },
+          {
+            "source": "C8zQ3LOnHMDkGsAQtCIjW",
+            "target": "tZipt8Whs2wp9j8vIB05H",
+            "kind": "refines",
+            "rationale": "Destiny is calling me is ambition with no work attached; the only scoring body he ever submitted to was her."
+          },
+          {
+            "source": "HoR9wXOG_nayqQwNjt6bX",
+            "target": "7Xtqp8Ffz3evWk04gPpID",
+            "kind": "refines",
+            "rationale": "The scene does not arrive from outside — he supplies every prop in it, which turns an affliction into an authorship."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "6zNz764v7a179F7BP3P4O",
+            "kind": "refines",
+            "rationale": "He keeps the projector running because the film is the last place the two of them are still in contact."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "xc5FjfSc3lxbLbfQIwyap",
+            "kind": "refines",
+            "rationale": "Naming himself the director raises the question of why the camera always chooses the dress, and the honest answer is that some of him is enjoying this."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "pTUGJxWNGKUEWKfuU6Eul",
+            "kind": "refines",
+            "rationale": "The torture is being fed because the sickness is the strongest signal his body has produced in months."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "ixXqdIhR-q9JlTiBPaG1G",
+            "kind": "assumes",
+            "rationale": "Calling it torture only holds if no part of him goes back to that bedroom for its own sake."
+          },
+          {
+            "source": "xc5FjfSc3lxbLbfQIwyap",
+            "target": "ixXqdIhR-q9JlTiBPaG1G",
+            "kind": "contradicts",
+            "rationale": "If he looks forward to the dress, then at 3am he is visiting rather than suffering, and the word torture was doing cover work."
+          },
+          {
+            "source": "7Xtqp8Ffz3evWk04gPpID",
+            "target": "_8TyKdA6sc-tiHPvcyRXp",
+            "kind": "assumes",
+            "rationale": "He can only grieve his own footage if he treats the staging he invented as reliable news about her."
+          },
+          {
+            "source": "_8TyKdA6sc-tiHPvcyRXp",
+            "target": "fctcqIQW3pQ3KzFJ-2s2p",
+            "kind": "evidence",
+            "rationale": "The conjunction in it's all in my head, but she's touching his chest is the exact half-second where the confession is overruled and filming resumes."
+          },
+          {
+            "source": "HoR9wXOG_nayqQwNjt6bX",
+            "target": "czIa7Q2QUwqDeNLfQWCZp",
+            "kind": "contradicts",
+            "rationale": "The mind that will not stop is undercut by never having spent four seconds testing whether it would."
+          },
+          {
+            "source": "pTUGJxWNGKUEWKfuU6Eul",
+            "target": "ETYZ354-2S1p4yKmYY3DV",
+            "kind": "assumes",
+            "rationale": "The replay can only be the most alive thing in the night if nothing else in his life has a start time to compete with it."
+          },
+          {
+            "source": "pTUGJxWNGKUEWKfuU6Eul",
+            "target": "HFmS308P06AIh9AgdbeT5",
+            "kind": "contradicts",
+            "rationale": "If the point is the sensation rather than her, the projector was running before she arrived and she is only tonight's casting."
+          },
+          {
+            "source": "6zNz764v7a179F7BP3P4O",
+            "target": "LdqrhS4t0lanPgDajx9Ne",
+            "kind": "assumes",
+            "rationale": "Nightly contact with her requires there to have been a real cab and a real man, which he has never checked because checking could take them away."
+          },
+          {
+            "source": "LdqrhS4t0lanPgDajx9Ne",
+            "target": "IaZvktCaHMG56VtpwAszF",
+            "kind": "assumes",
+            "rationale": "The unchecked version survives only because there is nobody close enough to ask him where the footage came from."
+          },
+          {
+            "source": "6zNz764v7a179F7BP3P4O",
+            "target": "EE8ax_QYtezgE9R3PrQZY",
+            "kind": "assumes",
+            "rationale": "The film is only the last contact if the alternative to it is total erasure, which quietly deletes the option of speaking to her on Thursday."
+          },
+          {
+            "source": "6zNz764v7a179F7BP3P4O",
+            "target": "JTujTDqzMJIxiJWVIpqYP",
+            "kind": "assumes",
+            "rationale": "Calling this contact with her assumes she is who he is missing, though he has never once described her face."
+          },
+          {
+            "source": "uw2LtxbkJLtte7HcnK-O4",
+            "target": "JTujTDqzMJIxiJWVIpqYP",
+            "kind": "contradicts",
+            "rationale": "Blocking out the man's evening shot by shot shows the loss was the slot, not the person standing in it."
+          },
+          {
+            "source": "MzMYmYIA8d6TtMaYKkg03",
+            "target": "pTUGJxWNGKUEWKfuU6Eul",
+            "kind": "refines",
+            "rationale": "Doing just fine is announced at the top of every relapse because being destroyed is more life than fine ever was."
+          },
+          {
+            "source": "2syx1HX15lrnFoAobADJe",
+            "target": "vGUDzKt0rCAK7dEHQ0zE7",
+            "kind": "refines",
+            "rationale": "The self-awarded title is scaffolding: a brand name and a comeback arc built around one kiss that needed neither."
+          },
+          {
+            "source": "vGUDzKt0rCAK7dEHQ0zE7",
+            "target": "MzMYmYIA8d6TtMaYKkg03",
+            "kind": "evidence",
+            "rationale": "Coming out of my cage and I've been doing just fine, sung identically twice, is the comeback arc with nothing behind it."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "uw2LtxbkJLtte7HcnK-O4",
+            "kind": "refines",
+            "rationale": "The ranking obsession resolves into wanting his position rather than her, which is why the man is filmed and she is furniture."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "2JBitpIjktzexoXSpwiZi",
+            "kind": "refines",
+            "rationale": "The unbearable ranking is specifically that he did in one evening the thing the narrator spent months being patient instead of doing."
+          },
+          {
+            "source": "2JBitpIjktzexoXSpwiZi",
+            "target": "rRlLelQLd-dN6sS2G3pvH",
+            "kind": "refines",
+            "rationale": "He keeps the rival's advantage unnamed because a vague deficit is a condition he suffers and a specific one is a task he skipped."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "tyFt-ZgbEbxDgo2JIUgZ4",
+            "kind": "assumes",
+            "rationale": "Being the kind of man who loses her requires her to have held both men in mind and chosen, which he has never verified."
+          },
+          {
+            "source": "tyFt-ZgbEbxDgo2JIUgZ4",
+            "target": "Uak4Xm7A4WEYGjOUrV4rf",
+            "kind": "assumes",
+            "rationale": "Placing second assumes he was available to be picked, that a yes was ever on the table if he had asked."
+          },
+          {
+            "source": "tyFt-ZgbEbxDgo2JIUgZ4",
+            "target": "OPResddVgmqckJirqdxiK",
+            "kind": "assumes",
+            "rationale": "A ranking only humiliates if it is posted somewhere, and he is the sole staff of the scoreboard."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "C4-J1AGPM-h50jD6PPBnn",
+            "kind": "assumes",
+            "rationale": "One night becomes a kind of man only if he converts a single Tuesday result into a permanent category and moves in."
+          },
+          {
+            "source": "yMQP5APGBvS3o5fxqQsWz",
+            "target": "4xxWninoaTbGjpKbpOwTt",
+            "kind": "assumes",
+            "rationale": "The grievance assumes winning would have been restful, when the ranking machine is his own and she was only its occasion."
+          },
+          {
+            "source": "4xxWninoaTbGjpKbpOwTt",
+            "target": "tZipt8Whs2wp9j8vIB05H",
+            "kind": "contradicts",
+            "rationale": "If no verdict from her would have ended the scoring, then the rating he was waiting for was never issuable by anyone but him."
+          },
+          {
+            "source": "0eaem78vSy3hsX2tOcfHN",
+            "target": "Uak4Xm7A4WEYGjOUrV4rf",
+            "kind": "refines",
+            "rationale": "Assuming she filed the kiss as an opening hardens into the flattering claim that she was his to lose to someone quicker."
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "0eaem78vSy3hsX2tOcfHN",
+            "kind": "assumes",
+            "rationale": "Grieving requires the night to have been jointly held, otherwise there is no ending, only a man keeping a receipt."
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "xUFzUuNWyM4bIcDePgB8K",
+            "kind": "assumes",
+            "rationale": "The whole mourning frame depends on this being grief rather than an appetite he simply never voiced."
+          },
+          {
+            "source": "GP5ZCymDy4JfDvhJZE9eE",
+            "target": "AxX5eZGlWaoVdSBuXx2IO",
+            "kind": "refines",
+            "rationale": "The relationship she never entered is one he never asked her to enter, which makes betrayal the flattering account of his own silence."
+          },
+          {
+            "source": "AxX5eZGlWaoVdSBuXx2IO",
+            "target": "xUFzUuNWyM4bIcDePgB8K",
+            "kind": "contradicts",
+            "rationale": "Four unfinished I nevers expose the mourning as retrospective cover for a want he declined to declare."
+          }
+        ]
+      }
+    }
+  ]
+}
