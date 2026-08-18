@@ -2,8 +2,9 @@
 // orphan link endpoints, no duplicate (source, target, kind), lyric rules).
 
 import { describe, expect, it } from 'vitest';
-import type { Bubble, BubbleMapDoc, Link } from '../src/types';
+import type { Bubble, BubbleMapDoc, Link, Tier } from '../src/types';
 import { resolveProposal, type RawProposal } from './ai';
+import type { Verb } from './prompts';
 
 const SOURCE = 'It started out with a kiss\nHow did it end up like this?\nIt was only a kiss';
 const LINE = 'started out with a kiss';
@@ -32,8 +33,8 @@ const mkDoc = (bubbles: Bubble[] = [], links: Link[] = []): BubbleMapDoc => ({
   updatedAt: '2026-08-18T00:00:00.000Z',
 });
 
-const propose = (raw: Partial<RawProposal>, doc = mkDoc()) =>
-  resolveProposal({ bubbles: [], links: [], ...raw }, doc);
+const propose = (raw: Partial<RawProposal>, doc = mkDoc(), verb?: Verb) =>
+  resolveProposal({ bubbles: [], links: [], ...raw }, doc, verb);
 
 describe('resolveProposal — §5 invariants', () => {
   it('resolves refs to real ids and keeps valid links, including cross-category refines', () => {
@@ -203,5 +204,60 @@ describe('resolveProposal — D23 sourceLine fabrication guard', () => {
     );
     expect(result.bubbles).toHaveLength(0);
     expect(result.rejections.map((r) => r.reason)).toEqual(['bubble sourceLine not found in doc.source']);
+  });
+});
+
+describe('resolveProposal — D18 seed split (3 SAFE + 3 REAL)', () => {
+  const seedOf = (tiers: Tier[]) =>
+    tiers.map((tier, i) => ({
+      ref: `n${i}`,
+      tier,
+      category: 'love' as const,
+      label: `b${i}`,
+      sourceLine: LINE,
+    }));
+
+  it('accepts a seed of exactly 3 SAFE + 3 REAL', () => {
+    const result = propose(
+      { bubbles: seedOf(['safe', 'safe', 'safe', 'real', 'real', 'real']) },
+      mkDoc(),
+      'seed',
+    );
+    expect(result.bubbles).toHaveLength(6);
+    expect(result.rejections).toHaveLength(0);
+  });
+
+  it('rejects the proposal whole when the split is off, dropping its links too', () => {
+    const result = propose(
+      {
+        bubbles: seedOf(['safe', 'safe', 'safe', 'safe', 'safe', 'safe']),
+        links: [{ source: 'n0', target: 'n1', kind: 'refines' }],
+      },
+      mkDoc(),
+      'seed',
+    );
+    expect(result.bubbles).toHaveLength(0);
+    expect(result.links).toHaveLength(0);
+    expect(result.rejections.map((r) => r.reason)).toEqual([
+      'seed split must be 3 SAFE + 3 REAL (got 6 SAFE, 0 REAL)',
+    ]);
+  });
+
+  it('counts a stray RAW bubble against the split', () => {
+    const result = propose(
+      { bubbles: seedOf(['safe', 'safe', 'safe', 'real', 'real', 'raw']) },
+      mkDoc(),
+      'seed',
+    );
+    expect(result.bubbles).toHaveLength(0);
+    expect(result.rejections.map((r) => r.reason)).toEqual([
+      'seed split must be 3 SAFE + 3 REAL (got 3 SAFE, 2 REAL)',
+    ]);
+  });
+
+  it('does not apply the split to other verbs', () => {
+    const result = propose({ bubbles: seedOf(['raw', 'raw', 'raw']) }, mkDoc(), 'descend');
+    expect(result.bubbles).toHaveLength(3);
+    expect(result.rejections).toHaveLength(0);
   });
 });

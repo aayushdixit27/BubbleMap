@@ -152,7 +152,7 @@ export async function propose(
   }
 
   return {
-    ...resolveProposal(toolUse.input as RawProposal, doc),
+    ...resolveProposal(toolUse.input as RawProposal, doc, verb),
     raw: toolUse.input,
     model,
     usage: {
@@ -252,6 +252,7 @@ export function sourceLineOccurs(sourceLine: string, source: string | undefined)
 export function resolveProposal(
   raw: RawProposal,
   doc: BubbleMapDoc,
+  verb?: Verb,
 ): Pick<Proposal, 'bubbles' | 'links' | 'rejections'> {
   const now = new Date().toISOString();
   const refToId = new Map<string, string>();
@@ -261,6 +262,23 @@ export function resolveProposal(
     console.warn(`[ai] rejected (${reason}):`, JSON.stringify(item));
     rejections.push({ reason, item });
   };
+
+  // D18's seed contract is 3 SAFE + 3 REAL. The schema can only bound the
+  // total (minItems/maxItems 6), not the split — 6 SAFE + 0 REAL would pass
+  // it and leave descend nothing to run on. A wrong split is a malformed
+  // seed, not six independently judgeable bubbles, so the proposal is
+  // rejected whole.
+  if (verb === 'seed') {
+    const tally = { safe: 0, real: 0 };
+    for (const b of raw.bubbles ?? []) if (b.tier === 'safe' || b.tier === 'real') tally[b.tier]++;
+    if (tally.safe !== 3 || tally.real !== 3) {
+      rejectItem(
+        `seed split must be 3 SAFE + 3 REAL (got ${tally.safe} SAFE, ${tally.real} REAL)`,
+        raw.bubbles ?? [],
+      );
+      return { bubbles: [], links: [], rejections };
+    }
+  }
 
   for (const rawBubble of raw.bubbles ?? []) {
     if (!rawBubble.ref || !rawBubble.tier || !rawBubble.category || !rawBubble.label || !rawBubble.sourceLine) {
