@@ -1,14 +1,12 @@
-// Client state + the Phase 2 loop (D25 — the unit of judgment is the
-// DESCENT, not the bubble):
-//   create → seed streams → the moment seed returns, descend fires on all
-//   three REAL bubbles in parallel, no human gate → three complete
-//   descents (SAFE → REAL → RAW) present in the readings layout → the
-//   human keeps or kills each descent whole. Keep commits all three
-//   bubbles in the path; kill parks all three in rejected[].
+// Client state + the loop (D26 — opt-out judging):
+//   create → seed streams → descends fire, streaming as ghosts → each
+//   completed arrival COMMITS (amended Hard Rule 1: it arrived on screen
+//   and is read as it lands). The only gesture is killDescent, which
+//   parks the whole SAFE → REAL → RAW path in rejected[]; kills are
+//   undoable for the session via undoKill.
 //
-// AI never mutates the map (Hard Rule 1 unchanged): every proposal
-// arrives status 'proposed' and only keepDescent() commits. Saving
-// strips proposals server-side.
+// What survives of Hard Rule 1: nothing commits off-screen or in bulk
+// unseen, and anything committed can be killed in one gesture.
 
 import { create } from 'zustand';
 import {
@@ -41,6 +39,12 @@ export interface DescentPath {
   raw: string;
 }
 
+// A killed descent, held in session memory so the kill is undoable (D26 #2).
+interface KilledDescent {
+  bubbles: Bubble[];
+  links: Link[];
+}
+
 interface MapState {
   maps: MapMeta[];
   doc: BubbleMapDoc | null;
@@ -50,6 +54,8 @@ interface MapState {
   status: string;
   error: string | null;
   metrics: string | null;
+  // Killed descents this session, newest last — the undo stack (D26 #2).
+  killed: KilledDescent[];
 
   loadMaps: () => Promise<void>;
   openMap: (id: string) => Promise<void>;
@@ -57,8 +63,8 @@ interface MapState {
   openProbeRun: () => void;
   closeMap: () => void;
   createAndSeed: (title: string, source: string) => Promise<void>;
-  keepDescent: (path: DescentPath) => void;
   killDescent: (path: DescentPath) => void;
+  undoKill: () => void;
 }
 
 // Autosave state. This was an 800ms trailing debounce that RESET on every
@@ -156,6 +162,18 @@ export const useMapStore = create<MapState>((set, get) => {
     });
   };
 
+  // D26 #2 (amended Hard Rule 1): a completed arrival commits. The human
+  // watched it stream in and reads it as it lands; judgment is by
+  // exception — the kill gesture — not by approval. Nothing commits
+  // off-screen: this runs only after the run's ghosts have rendered.
+  const commitArrived = (proposal: Proposal) => {
+    let next = get().doc;
+    if (!next) return;
+    for (const bubble of proposal.bubbles) next = commitInto(next, bubble.id);
+    set({ doc: next });
+    scheduleSave();
+  };
+
   // Swap a run's provisional ghosts for the server-resolved proposal.
   const finalizeRun = (runId: string, proposal: Proposal) => {
     const doc = get().doc;
@@ -175,9 +193,8 @@ export const useMapStore = create<MapState>((set, get) => {
     links: doc.links.filter((l) => !ids.has(l.source) && !ids.has(l.target)),
   });
 
-  // D24: unpicked candidates leave the view but are parked in doc.rejected —
-  // written to the file as their own signal, never rendered again. Killed
-  // seed ghosts do NOT come through here; they just vanish (D24 step 2).
+  // Killed paths leave the view but are parked in doc.rejected — written
+  // to the file as their own signal, never rendered again (D24 → D26).
   const parkInRejected = (doc: BubbleMapDoc, ids: Set<string>): BubbleMapDoc => ({
     ...removeBubbles(doc, ids),
     rejected: [...(doc.rejected ?? []), ...doc.bubbles.filter((b) => ids.has(b.id))],
@@ -210,6 +227,7 @@ export const useMapStore = create<MapState>((set, get) => {
     doc: null,
     readOnly: false,
     running: 0,
+    killed: [],
     status: '',
     error: null,
     metrics: null,
@@ -224,7 +242,7 @@ export const useMapStore = create<MapState>((set, get) => {
 
     openMap: async (id) => {
       try {
-        set({ doc: await fetchMap(id), readOnly: false, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), readOnly: false, killed: [], error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -243,11 +261,11 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), readOnly: true, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), readOnly: true, killed: [], error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
-      set({ doc: null, readOnly: false, status: '', metrics: null });
+      set({ doc: null, readOnly: false, killed: [], status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -258,11 +276,12 @@ export const useMapStore = create<MapState>((set, get) => {
       const t0 = performance.now();
       try {
         const doc = await apiCreateMap(title, source);
-        set({ doc, readOnly: false, error: null, metrics: null, status: 'seeding…', running: 1 });
+        set({ doc, readOnly: false, killed: [], error: null, metrics: null, status: 'seeding…', running: 1 });
         const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) =>
           applySnapshot('seed', snapshot),
         );
         finalizeRun('seed', seedProposal);
+        commitArrived(seedProposal);
 
         const reals = seedProposal.bubbles.filter((b) => b.tier === 'real');
         if (!reals.length) {
@@ -282,6 +301,7 @@ export const useMapStore = create<MapState>((set, get) => {
               applySnapshot(runId, snapshot),
             );
             finalizeRun(runId, proposal);
+            commitArrived(proposal);
             set((s) => ({ running: Math.max(0, s.running - 1) }));
           }),
         );
@@ -300,30 +320,14 @@ export const useMapStore = create<MapState>((set, get) => {
       }
     },
 
-    // D25: keeping a descent commits every bubble in its path, surface
-    // first so refines links flip committed as their endpoints do.
-    keepDescent: ({ safe, real, raw }) => {
-      const doc = get().doc;
-      if (!doc || get().readOnly || isProvisional(raw)) return;
-      let next = doc;
-      for (const id of [safe, real, raw]) {
-        if (!id) continue;
-        const bubble = next.bubbles.find((b) => b.id === id);
-        if (bubble?.status === 'proposed') next = commitInto(next, id);
-      }
-      set({ doc: next });
-      scheduleSave();
-    },
-
-    // D25: killing a descent parks its whole path in rejected[]. A SAFE
-    // or REAL that another surviving path still hangs off is spared —
-    // paths may share ancestors, and a kill must not amputate a sibling.
+    // D26 #2: the only gesture. Kills the whole path into rejected[],
+    // recording it on the session undo stack first. A SAFE or REAL that
+    // another surviving path still hangs off is spared — paths may share
+    // ancestors, and a kill must not amputate a sibling.
     killDescent: ({ safe, real, raw }) => {
       const doc = get().doc;
       if (!doc || get().readOnly || isProvisional(raw)) return;
       const toPark = new Set([raw]);
-      const proposed = (id: string) =>
-        doc.bubbles.find((b) => b.id === id)?.status === 'proposed';
       const hasOtherChild = (id: string) =>
         doc.links.some(
           (l) =>
@@ -332,9 +336,34 @@ export const useMapStore = create<MapState>((set, get) => {
             !toPark.has(l.target) &&
             doc.bubbles.some((b) => b.id === l.target),
         );
-      if (real && proposed(real) && !hasOtherChild(real)) toPark.add(real);
-      if (safe && proposed(safe) && !hasOtherChild(safe)) toPark.add(safe);
-      set({ doc: parkInRejected(doc, toPark) });
+      if (real && !hasOtherChild(real)) toPark.add(real);
+      if (safe && !hasOtherChild(safe)) toPark.add(safe);
+      const record: KilledDescent = {
+        bubbles: doc.bubbles.filter((b) => toPark.has(b.id)),
+        links: doc.links.filter((l) => toPark.has(l.source) || toPark.has(l.target)),
+      };
+      set({ doc: parkInRejected(doc, toPark), killed: [...get().killed, record] });
+      scheduleSave();
+    },
+
+    // D26 #2: kills are undoable for the session. Restores the most
+    // recent kill — bubbles out of rejected[], links back in place.
+    undoKill: () => {
+      const doc = get().doc;
+      const killed = get().killed;
+      if (!doc || !killed.length) return;
+      const last = killed[killed.length - 1];
+      const bubbleIds = new Set(last.bubbles.map((b) => b.id));
+      const linkIds = new Set(last.links.map((l) => l.id));
+      set({
+        doc: {
+          ...doc,
+          bubbles: [...doc.bubbles, ...last.bubbles],
+          links: [...doc.links.filter((l) => !linkIds.has(l.id)), ...last.links],
+          rejected: (doc.rejected ?? []).filter((b) => !bubbleIds.has(b.id)),
+        },
+        killed: killed.slice(0, -1),
+      });
       scheduleSave();
     },
   };

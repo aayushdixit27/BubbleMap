@@ -1,13 +1,13 @@
-// THE READINGS VIEW — the judgment surface (D25). Each reading is one
-// complete descent presented vertically:
+// THE READINGS VIEW — the judgment surface (D26, opt-out). Each reading
+// is one complete descent presented vertically:
 //   SAFE entry, its lyric line
 //   REAL entry, its lyric line
 //   RAW entry, its lyric line, and its full note.
-// The unit of judgment is the DESCENT: keep commits every bubble in the
-// path, kill parks the path in rejected[]. One decision per descent.
-// Controls surface on hover/focus only (D22); proposed steps read as
-// ghosts. While descends are still running, a thread that has not yet
-// reached RAW shows its SAFE/REAL with a quiet "descending…" slot.
+// Descents land committed; the only gesture is "kill this descent",
+// which parks the path in rejected[] (undoable for the session).
+// Controls surface on hover/focus only (D22); still-streaming steps read
+// as ghosts. While descends run, a thread that has not yet reached RAW
+// shows its SAFE/REAL with a quiet "descending…" slot.
 //
 // A reading is derived per thread: the first RAW entry, then its actual
 // ancestor chain (parentOf) for the REAL and SAFE steps, falling back to
@@ -57,7 +57,6 @@ export function Readings() {
   const doc = useMapStore((s) => s.doc);
   const running = useMapStore((s) => s.running);
   const readOnly = useMapStore((s) => s.readOnly);
-  const keepDescent = useMapStore((s) => s.keepDescent);
   const killDescent = useMapStore((s) => s.killDescent);
 
   const readings = useMemo<Reading[]>(() => {
@@ -98,8 +97,7 @@ export function Readings() {
       )}
       {readings.map((reading, i) => {
         const raw = reading.raw;
-        const judgeable =
-          !readOnly && raw?.status === 'proposed' && !isProvisional(raw.id);
+        const killable = !readOnly && raw && !isProvisional(raw.id);
         return (
           <div key={raw?.id ?? reading.real?.id ?? i} className="reading">
             <div className="reading-numeral">{NUMERAL[i] ?? String(i + 1)}</div>
@@ -112,23 +110,15 @@ export function Readings() {
                 <div className="reading-line">descending…</div>
               </div>
             )}
-            {judgeable && (
+            {killable && (
               <div className="entry-actions reading-actions">
-                <button
-                  className="text-action"
-                  onClick={() =>
-                    keepDescent({ safe: reading.safe?.id, real: reading.real?.id, raw: raw!.id })
-                  }
-                >
-                  keep this descent
-                </button>
                 <button
                   className="text-action"
                   onClick={() =>
                     killDescent({ safe: reading.safe?.id, real: reading.real?.id, raw: raw!.id })
                   }
                 >
-                  kill it
+                  kill this descent
                 </button>
               </div>
             )}

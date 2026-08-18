@@ -122,6 +122,8 @@ export default function App() {
   const running = useMapStore((s) => s.running);
   const loadMaps = useMapStore((s) => s.loadMaps);
   const closeMap = useMapStore((s) => s.closeMap);
+  const killed = useMapStore((s) => s.killed);
+  const undoKill = useMapStore((s) => s.undoKill);
   const [health, setHealth] = useState('server: …');
   // Readings is the judgment surface (D25); the grid stays as a toggle.
   const [view, setView] = useState<'grid' | 'readings'>('readings');
@@ -155,6 +157,11 @@ export default function App() {
           >
             {view === 'grid' ? 'readings' : 'grid'}
           </button>
+          {killed.length > 0 && (
+            <button className="text-action" onClick={undoKill}>
+              undo kill
+            </button>
+          )}
           {(status || running > 0) && <span className="status">{status}</span>}
           {error && <span className="status status-error">{error}</span>}
           {metrics && <span className="metrics">{metrics}</span>}
