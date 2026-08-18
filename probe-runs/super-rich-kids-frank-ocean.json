@@ -1,0 +1,167 @@
+{
+  "title": "Super Rich Kids — Frank Ocean",
+  "bubbles": {
+    "love": {
+      "safe": [
+        {
+          "label": "Money buys the whole party and still not one real love",
+          "note": "The chorus states it plainly: everything is available except the one thing being searched for."
+        },
+        {
+          "label": "The maid comes around too much, the parents not enough",
+          "note": "A house full of staff and no family. Care is outsourced and salaried."
+        }
+      ],
+      "real": [
+        {
+          "label": "I pay for everything so nobody has a reason to leave early",
+          "note": "Buying the night is cheaper than finding out who would stay without it. Fake friends are safer than the answer."
+        }
+      ]
+    },
+    "identity": {
+      "safe": [
+        {
+          "label": "Rich kid is a role, and I am playing it well",
+          "note": "Boredom and excess performed as a personality because the part comes with a script."
+        }
+      ],
+      "real": [
+        {
+          "label": "Without the money there is no story anyone would sit through",
+          "note": "The help do not stop to say hi because there is nothing to say hi to. Strip the house and the character disappears."
+        }
+      ]
+    },
+    "fitness": {
+      "safe": [
+        {
+          "label": "Days spent numb on bottles and joints nobody counts",
+          "note": "Consumption as a schedule. Nothing to be sober for, so why be sober."
+        }
+      ],
+      "real": [
+        {
+          "label": "I stay high because the afternoons in this house are unbearably quiet",
+          "note": "The drugs are not decadence, they are noise. The outro on the roof is what the quiet leads to."
+        }
+      ]
+    },
+    "earnings": {
+      "safe": [
+        {
+          "label": "Status inherited, never earned, so it proves nothing about me",
+          "note": "The wealth is the father's. The kid is a passenger in it."
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "kind": "refines",
+      "source": "Money buys the whole party and still not one real love",
+      "target": "I pay for everything so nobody has a reason to leave early",
+      "rationale": "Deepens the generic search for real love into the specific tactic that prevents finding it: the narrator underwrites the friendship so it can never be tested."
+    },
+    {
+      "kind": "refines",
+      "source": "Status inherited, never earned, so it proves nothing about me",
+      "target": "Without the money there is no story anyone would sit through",
+      "rationale": "Moves from unearned status to what that costs the self. The SAFE line is about the money's origin; the REAL one is that the narrator has no identity outside it, so it lands in IDENTITY."
+    },
+    {
+      "kind": "refines",
+      "source": "Days spent numb on bottles and joints nobody counts",
+      "target": "I stay high because the afternoons in this house are unbearably quiet",
+      "rationale": "Names what the intoxication is actually for. Not appetite but the silence of an empty house, which the narrator will not sit in sober."
+    }
+  ],
+  "model": "claude-opus-5",
+  "ranAt": "2026-08-18T00:54:08.810Z",
+  "wallClockMs": 36043,
+  "usage": {
+    "input_tokens": 1625,
+    "output_tokens": 2272
+  },
+  "rejections": [],
+  "raw": {
+    "bubbles": [
+      {
+        "ref": "s1",
+        "tier": "safe",
+        "category": "love",
+        "label": "Money buys the whole party and still not one real love",
+        "note": "The chorus states it plainly: everything is available except the one thing being searched for."
+      },
+      {
+        "ref": "s2",
+        "tier": "safe",
+        "category": "love",
+        "label": "The maid comes around too much, the parents not enough",
+        "note": "A house full of staff and no family. Care is outsourced and salaried."
+      },
+      {
+        "ref": "s3",
+        "tier": "safe",
+        "category": "fitness",
+        "label": "Days spent numb on bottles and joints nobody counts",
+        "note": "Consumption as a schedule. Nothing to be sober for, so why be sober."
+      },
+      {
+        "ref": "s4",
+        "tier": "safe",
+        "category": "earnings",
+        "label": "Status inherited, never earned, so it proves nothing about me",
+        "note": "The wealth is the father's. The kid is a passenger in it."
+      },
+      {
+        "ref": "s5",
+        "tier": "safe",
+        "category": "identity",
+        "label": "Rich kid is a role, and I am playing it well",
+        "note": "Boredom and excess performed as a personality because the part comes with a script."
+      },
+      {
+        "ref": "r1",
+        "tier": "real",
+        "category": "love",
+        "label": "I pay for everything so nobody has a reason to leave early",
+        "note": "Buying the night is cheaper than finding out who would stay without it. Fake friends are safer than the answer."
+      },
+      {
+        "ref": "r2",
+        "tier": "real",
+        "category": "identity",
+        "label": "Without the money there is no story anyone would sit through",
+        "note": "The help do not stop to say hi because there is nothing to say hi to. Strip the house and the character disappears."
+      },
+      {
+        "ref": "r3",
+        "tier": "real",
+        "category": "fitness",
+        "label": "I stay high because the afternoons in this house are unbearably quiet",
+        "note": "The drugs are not decadence, they are noise. The outro on the roof is what the quiet leads to."
+      }
+    ],
+    "links": [
+      {
+        "source": "s1",
+        "target": "r1",
+        "kind": "refines",
+        "rationale": "Deepens the generic search for real love into the specific tactic that prevents finding it: the narrator underwrites the friendship so it can never be tested."
+      },
+      {
+        "source": "s4",
+        "target": "r2",
+        "kind": "refines",
+        "rationale": "Moves from unearned status to what that costs the self. The SAFE line is about the money's origin; the REAL one is that the narrator has no identity outside it, so it lands in IDENTITY."
+      },
+      {
+        "source": "s3",
+        "target": "r3",
+        "kind": "refines",
+        "rationale": "Names what the intoxication is actually for. Not appetite but the silence of an empty house, which the narrator will not sit in sober."
+      }
+    ]
+  }
+}

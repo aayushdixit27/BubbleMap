@@ -1,0 +1,189 @@
+{
+  "title": "Mr. Brightside — The Killers",
+  "bubbles": {
+    "love": {
+      "safe": [
+        {
+          "label": "Lying awake picturing her with someone else",
+          "note": "The stated content: jealousy that arrives at night and will not leave."
+        },
+        {
+          "label": "It started casual so he has no claim to press",
+          "note": "It started out with a kiss, how did it end up like this. He was never officially anything."
+        }
+      ]
+    },
+    "identity": {
+      "safe": [
+        {
+          "label": "Calling himself Mr Brightside to stay the good sport",
+          "note": "Public posture of cheerfulness laid over private wreckage."
+        }
+      ],
+      "real": [
+        {
+          "label": "He never asked what they were so it would not count",
+          "note": "Undefined means she cannot leave him, only stop calling. He would rather be a man who was never serious than a man who was weighed and passed on."
+        },
+        {
+          "label": "Brightside is the version his friends are allowed to see",
+          "note": "The cheer is not for her and not for himself. It is so nobody at the party files him under the guy who got dropped."
+        }
+      ]
+    },
+    "fitness": {
+      "safe": [
+        {
+          "label": "The same scene runs on loop until morning",
+          "note": "Sleep is gone. The problem is not the woman, it is that the mind will not shut off."
+        }
+      ],
+      "real": [
+        {
+          "label": "Nobody told him the details, he is directing them",
+          "note": "The cigarette, the touch of his hand, the taxi, the stomach. That is camera work, not information. He is the one staging it and he keeps going back for another take."
+        }
+      ]
+    },
+    "earnings": {
+      "safe": [
+        {
+          "label": "Telling himself this is the price of a bigger destiny",
+          "note": "Destiny is calling me. Reframing being passed over as a toll on the way up."
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "kind": "refines",
+      "source": "The same scene runs on loop until morning",
+      "target": "Nobody told him the details, he is directing them",
+      "rationale": "Deepens the insomnia from something happening to him into something he is doing. The loop has an author."
+    },
+    {
+      "kind": "refines",
+      "source": "It started casual so he has no claim to press",
+      "target": "He never asked what they were so it would not count",
+      "rationale": "Moves out of love and into identity: the vagueness was not her doing, it was his insurance policy against being rejected on the record."
+    },
+    {
+      "kind": "refines",
+      "source": "Calling himself Mr Brightside to stay the good sport",
+      "target": "Brightside is the version his friends are allowed to see",
+      "rationale": "Names who the performance is actually for. Not optimism, reputation management."
+    },
+    {
+      "kind": "assumes",
+      "source": "Lying awake picturing her with someone else",
+      "target": "Nobody told him the details, he is directing them",
+      "rationale": "The jealousy only holds up because he keeps supplying it with footage he invented."
+    },
+    {
+      "kind": "assumes",
+      "source": "Telling himself this is the price of a bigger destiny",
+      "target": "Brightside is the version his friends are allowed to see",
+      "rationale": "Destiny talk works as a story he can tell out loud, which is the same audience Brightside plays to."
+    }
+  ],
+  "model": "claude-opus-5",
+  "ranAt": "2026-08-18T00:50:53.251Z",
+  "wallClockMs": 28905,
+  "usage": {
+    "input_tokens": 1622,
+    "output_tokens": 2060
+  },
+  "rejections": [],
+  "raw": {
+    "bubbles": [
+      {
+        "ref": "s1",
+        "tier": "safe",
+        "category": "love",
+        "label": "Lying awake picturing her with someone else",
+        "note": "The stated content: jealousy that arrives at night and will not leave."
+      },
+      {
+        "ref": "s2",
+        "tier": "safe",
+        "category": "fitness",
+        "label": "The same scene runs on loop until morning",
+        "note": "Sleep is gone. The problem is not the woman, it is that the mind will not shut off."
+      },
+      {
+        "ref": "s3",
+        "tier": "safe",
+        "category": "identity",
+        "label": "Calling himself Mr Brightside to stay the good sport",
+        "note": "Public posture of cheerfulness laid over private wreckage."
+      },
+      {
+        "ref": "s4",
+        "tier": "safe",
+        "category": "love",
+        "label": "It started casual so he has no claim to press",
+        "note": "It started out with a kiss, how did it end up like this. He was never officially anything."
+      },
+      {
+        "ref": "s5",
+        "tier": "safe",
+        "category": "earnings",
+        "label": "Telling himself this is the price of a bigger destiny",
+        "note": "Destiny is calling me. Reframing being passed over as a toll on the way up."
+      },
+      {
+        "ref": "r1",
+        "tier": "real",
+        "category": "fitness",
+        "label": "Nobody told him the details, he is directing them",
+        "note": "The cigarette, the touch of his hand, the taxi, the stomach. That is camera work, not information. He is the one staging it and he keeps going back for another take."
+      },
+      {
+        "ref": "r2",
+        "tier": "real",
+        "category": "identity",
+        "label": "He never asked what they were so it would not count",
+        "note": "Undefined means she cannot leave him, only stop calling. He would rather be a man who was never serious than a man who was weighed and passed on."
+      },
+      {
+        "ref": "r3",
+        "tier": "real",
+        "category": "identity",
+        "label": "Brightside is the version his friends are allowed to see",
+        "note": "The cheer is not for her and not for himself. It is so nobody at the party files him under the guy who got dropped."
+      }
+    ],
+    "links": [
+      {
+        "source": "s2",
+        "target": "r1",
+        "kind": "refines",
+        "rationale": "Deepens the insomnia from something happening to him into something he is doing. The loop has an author."
+      },
+      {
+        "source": "s4",
+        "target": "r2",
+        "kind": "refines",
+        "rationale": "Moves out of love and into identity: the vagueness was not her doing, it was his insurance policy against being rejected on the record."
+      },
+      {
+        "source": "s3",
+        "target": "r3",
+        "kind": "refines",
+        "rationale": "Names who the performance is actually for. Not optimism, reputation management."
+      },
+      {
+        "source": "s1",
+        "target": "r1",
+        "kind": "assumes",
+        "rationale": "The jealousy only holds up because he keeps supplying it with footage he invented."
+      },
+      {
+        "source": "s5",
+        "target": "r3",
+        "kind": "assumes",
+        "rationale": "Destiny talk works as a story he can tell out loud, which is the same audience Brightside plays to."
+      }
+    ]
+  }
+}

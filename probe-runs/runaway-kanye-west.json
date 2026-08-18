@@ -1,0 +1,167 @@
+{
+  "title": "Runaway — Kanye West",
+  "bubbles": {
+    "love": {
+      "safe": [
+        {
+          "label": "He tells the woman who loves him to run away fast",
+          "note": "The chorus is an instruction, not a plea. Leaving is presented as her best available option and he is the one supplying the plan."
+        },
+        {
+          "label": "He always finds something wrong right when it starts working",
+          "note": "Not drift, a pattern. She has been putting up with it way too long, which means the sabotage has a track record."
+        }
+      ],
+      "real": [
+        {
+          "label": "He'd rather be the villain who warned her than explain the emails",
+          "note": "Run away is a confession he can perform without giving details. Blanket guilt costs him less than one specific accounting of what he did."
+        }
+      ]
+    },
+    "identity": {
+      "safe": [
+        {
+          "label": "A toast to the douchebags, and he raises it about himself",
+          "note": "The song opens by naming a category of bad men and volunteering for it. Public self-indictment delivered as a party toast."
+        }
+      ],
+      "real": [
+        {
+          "label": "If he accuses himself first nobody else gets to land it",
+          "note": "The toast is armor. Naming himself scumbag in public means every future accusation arrives as old news he already made into a hook."
+        }
+      ]
+    },
+    "fitness": {
+      "safe": [
+        {
+          "label": "Never much of a romantic, never could take the intimacy",
+          "note": "Stated as a fixed trait rather than a wound. Closeness registers as something he cannot metabolize, like a capacity he was born without."
+        }
+      ]
+    },
+    "earnings": {
+      "safe": [
+        {
+          "label": "The fame rewards exactly the behavior that ruins the relationship",
+          "note": "Being the guy everyone talks about is the job. The traits that make the career work are the traits she has to survive."
+        }
+      ],
+      "real": [
+        {
+          "label": "Intimacy has no scoreboard so he cannot tell if he is winning",
+          "note": "Everywhere else he can measure himself. With her there is nothing to beat, no number going up, and being unmeasured feels indistinguishable from being nothing."
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "kind": "refines",
+      "source": "A toast to the douchebags, and he raises it about himself",
+      "target": "If he accuses himself first nobody else gets to land it",
+      "rationale": "Moves the toast from confession to strategy: he is not admitting he is a douchebag, he is claiming the title before anyone can pin it on him"
+    },
+    {
+      "kind": "refines",
+      "source": "He tells the woman who loves him to run away fast",
+      "target": "He'd rather be the villain who warned her than explain the emails",
+      "rationale": "Names what the instruction to leave is actually protecting, not her, but him from having to say out loud what she already found"
+    },
+    {
+      "kind": "refines",
+      "source": "Never much of a romantic, never could take the intimacy",
+      "target": "Intimacy has no scoreboard so he cannot tell if he is winning",
+      "rationale": "Cannot take the intimacy reads as a defect of the heart; underneath it is a man who only knows he exists when something is being scored, which puts it in EARNINGS rather than FITNESS"
+    }
+  ],
+  "model": "claude-opus-5",
+  "ranAt": "2026-08-18T00:51:22.739Z",
+  "wallClockMs": 36340,
+  "usage": {
+    "input_tokens": 1619,
+    "output_tokens": 2335
+  },
+  "rejections": [],
+  "raw": {
+    "bubbles": [
+      {
+        "ref": "s1",
+        "tier": "safe",
+        "category": "identity",
+        "label": "A toast to the douchebags, and he raises it about himself",
+        "note": "The song opens by naming a category of bad men and volunteering for it. Public self-indictment delivered as a party toast."
+      },
+      {
+        "ref": "s2",
+        "tier": "safe",
+        "category": "love",
+        "label": "He tells the woman who loves him to run away fast",
+        "note": "The chorus is an instruction, not a plea. Leaving is presented as her best available option and he is the one supplying the plan."
+      },
+      {
+        "ref": "s3",
+        "tier": "safe",
+        "category": "fitness",
+        "label": "Never much of a romantic, never could take the intimacy",
+        "note": "Stated as a fixed trait rather than a wound. Closeness registers as something he cannot metabolize, like a capacity he was born without."
+      },
+      {
+        "ref": "s4",
+        "tier": "safe",
+        "category": "earnings",
+        "label": "The fame rewards exactly the behavior that ruins the relationship",
+        "note": "Being the guy everyone talks about is the job. The traits that make the career work are the traits she has to survive."
+      },
+      {
+        "ref": "s5",
+        "tier": "safe",
+        "category": "love",
+        "label": "He always finds something wrong right when it starts working",
+        "note": "Not drift, a pattern. She has been putting up with it way too long, which means the sabotage has a track record."
+      },
+      {
+        "ref": "r1",
+        "tier": "real",
+        "category": "identity",
+        "label": "If he accuses himself first nobody else gets to land it",
+        "note": "The toast is armor. Naming himself scumbag in public means every future accusation arrives as old news he already made into a hook."
+      },
+      {
+        "ref": "r2",
+        "tier": "real",
+        "category": "love",
+        "label": "He'd rather be the villain who warned her than explain the emails",
+        "note": "Run away is a confession he can perform without giving details. Blanket guilt costs him less than one specific accounting of what he did."
+      },
+      {
+        "ref": "r3",
+        "tier": "real",
+        "category": "earnings",
+        "label": "Intimacy has no scoreboard so he cannot tell if he is winning",
+        "note": "Everywhere else he can measure himself. With her there is nothing to beat, no number going up, and being unmeasured feels indistinguishable from being nothing."
+      }
+    ],
+    "links": [
+      {
+        "source": "s1",
+        "target": "r1",
+        "kind": "refines",
+        "rationale": "Moves the toast from confession to strategy: he is not admitting he is a douchebag, he is claiming the title before anyone can pin it on him"
+      },
+      {
+        "source": "s2",
+        "target": "r2",
+        "kind": "refines",
+        "rationale": "Names what the instruction to leave is actually protecting, not her, but him from having to say out loud what she already found"
+      },
+      {
+        "source": "s3",
+        "target": "r3",
+        "kind": "refines",
+        "rationale": "Cannot take the intimacy reads as a defect of the heart; underneath it is a man who only knows he exists when something is being scored, which puts it in EARNINGS rather than FITNESS"
+      }
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "title": "Jesus Walks — Kanye West",
+  "bubbles": {
+    "identity": {
+      "real": [
+        {
+          "label": "If grace reaches the dealers it has to reach me too",
+          "note": "The list is an argument he's making on his own behalf. Naming everyone else's sin first is how he gets his own name onto the roll without saying it."
+        }
+      ]
+    },
+    "fitness": {
+      "real": [
+        {
+          "label": "I call on him in the minute before I do it anyway",
+          "note": "The prayer isn't a hinge, it's a companion to the choice. He wants to be accompanied through the wrong turn, not stopped at it."
+        }
+      ]
+    },
+    "earnings": {
+      "real": [
+        {
+          "label": "Nobody else is rapping about Jesus and that gap is mine",
+          "note": "The thing the radio won't play is also the thing no competitor is doing. Conviction and market positioning arriving in the same bar."
+        }
+      ]
+    }
+  },
+  "links": [],
+  "model": "claude-opus-5",
+  "ranAt": "2026-08-18T00:53:16.429Z",
+  "wallClockMs": 32973,
+  "usage": {
+    "input_tokens": 1622,
+    "output_tokens": 2223
+  },
+  "rejections": [],
+  "raw": {
+    "bubbles": [
+      {
+        "ref": "r1",
+        "tier": "real",
+        "category": "identity",
+        "label": "If grace reaches the dealers it has to reach me too",
+        "note": "The list is an argument he's making on his own behalf. Naming everyone else's sin first is how he gets his own name onto the roll without saying it."
+      },
+      {
+        "ref": "r2",
+        "tier": "real",
+        "category": "earnings",
+        "label": "Nobody else is rapping about Jesus and that gap is mine",
+        "note": "The thing the radio won't play is also the thing no competitor is doing. Conviction and market positioning arriving in the same bar."
+      },
+      {
+        "ref": "r3",
+        "tier": "real",
+        "category": "fitness",
+        "label": "I call on him in the minute before I do it anyway",
+        "note": "The prayer isn't a hinge, it's a companion to the choice. He wants to be accompanied through the wrong turn, not stopped at it."
+      }
+    ],
+    "links": []
+  }
+}

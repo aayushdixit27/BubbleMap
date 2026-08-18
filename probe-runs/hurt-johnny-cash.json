@@ -1,0 +1,177 @@
+{
+  "title": "Hurt — Johnny Cash",
+  "bubbles": {
+    "love": {
+      "safe": [
+        {
+          "label": "Everyone I held onto ended up going away",
+          "note": "The stated grief of the song: friends, lovers, a whole generation, gone before me."
+        }
+      ]
+    },
+    "identity": {
+      "safe": [
+        {
+          "label": "I look at what I became and see a stranger",
+          "note": "The man in the frame, the voice on the record, the face in the mirror — none of them line up."
+        },
+        {
+          "label": "Given the chance to start over I would keep myself",
+          "note": "The one hopeful clause in the song, offered as a conditional that will not be granted."
+        }
+      ]
+    },
+    "fitness": {
+      "safe": [
+        {
+          "label": "Pain is the last feeling that still reaches me",
+          "note": "Sensation as proof of life. The body has gone quiet everywhere else."
+        }
+      ],
+      "real": [
+        {
+          "label": "They did not leave me, I picked the drug over each of them",
+          "note": "Reframes the loss as a series of choices he made at specific moments, not weather that happened to him."
+        },
+        {
+          "label": "I go looking for the hurt because numbness frightens me worse",
+          "note": "The needle stopped working years ago; what is left is pressing on old damage to confirm he is still in the room."
+        }
+      ]
+    },
+    "earnings": {
+      "safe": [
+        {
+          "label": "Everything I built turned out to be an empire of dirt",
+          "note": "A lifetime of work, and the estimate of its worth arrives late and low."
+        }
+      ],
+      "real": [
+        {
+          "label": "The legend kept growing while the man behind it quit showing up",
+          "note": "People still stand for the songs, and he knows which years he was too far gone to have earned them."
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "kind": "refines",
+      "source": "Everyone I held onto ended up going away",
+      "target": "They did not leave me, I picked the drug over each of them",
+      "rationale": "The safe version has people vanishing on their own; the real version puts him at the door choosing. It moves from LOVE to FITNESS because the departures were consequences of what he was doing to his own body."
+    },
+    {
+      "kind": "refines",
+      "source": "Pain is the last feeling that still reaches me",
+      "target": "I go looking for the hurt because numbness frightens me worse",
+      "rationale": "Pain is not just what still reaches him, it is what he actively seeks out, and the reason is fear of feeling nothing rather than devotion to feeling something."
+    },
+    {
+      "kind": "refines",
+      "source": "Everything I built turned out to be an empire of dirt",
+      "target": "The legend kept growing while the man behind it quit showing up",
+      "rationale": "Names which part of the empire is dirt: not the work itself but the gap between the reputation and the years he was absent from it."
+    },
+    {
+      "kind": "assumes",
+      "source": "Given the chance to start over I would keep myself",
+      "target": "The legend kept growing while the man behind it quit showing up",
+      "rationale": "Wanting to keep himself only means anything if there is a self worth keeping underneath the reputation — which is exactly what r3 puts in doubt."
+    }
+  ],
+  "model": "claude-opus-5",
+  "ranAt": "2026-08-18T00:52:44.080Z",
+  "wallClockMs": 31846,
+  "usage": {
+    "input_tokens": 1621,
+    "output_tokens": 2150
+  },
+  "rejections": [],
+  "raw": {
+    "bubbles": [
+      {
+        "ref": "s1",
+        "tier": "safe",
+        "category": "love",
+        "label": "Everyone I held onto ended up going away",
+        "note": "The stated grief of the song: friends, lovers, a whole generation, gone before me."
+      },
+      {
+        "ref": "s2",
+        "tier": "safe",
+        "category": "identity",
+        "label": "I look at what I became and see a stranger",
+        "note": "The man in the frame, the voice on the record, the face in the mirror — none of them line up."
+      },
+      {
+        "ref": "s3",
+        "tier": "safe",
+        "category": "fitness",
+        "label": "Pain is the last feeling that still reaches me",
+        "note": "Sensation as proof of life. The body has gone quiet everywhere else."
+      },
+      {
+        "ref": "s4",
+        "tier": "safe",
+        "category": "earnings",
+        "label": "Everything I built turned out to be an empire of dirt",
+        "note": "A lifetime of work, and the estimate of its worth arrives late and low."
+      },
+      {
+        "ref": "s5",
+        "tier": "safe",
+        "category": "identity",
+        "label": "Given the chance to start over I would keep myself",
+        "note": "The one hopeful clause in the song, offered as a conditional that will not be granted."
+      },
+      {
+        "ref": "r1",
+        "tier": "real",
+        "category": "fitness",
+        "label": "They did not leave me, I picked the drug over each of them",
+        "note": "Reframes the loss as a series of choices he made at specific moments, not weather that happened to him."
+      },
+      {
+        "ref": "r2",
+        "tier": "real",
+        "category": "fitness",
+        "label": "I go looking for the hurt because numbness frightens me worse",
+        "note": "The needle stopped working years ago; what is left is pressing on old damage to confirm he is still in the room."
+      },
+      {
+        "ref": "r3",
+        "tier": "real",
+        "category": "earnings",
+        "label": "The legend kept growing while the man behind it quit showing up",
+        "note": "People still stand for the songs, and he knows which years he was too far gone to have earned them."
+      }
+    ],
+    "links": [
+      {
+        "source": "s1",
+        "target": "r1",
+        "kind": "refines",
+        "rationale": "The safe version has people vanishing on their own; the real version puts him at the door choosing. It moves from LOVE to FITNESS because the departures were consequences of what he was doing to his own body."
+      },
+      {
+        "source": "s3",
+        "target": "r2",
+        "kind": "refines",
+        "rationale": "Pain is not just what still reaches him, it is what he actively seeks out, and the reason is fear of feeling nothing rather than devotion to feeling something."
+      },
+      {
+        "source": "s4",
+        "target": "r3",
+        "kind": "refines",
+        "rationale": "Names which part of the empire is dirt: not the work itself but the gap between the reputation and the years he was absent from it."
+      },
+      {
+        "source": "s5",
+        "target": "r3",
+        "kind": "assumes",
+        "rationale": "Wanting to keep himself only means anything if there is a self worth keeping underneath the reputation — which is exactly what r3 puts in doubt."
+      }
+    ]
+  }
+}

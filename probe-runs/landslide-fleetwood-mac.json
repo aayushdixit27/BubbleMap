@@ -1,0 +1,119 @@
+{
+  "title": "Landslide — Fleetwood Mac",
+  "bubbles": {
+    "love": {
+      "safe": [
+        {
+          "label": "I built my whole life around one person",
+          "note": "I saw my reflection in the snow-covered hills — the mirror is him, not me."
+        },
+        {
+          "label": "I would give up this love if it is holding me still",
+          "note": "Take my love, take it down. Offered as generosity, phrased as surrender."
+        }
+      ]
+    },
+    "identity": {
+      "safe": [
+        {
+          "label": "Even the children get older, and so do I",
+          "note": "Aging admitted sideways, by pointing at someone else first."
+        }
+      ]
+    },
+    "fitness": {
+      "safe": [
+        {
+          "label": "Time keeps moving and I am not sure I can keep up",
+          "note": "The seasons-of-my-life question. Stated as weather, felt as body and nerve."
+        }
+      ]
+    },
+    "earnings": {
+      "safe": [
+        {
+          "label": "I climbed a mountain and turned around before the top",
+          "note": "The retreat is narrated as wisdom. It was a decision made while scared."
+        }
+      ],
+      "real": [
+        {
+          "label": "I am twenty-seven with no degree and one record nobody bought",
+          "note": "The mountain is not a metaphor this week. It is whether to enroll in school by fall or give it one more year."
+        }
+      ]
+    }
+  },
+  "links": [],
+  "model": "claude-opus-5",
+  "ranAt": "2026-08-18T00:52:05.352Z",
+  "wallClockMs": 38212,
+  "usage": {
+    "input_tokens": 1623,
+    "output_tokens": 2877
+  },
+  "rejections": [
+    {
+      "reason": "bubble missing required field",
+      "item": {
+        "ref": "r2",
+        "tier": "earnings",
+        "label": "placeholder",
+        "note": ""
+      }
+    }
+  ],
+  "raw": {
+    "bubbles": [
+      {
+        "ref": "s1",
+        "tier": "safe",
+        "category": "fitness",
+        "label": "Time keeps moving and I am not sure I can keep up",
+        "note": "The seasons-of-my-life question. Stated as weather, felt as body and nerve."
+      },
+      {
+        "ref": "s2",
+        "tier": "safe",
+        "category": "love",
+        "label": "I built my whole life around one person",
+        "note": "I saw my reflection in the snow-covered hills — the mirror is him, not me."
+      },
+      {
+        "ref": "s3",
+        "tier": "safe",
+        "category": "earnings",
+        "label": "I climbed a mountain and turned around before the top",
+        "note": "The retreat is narrated as wisdom. It was a decision made while scared."
+      },
+      {
+        "ref": "s4",
+        "tier": "safe",
+        "category": "identity",
+        "label": "Even the children get older, and so do I",
+        "note": "Aging admitted sideways, by pointing at someone else first."
+      },
+      {
+        "ref": "s5",
+        "tier": "safe",
+        "category": "love",
+        "label": "I would give up this love if it is holding me still",
+        "note": "Take my love, take it down. Offered as generosity, phrased as surrender."
+      },
+      {
+        "ref": "r1",
+        "tier": "real",
+        "category": "earnings",
+        "label": "I am twenty-seven with no degree and one record nobody bought",
+        "note": "The mountain is not a metaphor this week. It is whether to enroll in school by fall or give it one more year."
+      },
+      {
+        "ref": "r2",
+        "tier": "earnings",
+        "label": "placeholder",
+        "note": ""
+      }
+    ],
+    "links": []
+  }
+}
