@@ -3,3 +3,5 @@ dist/
 .env
 maps/
 .obsidian/
+.DS_Store
+.claude/
