@@ -104,6 +104,32 @@ question when it was a display question, and should have asked what 27 looks lik
 a four-quadrant target *before* running anything. Bubble counts are a design
 constraint, not an outcome to be observed. *18 Aug.*
 
+**D20 — Supersedes D13. The workspace is a grid; the target becomes a signature.**
+
+Seeing Phase 1 rendered showed a structural fault that reading the JSON did not:
+**the target inverts space against content.** RAW sits at the centre, the smallest
+region, and RAW is where the most content lives and all the reading happens. Standard
+practice for radial layouts is the reverse — deeper levels get *more* area. Ours
+gives them less. No packing algorithm fixes a region that is too small by design.
+
+**Workspace: threads as rows, tiers as columns.** Overlap becomes impossible rather
+than managed. The RAW column takes the most width. Reading across a row traces one
+descent; reading down the RAW column shows every raw thing at once. Cross-category
+renders as a badge on the cell (`LOVE → IDENTITY`), not a line to trace.
+
+**Signature: the target, demoted.** Dots only, no text, showing where the accepted RAW
+bubbles landed. It is bad at prose and good at being glanced at, so it does only that.
+Twenty signatures stacked is the corpus finding — the real v2 product. `geometry.ts`
+and its 18 tests survive intact; they position dots instead of nodes.
+
+**Degree-of-interest on top.** Only the selected row expands to full notes; other rows
+show labels. Scale detail to attention rather than shrinking everything uniformly.
+Ref: Card & Nation, *Degree-of-Interest Trees*, AVI 2002.
+
+*Honest note:* D13 was decided from the probe JSON without seeing it rendered. The
+screenshot was evidence the JSON was not. Render before committing to a layout.
+*18 Aug.*
+
 ---
 
 ## Open — architect owes an answer
@@ -146,3 +172,10 @@ Rejected: full notes always visible at quadrant zoom (a pre-filter wedge of 6–
 bubbles becomes a wall of overlapping text), and a fixed reading rail (pulls the eye
 off the map; that surface arrives anyway as Phase 3's Inspector and doesn't conflict).
 Chosen by the architect from the three mocked options. *18 Aug.*
+
+**D21 — D19 is absorbed by D20's degree-of-interest rule.** Expansion happens at
+the row (whole thread reads together), not per bubble. Executed in the grid
+rebuild: selected row shows full notes in all three tier columns; other rows show
+labels only. React Flow and the canvas components are deleted — a CSS grid and a
+static SVG signature need neither (supersedes D1's library choice along with D13).
+`geometry.ts` + its 18 tests survive untouched, positioning signature dots. *18 Aug.*

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Canvas } from './canvas/Canvas';
+import { ThreadGrid } from './grid/ThreadGrid';
+import { Signature } from './signature/Signature';
 import { useMapStore } from './store';
 
 export default function App() {
-  const title = useMapStore((s) => s.doc.title);
+  const doc = useMapStore((s) => s.doc);
   const [health, setHealth] = useState('server: …');
 
   useEffect(() => {
@@ -18,10 +19,13 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <span className="title">{title}</span>
-        <span className="health">{health}</span>
+        <div className="app-header-text">
+          <span className="title">{doc.title}</span>
+          <span className="health">{health}</span>
+        </div>
+        <Signature doc={doc} />
       </header>
-      <Canvas />
+      <ThreadGrid />
     </div>
   );
 }

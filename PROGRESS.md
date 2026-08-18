@@ -12,27 +12,28 @@ spec. Fable updates it at every phase boundary, before committing.
 
 ## Where we are
 
-**Phase 1 — walking skeleton built and verified in Chrome. Phase 0 closed
-(gate passed, D11–D17).**
+**Phase 1 — rebuilt per D20 as the thread grid, verified in Chrome. Phase 0
+closed (gate passed, D11–D17).**
 
 What runs: `npm run dev` → Express on `127.0.0.1:8787` (`/api/health` green,
 reports the model) + Vite on `127.0.0.1:5173`, proxied. The Phase 0 chain
-output (`probe-runs/mr-brightside.json`) renders on the target — right rings,
-right quadrants, category hue × tier intensity, basic edge styling by kind.
-Pan/zoom work; below 0.55 zoom bubbles drop note previews (§6.4). Dragging a
-bubble across a ring boundary recolors it (verified visually).
-`src/canvas/geometry.ts` has 18 passing unit tests (regionForPoint /
-assignRegion / toCenter round-trip / placeInRegion).
+output (`probe-runs/mr-brightside.json`) renders as the D20 grid: threads as
+rows (derived from the doc's links in `src/grid/threads.ts` — refines >
+assumes > evidence parenting, contradicts never parents), tiers as columns
+with RAW widest and flowing multi-column. Cards carry category hue on the
+left border, tier intensity, labels always whole. Cross-category descent is
+a gradient badge on the card (`LOVE → IDENTITY`), not a line. DOI: clicking
+a row expands every card in it to full notes; other rows stay labels-only.
+The target survives as a 96px dots-only signature in the header (D20),
+positioned by the same geometry. Overlap is structurally impossible.
 
-Reading surface (D14 → D19): label + first sentence by default; the selected
-bubble expands in place to its full note. Phase 0 carry-overs landed first:
-relink cut (D15), interrogate capped via schema `maxItems` (D16), streaming
-callback + non-focus context trim (D17 #1–2). D17 #3 (parallel descends) and
-D18 (spine-not-bush verb counts) apply at Phase 2 with the verbs.
+React Flow and the canvas components are **deleted** (D21) — grid + static
+SVG need neither. `src/canvas/geometry.ts` + 18 passing tests untouched.
 
-Known honest state: the canvas renders the **unfiltered firehose** (27 RAW),
-so love/identity RAW wedges overlap — D12/D18 say that resolves at Phase 2
-via accept/reject + reduced verb counts, not by resizing geometry.
+Carry-overs done earlier: relink cut (D15), interrogate schema-capped (D16),
+streaming + context trim (D17 #1–2). D17 #3 (parallel descends) and D18
+(spine-not-bush verb counts, ~9-bubble maps) apply at Phase 2 with the verbs.
+The grid currently shows the unfiltered firehose; Phase 2's keep-1-of-3 thins it.
 
 ### The gate — one question
 
@@ -131,7 +132,7 @@ Then run PRODUCT §6.5's five-question phase gate in writing before opening Phas
 |---|---|---|---|
 | 0 — probe v1 | superseded | `a106b70`, `6dda483` | seed-only, 6 songs, title-only. Category spread cleared; RAW untestable by construction |
 | 0 — probe v2 | **closed — gate passed** | `d2a95d1` | RAW implicates the narrator, lyrics grounding worked, no fabrications (architect read). Decisions D11–D18 |
-| 1 — walking skeleton | **built** | see "Phase 1" commit | geometry + 18 tests, target canvas, drag-to-reassign recolors, D19 reading surface. Renders pre-filter firehose; thins at Phase 2 |
+| 1 — walking skeleton | **built (D20 grid)** | `474051d` + D20 rebuild commit | geometry + 18 tests kept; target canvas replaced by thread grid + signature (D20/D21); React Flow deleted. Renders pre-filter firehose; thins at Phase 2 |
 | 2 — the loop | not started | — | first usable version |
 | 3 — authoring | not started | — | |
 | 4 — depth | not started | — | |
