@@ -131,11 +131,32 @@ html, body, #root {
   color: var(--ink);
 }
 
-/* Ghosts (§10): proposals read at reduced ink until kept. No chrome. */
-.entry.ghost { opacity: 0.62; }
+/* Ghosts (D24, D22): a proposal is set in lighter type with a dashed
+   hairline hanging in the gutter — reduced ink, no glow, no colour shift.
+   The negative margin keeps ghost text aligned with committed entries. */
+.entry.ghost {
+  opacity: 0.62;
+  border-left: 1px dashed var(--ink-dim);
+  padding-left: 10px;
+  margin-left: -11px;
+}
 .entry-state { color: var(--ink-dim); font-variant: normal; letter-spacing: 0; }
 
-.entry-actions { display: flex; gap: 14px; margin-top: 6px; }
+/* Keep / kill surfaces on hover, focus, or row selection — never
+   permanently. margin-top is unconditional so nothing reflows on reveal. */
+.entry-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+  opacity: 0;
+  pointer-events: none;
+}
+.entry:hover .entry-actions,
+.thread-row.selected .entry-actions,
+.entry-actions:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
 .text-action {
   font-family: var(--sans);
   font-size: 12px;

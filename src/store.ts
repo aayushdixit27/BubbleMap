@@ -151,6 +151,14 @@ export const useMapStore = create<MapState>((set, get) => {
     links: doc.links.filter((l) => !ids.has(l.source) && !ids.has(l.target)),
   });
 
+  // D24: unpicked candidates leave the view but are parked in doc.rejected —
+  // written to the file as their own signal, never rendered again. Killed
+  // seed ghosts do NOT come through here; they just vanish (D24 step 2).
+  const parkInRejected = (doc: BubbleMapDoc, ids: Set<string>): BubbleMapDoc => ({
+    ...removeBubbles(doc, ids),
+    rejected: [...(doc.rejected ?? []), ...doc.bubbles.filter((b) => ids.has(b.id))],
+  });
+
   // Flip a bubble to committed, place it, and commit links whose endpoints
   // are now both committed.
   const commitInto = (doc: BubbleMapDoc, id: string): BubbleMapDoc => {
@@ -297,9 +305,9 @@ export const useMapStore = create<MapState>((set, get) => {
       const groups = { ...get().groups };
       const groupEntry = Object.entries(groups).find(([, ids]) => ids.includes(id));
       if (groupEntry) {
-        // D18: keep one, the other candidates are discarded — not parked.
+        // D24 (amends D18): keep one, park the unpicked siblings.
         const [runId, ids] = groupEntry;
-        next = removeBubbles(next, new Set(ids.filter((otherId) => otherId !== id)));
+        next = parkInRejected(next, new Set(ids.filter((otherId) => otherId !== id)));
         delete groups[runId];
       }
       next = commitInto(next, id);
@@ -310,12 +318,16 @@ export const useMapStore = create<MapState>((set, get) => {
     reject: (id) => {
       const doc = get().doc;
       if (!doc || isProvisional(id)) return;
+      // A killed grouped candidate is an unpicked RAW reading — parked
+      // (D24). A killed seed ghost vanishes (D24 step 2).
+      const grouped = Object.values(get().groups).some((ids) => ids.includes(id));
       const groups = Object.fromEntries(
         Object.entries(get().groups)
           .map(([runId, ids]) => [runId, ids.filter((i) => i !== id)] as const)
           .filter(([, ids]) => ids.length > 0),
       );
-      set({ doc: removeBubbles(doc, new Set([id])), groups });
+      const ids = new Set([id]);
+      set({ doc: grouped ? parkInRejected(doc, ids) : removeBubbles(doc, ids), groups });
       scheduleSave();
     },
 
@@ -338,10 +350,14 @@ export const useMapStore = create<MapState>((set, get) => {
     rejectAllProposed: () => {
       const doc = get().doc;
       if (!doc) return;
-      const ids = new Set(
-        doc.bubbles.filter((b) => b.status === 'proposed' && !isProvisional(b.id)).map((b) => b.id),
+      const grouped = new Set(Object.values(get().groups).flat());
+      const proposed = doc.bubbles.filter((b) => b.status === 'proposed' && !isProvisional(b.id));
+      // Same split as reject(): candidates park (D24), seed ghosts vanish.
+      const next = removeBubbles(
+        parkInRejected(doc, new Set(proposed.filter((b) => grouped.has(b.id)).map((b) => b.id))),
+        new Set(proposed.filter((b) => !grouped.has(b.id)).map((b) => b.id)),
       );
-      set({ doc: removeBubbles(doc, ids), groups: {} });
+      set({ doc: next, groups: {} });
       scheduleSave();
     },
   };

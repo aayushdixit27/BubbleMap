@@ -3,9 +3,11 @@
 // small-caps marginalia above each ENTRY (cross-category reads
 // "Love → Identity"). DOI: only the selected row expands to full notes.
 //
-// Phase 2: AI proposals render as ghosts. Streaming (provisional) ghosts
-// show "arriving…"; resolved ghosts carry keep / discard. Keeping one RAW
-// candidate from a descend discards its siblings (D18). Labels never clip.
+// Phase 2: AI proposals render as ghosts — dashed hairline in the margin,
+// reduced ink, no glow, no colour shift (D22). Streaming (provisional)
+// ghosts show "arriving…"; keep / kill surfaces on hover or row selection,
+// never permanently. Keeping one RAW candidate parks its siblings in
+// doc.rejected (D24). Labels never clip.
 
 import { useMemo, useState } from 'react';
 import { useMapStore } from '../store';
@@ -99,7 +101,7 @@ export function ThreadGrid() {
         return (
           <div
             key={thread.rootId}
-            className="thread-row"
+            className={`thread-row${expanded ? ' selected' : ''}`}
             onClick={() => setSelected(expanded ? null : thread.rootId)}
           >
             {COLUMNS.map((tier) => (
