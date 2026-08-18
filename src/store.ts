@@ -1,11 +1,11 @@
-// Client state + the Phase 2 pipeline (D17/D18, strategy_that_worked.md):
-//   seed streams → ghosts render as they arrive → on seed completion ALL
-//   descends dispatch in parallel (never waiting for the human) → RAW
-//   candidate ghosts appear per descend. interrogate is on-demand only.
+// Client state + the Phase 2 loop, serial (dogfood-first):
+//   create → seed streams → ghosts render → human keeps/kills each →
+//   descend is human-triggered per kept REAL entry → 3 RAW candidate
+//   ghosts → human picks one, siblings park in rejected[] (D24).
 //
-// Latency is solved by removing idle time, never by thinking less: same
-// model, same reasoning, same candidate counts — serial depth is 2 by
-// construction (seed, then everything else).
+// The parallel pipeline (D17 #3: all descends dispatched on seed
+// completion) is deliberately deferred until the loop has been used on
+// real songs — a slow correct loop beats a fast unused one.
 //
 // AI never mutates the map: proposals arrive status 'proposed' and only
 // accept() commits. Saving strips proposals server-side.
@@ -142,9 +142,6 @@ export const useMapStore = create<MapState>((set, get) => {
     });
   };
 
-  const hasCompleteBubble = (snapshot: Snapshot) =>
-    (snapshot.bubbles ?? []).some((b) => b.ref && b.label && b.tier && b.category && b.sourceLine);
-
   const removeBubbles = (doc: BubbleMapDoc, ids: Set<string>): BubbleMapDoc => ({
     ...doc,
     bubbles: doc.bubbles.filter((b) => !ids.has(b.id)),
@@ -211,67 +208,18 @@ export const useMapStore = create<MapState>((set, get) => {
       void get().loadMaps();
     },
 
-    // The pipeline. Serial depth 2: seed, then all descends in parallel.
+    // Create, then seed — serial. Descend is human-triggered per kept
+    // REAL entry; nothing is dispatched speculatively this side of the
+    // dogfood milestone.
     createAndSeed: async (title, source) => {
-      const t0 = performance.now();
-      const seconds = (ms: number | null) => (ms === null ? '—' : `${(ms / 1000).toFixed(1)}s`);
-      let ttfb: number | null = null;
-      let firstRaw: number | null = null;
-
       try {
         const doc = await apiCreateMap(title, source);
         set({ doc, groups: {}, error: null, metrics: null, status: 'seeding…', running: 1 });
-
-        const seedRun = 'seed';
-        const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) => {
-          if (ttfb === null && hasCompleteBubble(snapshot)) ttfb = performance.now() - t0;
-          applySnapshot(seedRun, snapshot);
-        });
-        finalizeRun(seedRun, seedProposal, 'seed');
-        const seedDone = performance.now() - t0;
-
-        // Dispatch every descend NOW, in parallel — the human reads
-        // SAFE/REAL while these think (D17 #3).
-        const reals = seedProposal.bubbles.filter((b) => b.tier === 'real');
-        set({ status: `descending ${reals.length} REAL bubbles…`, running: reals.length });
-        const results = await Promise.allSettled(
-          reals.map(async (real) => {
-            const runId = `descend:${real.id}`;
-            const proposal = await streamVerb('descend', get().doc!, real.id, (snapshot) => {
-              if (firstRaw === null && hasCompleteBubble(snapshot)) firstRaw = performance.now() - t0;
-              applySnapshot(runId, snapshot);
-            });
-            finalizeRun(runId, proposal, 'descend');
-            set((s) => ({ running: s.running - 1 }));
-          }),
+        const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) =>
+          applySnapshot('seed', snapshot),
         );
-        const allDone = performance.now() - t0;
-
-        const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-        // The three input metrics (strategy_that_worked.md §3). Blocked is
-        // worst-case: assumes zero reading time between seed and first RAW.
-        const blocked = (ttfb ?? seedDone) + Math.max(0, (firstRaw ?? allDone) - seedDone);
-        const metrics =
-          `first bubble ${seconds(ttfb)} · serial depth 2 · ` +
-          `blocked ≤ ${seconds(blocked)} (worst case) · ` +
-          `seed done ${seconds(seedDone)} · first RAW ${seconds(firstRaw)} · all done ${seconds(allDone)}`;
-        console.info('[metrics]', {
-          time_to_first_bubble_ms: ttfb,
-          serial_round_trip_depth: 2,
-          blocked_ui_worst_case_ms: blocked,
-          seed_done_ms: seedDone,
-          first_raw_ms: firstRaw,
-          all_done_ms: allDone,
-        });
-        set({
-          status: '',
-          running: 0,
-          metrics,
-          error: failures.length
-            ? `${failures.length} descend call(s) failed: ${failures[0].reason instanceof Error ? failures[0].reason.message : String(failures[0].reason)}`
-            : null,
-        });
-        scheduleSave();
+        finalizeRun('seed', seedProposal, 'seed');
+        set({ status: '', running: 0 });
       } catch (e) {
         set({ status: '', running: 0, error: e instanceof Error ? e.message : String(e) });
       }

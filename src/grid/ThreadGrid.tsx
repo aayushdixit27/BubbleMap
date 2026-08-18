@@ -67,7 +67,7 @@ function Entry({
           </button>
         </div>
       )}
-      {!proposed && bubble.tier === 'real' && expanded && (
+      {!proposed && bubble.tier === 'real' && (
         <div className="entry-actions" onClick={(e) => e.stopPropagation()}>
           <button className="text-action" onClick={() => void runDescend(bubble.id)}>
             descend
