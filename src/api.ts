@@ -46,6 +46,9 @@ export const saveMap = (doc: BubbleMapDoc): Promise<{ ok: boolean; updatedAt: st
     method: 'PUT',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(doc),
+    // Survive a reload issued right after the judgment that triggered
+    // this save — without keepalive the browser aborts the in-flight PUT.
+    keepalive: true,
   }).then(asJson<{ ok: boolean; updatedAt: string }>);
 
 export async function streamVerb(

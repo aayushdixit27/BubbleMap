@@ -6,7 +6,8 @@ import { mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFile
 import { join } from 'node:path';
 import type { BubbleMapDoc } from '../src/types';
 
-const MAPS_DIR = 'maps';
+// Overridable so tests round-trip against a scratch dir, never real maps/.
+const MAPS_DIR = process.env.BUBBLEMAP_MAPS_DIR ?? 'maps';
 
 export interface MapMeta {
   id: string;

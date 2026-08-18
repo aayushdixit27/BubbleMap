@@ -52,21 +52,41 @@ interface MapState {
   rejectAllProposed: () => void;
 }
 
-let saveTimer: ReturnType<typeof setTimeout> | null = null;
+// Autosave state. This was an 800ms trailing debounce that RESET on every
+// accept/reject — judging a whole seed in quick clicks pushed the timer
+// back each time, so nothing was ever written, and a reload lost every
+// judgment ("the whole map"). Saves are now immediate: serialized (one
+// PUT in flight) and coalescing (state changes during a save trigger one
+// more with the latest doc). Writes are a few KB to localhost — there is
+// nothing worth debouncing.
+let saving = false;
+let dirty = false;
 
 export const useMapStore = create<MapState>((set, get) => {
   const scheduleSave = () => {
-    if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(async () => {
-      const doc = get().doc;
-      if (!doc) return;
-      try {
-        const { updatedAt } = await saveMap(doc);
-        set((s) => (s.doc?.id === doc.id ? { doc: { ...s.doc!, updatedAt } } : {}));
-      } catch (e) {
-        set({ error: `autosave failed: ${e instanceof Error ? e.message : String(e)}` });
+    dirty = true;
+    void flushSave();
+  };
+
+  const flushSave = async () => {
+    if (saving) return;
+    saving = true;
+    try {
+      while (dirty) {
+        dirty = false;
+        const doc = get().doc;
+        if (!doc) break;
+        try {
+          const { updatedAt } = await saveMap(doc);
+          set((s) => (s.doc?.id === doc.id ? { doc: { ...s.doc!, updatedAt } } : {}));
+        } catch (e) {
+          set({ error: `autosave failed: ${e instanceof Error ? e.message : String(e)}` });
+          break;
+        }
       }
-    }, 800); // §10
+    } finally {
+      saving = false;
+    }
   };
 
   // Rebuild one run's provisional ghosts from the latest streamed snapshot.
