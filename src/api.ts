@@ -9,7 +9,11 @@ export interface MapMeta {
   createdAt: string;
   updatedAt: string;
   descents: number; // kept descents in the saved map (one committed RAW each)
+  rawLine?: string; // most recently committed RAW label — the sharpest find
 }
+
+export const deleteMap = (id: string): Promise<{ ok: boolean }> =>
+  fetch(`/api/maps/${id}`, { method: 'DELETE' }).then(asJson<{ ok: boolean }>);
 
 export interface Snapshot {
   bubbles?: { ref?: string; tier?: string; category?: string; label?: string; sourceLine?: string; note?: string }[];

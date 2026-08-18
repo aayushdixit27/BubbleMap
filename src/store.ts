@@ -13,6 +13,7 @@
 import { create } from 'zustand';
 import {
   createMap as apiCreateMap,
+  deleteMap as apiDeleteMap,
   fetchMap,
   fetchMaps,
   saveMap,
@@ -52,6 +53,7 @@ interface MapState {
 
   loadMaps: () => Promise<void>;
   openMap: (id: string) => Promise<void>;
+  removeMap: (id: string) => Promise<void>;
   openProbeRun: () => void;
   closeMap: () => void;
   createAndSeed: (title: string, source: string) => Promise<void>;
@@ -226,6 +228,16 @@ export const useMapStore = create<MapState>((set, get) => {
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
+    },
+
+    removeMap: async (id) => {
+      try {
+        await apiDeleteMap(id);
+        set({ error: null });
+      } catch (e) {
+        set({ error: e instanceof Error ? e.message : String(e) });
+      }
+      await get().loadMaps();
     },
 
     // The Phase 0 chain output as design-test data — never saved, never

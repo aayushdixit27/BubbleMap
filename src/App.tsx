@@ -11,30 +11,62 @@ function Library() {
   const maps = useMapStore((s) => s.maps);
   const createAndSeed = useMapStore((s) => s.createAndSeed);
   const openMap = useMapStore((s) => s.openMap);
+  const removeMap = useMapStore((s) => s.removeMap);
   const openProbeRun = useMapStore((s) => s.openProbeRun);
+  const error = useMapStore((s) => s.error);
   const [adding, setAdding] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [source, setSource] = useState('');
 
+  // Date AND time — two takes on the same song made minutes apart must
+  // read as different rows.
   const madeOn = (iso: string) =>
-    new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    new Date(iso).toLocaleString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
   const descents = (n: number) =>
     n === 0 ? 'no descents yet' : n === 1 ? '1 descent' : `${n} descents`;
 
   return (
     <div className="start">
-      <h1 className="start-title">BubbleMap</h1>
-
       <div className="library">
         {maps.map((m) => (
-          <button key={m.id} className="library-row" onClick={() => void openMap(m.id)}>
-            <span className="library-title">{m.title}</span>
-            <span className="library-meta">
-              {madeOn(m.createdAt)} · {descents(m.descents)}
-            </span>
-          </button>
+          <div key={m.id} className="library-row">
+            <button className="library-open" onClick={() => void openMap(m.id)}>
+              <span className="library-title">{m.title}</span>
+              {m.rawLine && <span className="library-raw">{m.rawLine}</span>}
+              <span className="library-meta">
+                {madeOn(m.createdAt)} · {descents(m.descents)}
+              </span>
+            </button>
+            <div className={`library-actions${deleting === m.id ? ' confirming' : ''}`}>
+              {deleting === m.id ? (
+                <>
+                  <span className="library-confirm">delete this song?</span>
+                  <button
+                    className="text-action"
+                    onClick={() => {
+                      setDeleting(null);
+                      void removeMap(m.id);
+                    }}
+                  >
+                    delete
+                  </button>
+                  <button className="text-action" onClick={() => setDeleting(null)}>
+                    keep
+                  </button>
+                </>
+              ) : (
+                <button className="text-action" onClick={() => setDeleting(m.id)}>
+                  delete
+                </button>
+              )}
+            </div>
+          </div>
         ))}
         {maps.length === 0 && <div className="library-empty">No songs yet.</div>}
+        {error && <div className="status status-error">{error}</div>}
       </div>
 
       {adding ? (

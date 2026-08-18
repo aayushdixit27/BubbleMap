@@ -305,20 +305,50 @@ html, body, #root {
 
 .library { display: flex; flex-direction: column; margin-top: 4px; }
 .library-row {
+  position: relative;
+  border-bottom: 1px solid var(--hairline);
+}
+.library-open {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 3px;
+  gap: 4px;
   width: 100%;
   padding: 16px 0;
   background: none;
   border: none;
-  border-bottom: 1px solid var(--hairline);
   cursor: pointer;
   text-align: left;
 }
 .library-row:hover .library-title { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--hairline); }
 .library-title { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+/* The sharpest RAW line — what you found, the reason to come back. */
+.library-raw {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+  overflow-wrap: break-word;
+}
+/* Delete: quiet, hover-revealed, inline confirm — never a native dialog. */
+.library-actions {
+  position: absolute;
+  top: 18px;
+  right: 0;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  opacity: 0;
+  pointer-events: none;
+}
+.library-row:hover .library-actions,
+.library-actions:focus-within,
+.library-actions.confirming {
+  opacity: 1;
+  pointer-events: auto;
+}
+.library-confirm { font-family: var(--sans); font-size: 12px; color: var(--ink-dim); }
 .library-meta {
   font-family: var(--sans);
   font-variant: small-caps;

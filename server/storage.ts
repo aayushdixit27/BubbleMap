@@ -15,6 +15,7 @@ export interface MapMeta {
   createdAt: string;
   updatedAt: string;
   descents: number; // committed RAW bubbles — one per descent (D25/D26)
+  rawLine?: string; // the most recently committed RAW bubble's label — what you found
 }
 
 const slugify = (s: string): string =>
@@ -44,13 +45,18 @@ export function listMaps(): MapMeta[] {
   for (const f of files) {
     try {
       const doc = JSON.parse(readFileSync(join(MAPS_DIR, f), 'utf8')) as BubbleMapDoc;
+      // Files hold committed bubbles only, so raws are the kept descents.
+      const raws = doc.bubbles.filter((b) => b.tier === 'raw');
+      const latest = raws.length
+        ? raws.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
+        : null;
       metas.push({
         id: doc.id,
         title: doc.title,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
-        // Files hold committed bubbles only, so this is the kept-descent count.
-        descents: doc.bubbles.filter((b) => b.tier === 'raw').length,
+        descents: raws.length,
+        ...(latest ? { rawLine: latest.label } : {}),
       });
     } catch (e) {
       console.warn(`[storage] skipping unreadable map file ${f}:`, e);
