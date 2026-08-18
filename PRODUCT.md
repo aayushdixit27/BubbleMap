@@ -40,6 +40,21 @@ failed, no matter how good the canvas looks.
 **Anti-signal:** a beautiful map I never look at again. Ten completed maps that
 taught me nothing beats one gorgeous one.
 
+**The keep-rate, and why it's not a bug.** The model's job is to propose candidates
+I can reject (§5), so a low accept rate is the mechanism working, not failing.
+Expect to keep roughly **half** of what `seed` proposes and **a third** of what
+`interrogate` does — interrogation should overreach by design.
+
+Two failure signals sit either side of that:
+
+- **Keeping ~everything** means I've stopped reading, or the proposals are so
+  hedged there's nothing to reject. The second is worse and looks like the first.
+- **Keeping ~nothing** across several songs means the prompt is off, not that I'm
+  discerning.
+
+Phase 0's output sets the real number. Record it in PROGRESS.md, then treat large
+deviations as a signal about the prompt rather than about my taste that day.
+
 ---
 
 ## 3. Non-goals (load-bearing — these kill scope creep before it starts)
@@ -106,6 +121,29 @@ exists across twenty.
 
 ---
 
+**#5 — I measured what was available instead of what mattered.** *(Observed, 17 Aug,
+not predicted.)* The Phase 0 probe ran `seed` only, which stops at REAL by contract.
+Rather than fix the chain, the architect ran two judgment passes over the SAFE→REAL
+half — the easy jump — and produced a finding at n=4 that was then correctly
+dismissed as noise. Two audits, zero movement on the question the phase exists to
+answer.
+
+> **Mitigation — the stop rule.** Before analysing any output, ask: *does this data
+> answer the gate question, or is it merely the data I have?* If the second, stop
+> and go get the right data. Analysis of the wrong dataset is Overhead that feels
+> like Leverage, because it produces charts.
+>
+> The tell is a second pass over the same material. One read is diligence; a second
+> read of the same twelve items means the first read already told you everything it
+> could, and the honest next step is elsewhere.
+
+This is Doshi's three levels: the audits were **execution-level** work (are we
+measuring correctly?) while the open question was **impact-level** (does the tool do
+the thing?). Under a clock, execution rigour on the wrong artifact is indistinguishable
+from progress. It is not progress.
+
+---
+
 ## 5. Why AI at all (vs. an Excalidraw template)
 
 Worth answering honestly, because "we added AI" is product theater and this is
@@ -150,6 +188,31 @@ tool has failed in exactly the way this section was written to prevent.
 **Opportunity-cost check at every phase boundary:** not *"is this a good use of
 the next session?"* but *"is this the best one?"* The answer is almost always the
 prompt.
+
+---
+
+## 6.5 The phase gate — five questions, answered in writing, every boundary
+
+Frameworks in prose don't prevent rabbit holes. On 17 Aug the architect cited LNO
+in one message and violated it in the next. What prevents it is a checklist someone
+else can audit. Any "no" stops the phase.
+
+1. **Did this phase produce an outcome or an output?** Name the behaviour that
+   changed. "The code runs" and "the tests pass" are outputs. *(Cagan, Torres)*
+2. **Does the data in hand answer the gate question, or is it merely the data I
+   have?** If the second — stop, go get the right data. Analysis of the wrong
+   dataset produces numbers, and numbers feel like findings. *(§4 #5)*
+3. **What did I cut?** A phase that cut nothing had no scope. Name the thing you
+   didn't build and why. *(Rachitsky — non-goals are load-bearing)*
+4. **Pre-mortem the next phase in three lines:** most likely failure, its
+   mitigation, who owns it. Before starting, not after failing. *(Doshi)*
+5. **Is the next phase the best use of the next session, or merely a good one?**
+   The build order is a plan, not a commitment. If something higher-leverage has
+   surfaced, take it. *(Collison via Doshi — opportunity cost over ROI)*
+
+**Stop rule, checkable by anyone:** a second analytical pass over the same material
+means stop. One read is diligence. A second read of the same items means the first
+read already told you everything it could, and the honest next step is elsewhere.
 
 ---
 

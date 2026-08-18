@@ -54,8 +54,36 @@ problems, build errors, and tests.
 4. **Read `git diff --stat` at each boundary.** The one place you *should* be a bottleneck.
 5. **Watch for `0.0.0.0`** in any server diff.
 
+## Context hygiene
+
+Phase boundaries are `/clear` points by construction. What makes clearing cheap:
+
+- **`PROGRESS.md` is the state-reload file.** Fable updates it at every boundary,
+  *before* committing. Read it first, every session.
+- **Root `CLAUDE.md` stays phase-agnostic** and under ~100 lines. Anything true only
+  this week goes in PROGRESS.md; anything true only in one folder goes in that
+  folder's CLAUDE.md, where it costs nothing until you're there.
+- **ARCHITECTURE.md is read by section, not in full.** It's a reference, not a
+  briefing. Loading 28KB of geometry constants into a prompt-tuning session is the
+  clutter that buries the rules that matter.
+- Clear on **task boundaries, not token counts**. Degradation is cliff-shaped, and
+  spent context that resembles current work is the worst kind.
+
+See `reference/THE-AMNESIAC-CONTRACTOR.md`.
+
 ## Reporting back
 
 At each phase boundary, bring the architect: what runs, what you cut, the actual
 Phase 0 outputs or the actual Phase 2 stopwatch time, and anything the spec told
-you to do that turned out wrong. Update PRODUCT.md §9's status table.
+you to do that turned out wrong. **Bring raw output, not summaries** — the question
+is usually whether the words are good, so the words have to survive the trip.
+
+Update PROGRESS.md's phase log and PRODUCT.md §9's status table.
+
+## Reviewing
+
+`reference/COLD-REVIEW.md` is the review skeleton. The section that earns its keep
+is §6 — *does the worked example prove the thesis, or a different one?* Point it at
+Phase 0's output first: does the probe prove **the prompt reaches RAW**, or merely
+that **the model writes fluent prose about songs**? Those look identical on a first
+read and only one of them is the product.

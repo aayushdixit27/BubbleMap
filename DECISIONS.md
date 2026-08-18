@@ -130,6 +130,68 @@ Ref: Card & Nation, *Degree-of-Interest Trees*, AVI 2002.
 screenshot was evidence the JSON was not. Render before committing to a layout.
 *18 Aug.*
 
+**D22 — Editorial treatment. Supersedes ARCHITECTURE §9 entirely.**
+
+The Phase 1 rebuild read as generic AI output, and the tells are documented rather
+than a matter of taste: permanent dark mode (the most common single tell), Tailwind
+indigo, Inter, rounded cards with soft shadows, an even grid of tiles. That is the
+statistical mean of the training set, not a design.
+
+This is a reading tool about lyrics and self-deception. Reference class is liner
+notes and literary magazines, not dashboards.
+
+1. **Tier is typographic, not chrome.** SAFE = 13px grey sans. REAL = 15px darker
+   sans. RAW = 21px serif, near-black, with its note in 14px serif beneath. The
+   descent is a crescendo in type, which deletes the cards, the colored bars, the
+   glow and the tier tokens in one move.
+2. **Paper, not dark.** Ground `#f6f3ec`, ink `#1a1814`.
+3. **Category is marginalia.** Small caps above each cell in muted ink —
+   love `#8c3a52`, identity `#4a4270`, fitness `#3d5c48`, earnings `#7a5c2e`.
+   Cross-category reads `Love → Identity`. No pills, no gradients.
+4. **Hairline rules, never containers.** `#ddd7ca`, 1px. Nothing is a card. Rules
+   separate; whitespace groups.
+5. **Serif carries prose, sans is demoted to labels.** Source Serif 4 or Newsreader.
+   **Not Inter** — it is a named tell.
+
+Every item here removes elements. The chrome removal *is* the design. *18 Aug.*
+
+*Amendment:* marginalia sits above each **entry**, not each cell. A RAW cell holds
+entries from several categories, so per-cell marginalia would destroy the per-entry
+cross-category read — which is the most valuable thing on screen. Raised by the
+implementer, confirmed. *18 Aug.*
+
+**D23 — Every bubble carries a required `sourceLine`, and it is validated.**
+`sourceLine: string` — the verbatim lyric fragment the bubble derives from. Renders in
+the marginalia beside the category. Two jobs:
+
+1. **Reading.** You can see which line produced the reading without hunting for it.
+2. **Fabrication guard.** The server checks `sourceLine` occurs in `doc.source` and
+   rejects the bubble if it does not. This converts ARCHITECTURE §7.3's accepted risk
+   — "a beautifully raw bubble about a lyric that isn't in the song" — from unchecked
+   into mechanically impossible. The Runaway "explain the emails" invention could not
+   have survived this.
+
+Normalise whitespace and case before matching; do not require punctuation to match.
+`kind: 'lyric'` bubbles are exempt (they *are* the line). *18 Aug.*
+
+**D24 — The accept/reject loop, stated plainly. Amends D18.**
+
+1. `seed` streams 3 SAFE + 3 REAL as **ghosts**. Nothing is committed.
+2. Human keeps or kills each. Killed ghosts vanish.
+3. For each kept REAL, `descend` proposes **3 RAW candidates** in that row. Human
+   picks **one**. The other two are removed from view.
+4. `interrogate` on demand for a stalled row; max 3, same pick-one.
+
+~15 proposed, ~9 committed. Step 3 is a choice *between alternatives*, not a review
+queue — that distinction is the product (PRODUCT §5).
+
+**Amends D18:** unpicked candidates are **written to the map JSON but never
+rendered**. D18 said "discarded, not parked" — parking in the *UI* is what creates a
+graveyard, and that still holds. Retaining them in the file costs nothing, keeps the
+map a spine, and across twenty songs the rejection set is its own signal about what
+the human does not find raw. Store under `rejected: Bubble[]`, never loaded into the
+grid. *18 Aug.*
+
 ---
 
 ## Open — architect owes an answer

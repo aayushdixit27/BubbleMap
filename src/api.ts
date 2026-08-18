@@ -1,0 +1,92 @@
+// Client → server calls. AI verbs stream NDJSON; onSnapshot fires with the
+// model's accumulating tool input so bubbles render as they arrive (D17 #1).
+
+import type { Bubble, BubbleMapDoc, Link, LinkKind } from './types';
+
+export interface MapMeta {
+  id: string;
+  title: string;
+  updatedAt: string;
+}
+
+export interface Snapshot {
+  bubbles?: { ref?: string; tier?: string; category?: string; label?: string; sourceLine?: string; note?: string }[];
+  links?: { source?: string; target?: string; kind?: LinkKind; rationale?: string }[];
+}
+
+export interface Proposal {
+  bubbles: Bubble[];
+  links: Link[];
+  rejections: { reason: string; item: unknown }[];
+  usage: { input_tokens: number; output_tokens: number };
+}
+
+async function asJson<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error ?? `${res.status} ${res.statusText}`);
+  }
+  return res.json() as Promise<T>;
+}
+
+export const fetchMaps = (): Promise<MapMeta[]> => fetch('/api/maps').then(asJson<MapMeta[]>);
+
+export const createMap = (title: string, source: string): Promise<BubbleMapDoc> =>
+  fetch('/api/maps', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ title, subject: 'song', source }),
+  }).then(asJson<BubbleMapDoc>);
+
+export const fetchMap = (id: string): Promise<BubbleMapDoc> =>
+  fetch(`/api/maps/${id}`).then(asJson<BubbleMapDoc>);
+
+export const saveMap = (doc: BubbleMapDoc): Promise<{ ok: boolean; updatedAt: string }> =>
+  fetch(`/api/maps/${doc.id}`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(doc),
+  }).then(asJson<{ ok: boolean; updatedAt: string }>);
+
+export async function streamVerb(
+  verb: 'seed' | 'descend' | 'interrogate',
+  doc: BubbleMapDoc,
+  focusId: string | undefined,
+  onSnapshot: (snapshot: Snapshot) => void,
+): Promise<Proposal> {
+  const res = await fetch(`/api/ai/${verb}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ doc, focusId }),
+  });
+  if (!res.ok || !res.body) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error ?? `${res.status} ${res.statusText}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let result: Proposal | null = null;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let newline: number;
+    while ((newline = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, newline).trim();
+      buffer = buffer.slice(newline + 1);
+      if (!line) continue;
+      const msg = JSON.parse(line) as
+        | { type: 'snapshot'; snapshot: Snapshot }
+        | { type: 'result'; proposal: Proposal }
+        | { type: 'error'; error: string };
+      if (msg.type === 'snapshot') onSnapshot(msg.snapshot);
+      else if (msg.type === 'result') result = msg.proposal;
+      else throw new Error(msg.error);
+    }
+  }
+  if (!result) throw new Error(`${verb} stream ended without a result`);
+  return result;
+}

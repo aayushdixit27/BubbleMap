@@ -333,7 +333,7 @@ Four verbs. Every one returns **proposals only**.
 |---|---|---|---|
 | `seed` | "New map from analysis" | `doc.source` | 4–6 SAFE bubbles spread across whichever LIFE categories the song actually touches, 2–3 REAL, `refines` links between them |
 | `descend` | Select a bubble → **D** | focus bubble + its ancestor chain + `doc.source` | 2–3 bubbles one tier deeper + `refines` links from the focus. May change category. |
-| `interrogate` | Select a bubble → **I** | focus bubble + `doc.source` | 3–5 `assumes` bubbles — *what would have to be true for this to hold?* — plus `contradicts` links to existing bubbles that would kill an assumption |
+| `interrogate` | Select a bubble → **I** | focus bubble + **all committed bubbles on the map** + `doc.source` | 3–5 `assumes` bubbles — *what would have to be true for this to hold?* — plus `contradicts` links to existing bubbles that would kill an assumption |
 | `relink` | Toolbar → "Find links" | whole map, bubbles only | `Link` proposals between **existing** bubbles only. Creates no new bubbles. Each carries a `rationale`. |
 
 - `descend` on a RAW bubble is disabled.
@@ -401,6 +401,33 @@ BUBBLEMAP_MODEL=claude-opus-5
 
 Do **not** hardcode the model string anywhere but `server/ai.ts`. This is the app's
 runtime model and is unrelated to whichever model writes the code.
+
+### 7.3 Rawness and accuracy are different axes
+
+The accept/reject gate tests whether a proposal is **raw**. Nothing in this design
+tests whether it is **true of the song**. A bubble can be perfectly
+self-implicating, land in the right quadrant, read beautifully — and be about a
+lyric that isn't in the song, or attribute to the narrator a situation the song
+never describes.
+
+This is the same blind spot cold review has (`reference/COLD-REVIEW.md`): a
+confident, internally consistent, well-formed falsehood passes every check we
+wrote, because every check we wrote is about form and honesty rather than fact.
+Fluent prose *about* a song and a correct reading *of* one are nearly
+indistinguishable on a fast read, and the fast read is exactly what `Shift+A`
+encourages.
+
+Accepted for v1, with two partial defences:
+
+- **`doc.source` is the ground truth.** Prompts operate on the text you pasted, so
+  the model is grounded rather than recalling. Paste actual lyrics when you have them.
+- **`evidence` links are the audit trail.** When a RAW bubble surprises you, ask for
+  the line that supports it. If nothing in `source` supports it, it's invention —
+  reject it however good it sounds.
+
+Not solved, deliberately: there is no automated fact pass. If maps start containing
+confident fiction, that's a v2 verb (`ground`) and an architect decision — not
+something to patch into the accept flow.
 
 ---
 
@@ -607,13 +634,34 @@ before starting the next.
 
 ### Phase 0 — Prompt probe. No UI. **Gate for everything else.**
 
-A single CLI script, `npm run probe -- <song title>`. Reads `server/prompts.ts`,
-calls the API, prints the raw proposal JSON to stdout. That's it. No React, no
-Vite, no canvas, no persistence — `server/prompts.ts`, `server/ai.ts`,
-`src/types.ts`, and a ~40-line runner.
+A single CLI script that runs **all four verbs, end to end**, per song:
 
-Run it against **six songs, chosen to include at least two you'd expect not to be
-LOVE** (e.g. something about work, something about faith or aging). Read the
+1. `seed` — produces SAFE and REAL
+2. `descend` on every REAL bubble → RAW
+3. `interrogate` on every REAL bubble → assumption bubbles and contradiction links
+4. `relink` once over the finished map
+
+No React, no Vite, no canvas, no persistence.
+
+**The full chain is the point, and `interrogate` is not optional.** §1.1 names
+interrogation — *what would have to be true for this to be raw?* — as the mechanic
+that produces RAW. A probe that runs only `seed` cannot reach RAW at all (seed stops
+at REAL by contract). A probe that runs `seed` + `descend` tests a mechanism the
+product doesn't claim is the important one. Both are half-tests, and analysing a
+half-test's output is worse than not running it, because it produces numbers that
+feel like findings. See PRODUCT §4 #5.
+
+`relink` earns its place here for a different reason: Phase 0 is the last cheap
+place to discover a broken verb. After this, every bug costs UI work to reproduce.
+
+**Paste real lyrics into `doc.source`.** RAW lives in specifics, and specifics are
+exactly where an ungrounded model invents. A title-only run will hand you confident
+fabrications that read better than true readings. Lyrics are human-supplied — do not
+have the implementer fetch them.
+
+Run **all six songs**, chosen to include at least two you'd expect not to be LOVE.
+The full chain on six songs is on the order of ten dollars; running fewer to save
+that reintroduces the "should we have run more" question permanently. Read the
 output as a human and judge two things:
 
 1. **Does RAW clear the bar?** Does it implicate the narrator, or is it REAL with

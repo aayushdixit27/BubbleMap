@@ -131,6 +131,81 @@ html, body, #root {
   color: var(--ink);
 }
 
+/* Ghosts (§10): proposals read at reduced ink until kept. No chrome. */
+.entry.ghost { opacity: 0.62; }
+.entry-state { color: var(--ink-dim); font-variant: normal; letter-spacing: 0; }
+
+.entry-actions { display: flex; gap: 14px; margin-top: 6px; }
+.text-action {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-mid);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--hairline);
+}
+.text-action:hover { color: var(--ink); text-decoration-color: var(--ink-mid); }
+.text-action:disabled { color: var(--ink-dim); cursor: default; text-decoration: none; }
+.text-action kbd {
+  font-family: var(--sans);
+  font-size: 10px;
+  color: var(--ink-dim);
+  margin-left: 2px;
+}
+
+/* ── Toolbar & status ────────────────────────────────────────────────── */
+
+.toolbar {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  padding: 8px 28px;
+  border-bottom: 1px solid var(--hairline);
+}
+.status { font-size: 12px; color: var(--ink-dim); }
+.status-error { color: #a03d30; }
+.metrics { font-size: 12px; color: var(--ink-dim); margin-left: auto; }
+
+/* ── Start screen ────────────────────────────────────────────────────── */
+
+.start {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 48px 28px;
+  overflow-y: auto;
+}
+.start-title { font-family: var(--serif); font-size: 28px; font-weight: 600; margin: 0 0 28px; }
+.start-form { display: flex; flex-direction: column; gap: 8px; }
+.field-label {
+  font-family: var(--sans);
+  font-variant: small-caps;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  color: var(--ink-dim);
+  margin-top: 14px;
+}
+.start-form input,
+.start-form textarea {
+  font-family: var(--serif);
+  font-size: 15px;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  padding: 6px 0;
+  outline: none;
+  resize: vertical;
+}
+.start-form input:focus,
+.start-form textarea:focus { border-bottom-color: var(--ink-mid); }
+.start-submit { align-self: flex-start; margin-top: 18px; font-size: 14px; }
+.start-maps { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 40px; }
+.map-link { font-family: var(--serif); font-size: 15px; }
+
 /* DOI: full notes only on the selected row. Prose is serif. */
 .entry-note {
   font-family: var(--serif);

@@ -62,9 +62,9 @@ export type Verb = 'seed' | 'descend' | 'interrogate';
 // `descend` and `interrogate` are §8 verbatim.
 // `seed` has no §8 text; it is stated from the §7 contract.
 export const VERB_SUFFIXES: Record<Verb, string> = {
-  seed: `Seed a new map for this song. Propose 4 to 6 SAFE bubbles spread across
-whichever LIFE categories the song actually touches, and 2 to 3 REAL bubbles,
-with "refines" links connecting each REAL bubble to the SAFE bubble it deepens.`,
+  seed: `Seed a new map for this song. Propose 3 SAFE bubbles spread across
+whichever LIFE categories the song actually touches, and 3 REAL bubbles, with
+"refines" links connecting each REAL bubble to the SAFE bubble it deepens.`,
 
   descend: `Go exactly one tier deeper than the focus bubble. Before choosing a category
 for each new bubble, ask whether the deeper reading is still about the same

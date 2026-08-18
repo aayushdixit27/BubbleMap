@@ -146,6 +146,7 @@ describe('placeInRegion', () => {
     tier,
     category,
     label: `bubble ${i}`,
+    sourceLine: `line ${i}`,
     position,
     origin: 'ai',
     status: 'committed',

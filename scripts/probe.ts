@@ -76,6 +76,7 @@ const doc: BubbleMapDoc = {
   source: lyrics,
   bubbles: [],
   links: [],
+  rejected: [],
   createdAt: ranAt,
   updatedAt: ranAt,
 };

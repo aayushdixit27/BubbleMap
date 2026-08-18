@@ -19,6 +19,9 @@ export interface Bubble {
   tier: Tier | null;          // null only when kind === 'lyric'
   category: Category | null;  // null only when kind === 'lyric'
   label: string;              // ≤ 12 words. Renders in the bubble.
+  sourceLine: string;         // verbatim lyric fragment the bubble derives from (D23).
+                              // Server-validated against doc.source; fabrication guard.
+                              // For kind 'lyric' it is the line itself.
   note?: string;              // longer expansion, shown in Inspector.
   position: { x: number; y: number };
   origin: Origin;
@@ -44,6 +47,7 @@ export interface BubbleMapDoc {
   source?: string;            // free text: lyrics, notes, your analysis
   bubbles: Bubble[];
   links: Link[];
+  rejected: Bubble[];         // unpicked candidates: persisted, never rendered (D24).
   createdAt: string;
   updatedAt: string;
 }

@@ -8,8 +8,14 @@ import type { Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../sr
 import { SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
-// mutation verb. interrogate's bubbles are capped at 5 in the schema, not the
-// prompt (D16) — §8 stays verbatim, schema constraints are free.
+// mutation verb. Bubble counts are capped in the schema, not the prompt
+// (D16/D18) — §8 stays verbatim, schema constraints are free.
+// seed: exactly 3 SAFE + 3 REAL. descend: exactly 3 candidates (D18/D24 —
+// the human picks one). interrogate: max 3, no minimum — §8 says padding is
+// failure, so a stalled interrogation may return fewer.
+const BUBBLE_CAP: Record<Verb, number> = { seed: 6, descend: 3, interrogate: 3 };
+const BUBBLE_MIN: Record<Verb, number> = { seed: 6, descend: 3, interrogate: 0 };
+
 function proposeTool(verb: Verb): Anthropic.Tool {
   return {
   name: 'propose',
@@ -18,17 +24,19 @@ function proposeTool(verb: Verb): Anthropic.Tool {
     properties: {
       bubbles: {
         type: 'array',
-        ...(verb === 'interrogate' ? { maxItems: 5 } : {}),
+        maxItems: BUBBLE_CAP[verb],
+        minItems: BUBBLE_MIN[verb],
         items: {
           type: 'object',
           properties: {
-            ref:      { type: 'string' },                    // "n1", "n2" — temp id
-            tier:     { enum: ['safe', 'real', 'raw'] },
-            category: { enum: ['love', 'identity', 'fitness', 'earnings'] },
-            label:    { type: 'string' },
-            note:     { type: 'string' },
+            ref:        { type: 'string' },                  // "n1", "n2" — temp id
+            tier:       { enum: ['safe', 'real', 'raw'] },
+            category:   { enum: ['love', 'identity', 'fitness', 'earnings'] },
+            label:      { type: 'string' },
+            sourceLine: { type: 'string' },                  // verbatim lyric fragment (D23)
+            note:       { type: 'string' },
           },
-          required: ['ref', 'tier', 'category', 'label'],
+          required: ['ref', 'tier', 'category', 'label', 'sourceLine'],
         },
       },
       links: {
@@ -60,6 +68,7 @@ interface RawBubble {
   tier: Tier;
   category: Category;
   label: string;
+  sourceLine: string;
   note?: string;
 }
 
@@ -70,7 +79,7 @@ interface RawLink {
   rationale?: string;
 }
 
-interface RawProposal {
+export interface RawProposal {
   bubbles: RawBubble[];
   links: RawLink[];
 }
@@ -217,10 +226,30 @@ function ancestorChain(doc: BubbleMapDoc, focus: Bubble): Bubble[] {
 
 const TIER_DEPTH: Record<Tier, number> = { safe: 0, real: 1, raw: 2 };
 
+// D23's matching rule: whitespace and case are normalised, punctuation is
+// ignored entirely — the model quoting "Mr Brightside" against "Mr. Brightside"
+// is a match, not a fabrication.
+function normalizeForMatch(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// The D23 fabrication guard: a bubble's sourceLine must occur verbatim
+// (modulo normalisation) in doc.source. Exported for the invariant tests.
+export function sourceLineOccurs(sourceLine: string, source: string | undefined): boolean {
+  if (!source) return false;
+  const needle = normalizeForMatch(sourceLine);
+  if (!needle) return false;
+  return normalizeForMatch(source).includes(needle);
+}
+
 // Resolve model refs ("n1") to nanoids and validate every link against the
 // §5 invariants. Rejections are console.warn'd with the raw model output —
-// silent dropping hides prompt regressions.
-function resolveProposal(
+// silent dropping hides prompt regressions. Exported for the invariant tests.
+export function resolveProposal(
   raw: RawProposal,
   doc: BubbleMapDoc,
 ): Pick<Proposal, 'bubbles' | 'links' | 'rejections'> {
@@ -234,12 +263,18 @@ function resolveProposal(
   };
 
   for (const rawBubble of raw.bubbles ?? []) {
-    if (!rawBubble.ref || !rawBubble.tier || !rawBubble.category || !rawBubble.label) {
+    if (!rawBubble.ref || !rawBubble.tier || !rawBubble.category || !rawBubble.label || !rawBubble.sourceLine) {
       rejectItem('bubble missing required field', rawBubble);
       continue;
     }
     if (refToId.has(rawBubble.ref)) {
       rejectItem('bubble duplicate ref', rawBubble);
+      continue;
+    }
+    // D23 fabrication guard. AI bubbles are always kind 'idea', so the
+    // lyric-bubble exemption never applies here.
+    if (!sourceLineOccurs(rawBubble.sourceLine, doc.source)) {
+      rejectItem('bubble sourceLine not found in doc.source', rawBubble);
       continue;
     }
     const id = nanoid();
@@ -250,6 +285,7 @@ function resolveProposal(
       tier: rawBubble.tier,
       category: rawBubble.category,
       label: rawBubble.label,
+      sourceLine: rawBubble.sourceLine,
       ...(rawBubble.note ? { note: rawBubble.note } : {}),
       // Placeholder — Phase 1's placeInRegion assigns real positions.
       position: { x: 0, y: 0 },
