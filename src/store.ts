@@ -22,6 +22,7 @@ import {
   type Snapshot,
 } from './api';
 import { placeInRegion } from './canvas/geometry';
+import { loadProbeRun } from './loadProbeRun';
 import type { Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from './types';
 
 const TIERS: Tier[] = ['safe', 'real', 'raw'];
@@ -34,6 +35,8 @@ const isProvisional = (id: string) => id.startsWith('p:');
 interface MapState {
   maps: MapMeta[];
   doc: BubbleMapDoc | null;
+  // Probe-run docs are design-test data: no autosave, no AI verbs.
+  readOnly: boolean;
   // descend runId → proposed RAW candidate ids; keeping one discards the rest (D18)
   groups: Record<string, string[]>;
   running: number;
@@ -43,6 +46,7 @@ interface MapState {
 
   loadMaps: () => Promise<void>;
   openMap: (id: string) => Promise<void>;
+  openProbeRun: () => void;
   closeMap: () => void;
   createAndSeed: (title: string, source: string) => Promise<void>;
   runDescend: (focusId: string) => Promise<void>;
@@ -64,6 +68,7 @@ let dirty = false;
 
 export const useMapStore = create<MapState>((set, get) => {
   const scheduleSave = () => {
+    if (get().readOnly) return;
     dirty = true;
     void flushSave();
   };
@@ -201,6 +206,7 @@ export const useMapStore = create<MapState>((set, get) => {
   return {
     maps: [],
     doc: null,
+    readOnly: false,
     groups: {},
     running: 0,
     status: '',
@@ -217,14 +223,20 @@ export const useMapStore = create<MapState>((set, get) => {
 
     openMap: async (id) => {
       try {
-        set({ doc: await fetchMap(id), groups: {}, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), readOnly: false, groups: {}, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
     },
 
+    // The Phase 0 chain output as design-test data — never saved, never
+    // descended into, no tokens spent.
+    openProbeRun: () => {
+      set({ doc: loadProbeRun(), readOnly: true, groups: {}, error: null, metrics: null, status: '' });
+    },
+
     closeMap: () => {
-      set({ doc: null, groups: {}, status: '', metrics: null });
+      set({ doc: null, readOnly: false, groups: {}, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -248,7 +260,7 @@ export const useMapStore = create<MapState>((set, get) => {
     // On-demand descend (a row that stalls). Never speculative.
     runDescend: async (focusId) => {
       const doc = get().doc;
-      if (!doc) return;
+      if (!doc || get().readOnly) return;
       const runId = `descend:${focusId}:${Date.now()}`;
       set((s) => ({ running: s.running + 1, status: 'descending…', error: null }));
       try {

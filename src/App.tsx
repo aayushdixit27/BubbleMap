@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Readings } from './grid/Readings';
 import { ThreadGrid } from './grid/ThreadGrid';
 import { Signature } from './signature/Signature';
 import { useMapStore } from './store';
@@ -7,6 +8,7 @@ function StartScreen() {
   const maps = useMapStore((s) => s.maps);
   const createAndSeed = useMapStore((s) => s.createAndSeed);
   const openMap = useMapStore((s) => s.openMap);
+  const openProbeRun = useMapStore((s) => s.openProbeRun);
   const [title, setTitle] = useState('');
   const [source, setSource] = useState('');
 
@@ -52,6 +54,13 @@ function StartScreen() {
           ))}
         </div>
       )}
+
+      <div className="start-maps">
+        <div className="field-label">Design-test data</div>
+        <button className="text-action map-link" onClick={openProbeRun}>
+          Mr. Brightside — Phase 0 probe run (read-only)
+        </button>
+      </div>
     </div>
   );
 }
@@ -67,6 +76,8 @@ export default function App() {
   const acceptAllUngrouped = useMapStore((s) => s.acceptAllUngrouped);
   const rejectAllProposed = useMapStore((s) => s.rejectAllProposed);
   const [health, setHealth] = useState('server: …');
+  // The grid ⇄ readings toggle — same doc, two presentations (design test).
+  const [view, setView] = useState<'grid' | 'readings'>('grid');
 
   useEffect(() => {
     void loadMaps();
@@ -105,6 +116,12 @@ export default function App() {
       {doc && (
         <div className="toolbar">
           <button className="text-action" onClick={closeMap}>← maps</button>
+          <button
+            className="text-action"
+            onClick={() => setView(view === 'grid' ? 'readings' : 'grid')}
+          >
+            {view === 'grid' ? 'readings' : 'grid'}
+          </button>
           {proposedCount > 0 && (
             <>
               <button className="text-action" onClick={acceptAllUngrouped}>
@@ -121,7 +138,7 @@ export default function App() {
         </div>
       )}
 
-      {doc ? <ThreadGrid /> : <StartScreen />}
+      {doc ? view === 'readings' ? <Readings /> : <ThreadGrid /> : <StartScreen />}
     </div>
   );
 }

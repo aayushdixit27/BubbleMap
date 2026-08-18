@@ -16,7 +16,7 @@ import { buildGrid } from './threads';
 
 const COLUMNS: Tier[] = ['safe', 'real', 'raw'];
 
-const CATEGORY_LABEL: Record<Category, string> = {
+export const CATEGORY_LABEL: Record<Category, string> = {
   love: 'Love',
   identity: 'Identity',
   fitness: 'Fitness',
@@ -39,6 +39,7 @@ function Entry({
   const accept = useMapStore((s) => s.accept);
   const reject = useMapStore((s) => s.reject);
   const runDescend = useMapStore((s) => s.runDescend);
+  const readOnly = useMapStore((s) => s.readOnly);
 
   const category = bubble.category;
   const cross = Boolean(parent?.category && category && parent.category !== category);
@@ -67,7 +68,7 @@ function Entry({
           </button>
         </div>
       )}
-      {!proposed && bubble.tier === 'real' && (
+      {!proposed && !readOnly && bubble.tier === 'real' && (
         <div className="entry-actions" onClick={(e) => e.stopPropagation()}>
           <button className="text-action" onClick={() => void runDescend(bubble.id)}>
             descend
