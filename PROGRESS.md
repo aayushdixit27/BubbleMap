@@ -1,6 +1,6 @@
 # PROGRESS
 
-> **Last updated: 17 Aug 2026, after the Phase 0 chain run.**
+> **Last updated: 18 Aug 2026, end of Phase 1.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -12,21 +12,27 @@ spec. Fable updates it at every phase boundary, before committing.
 
 ## Where we are
 
-**Phase 0 — chain run complete on Mr. Brightside, lyrics-grounded. Gate open:
-the RAW bubbles have not been read by a human.**
+**Phase 1 — walking skeleton built and verified in Chrome. Phase 0 closed
+(gate passed, D11–D17).**
 
-The probe runs `seed` → `descend` on every REAL → `interrogate` on every REAL →
-`relink` once, on **one song**, grounded in human-pasted lyrics
-(`probe-runs/lyrics/Mr. Brightside Lyrics.md` — lyrics files are `.md` now). It
-hard-refuses to run on missing/empty lyrics.
+What runs: `npm run dev` → Express on `127.0.0.1:8787` (`/api/health` green,
+reports the model) + Vite on `127.0.0.1:5173`, proxied. The Phase 0 chain
+output (`probe-runs/mr-brightside.json`) renders on the target — right rings,
+right quadrants, category hue × tier intensity, basic edge styling by kind.
+Pan/zoom work; below 0.55 zoom bubbles drop note previews (§6.4). Dragging a
+bubble across a ring boundary recolors it (verified visually).
+`src/canvas/geometry.ts` has 18 passing unit tests (regionForPoint /
+assignRegion / toCenter round-trip / placeInRegion).
 
-The run: 38 bubbles (6 SAFE / 5 REAL / 27 RAW), 79 accepted links, 21 rejections
-(20 of them in `relink`, 16 of those re-proposals of links it wasn't shown),
-32.2k in / 36.4k out tokens, 9.0 min. Full chain with per-bubble provenance in
-`probe-runs/mr-brightside.json`; mechanical facts in `probe-runs/SUMMARY.md`.
-Answer to the open interrogate question: **the model tiered 18 of 19 assumption
-bubbles RAW** (1 REAL, 0 SAFE) — see SUMMARY for the geometry implication data
-(27 RAW bubbles on a canvas whose RAW ring holds 2–3 per quadrant).
+Reading surface (D14 → D19): label + first sentence by default; the selected
+bubble expands in place to its full note. Phase 0 carry-overs landed first:
+relink cut (D15), interrogate capped via schema `maxItems` (D16), streaming
+callback + non-focus context trim (D17 #1–2). D17 #3 (parallel descends) and
+D18 (spine-not-bush verb counts) apply at Phase 2 with the verbs.
+
+Known honest state: the canvas renders the **unfiltered firehose** (27 RAW),
+so love/identity RAW wedges overlap — D12/D18 say that resolves at Phase 2
+via accept/reject + reduced verb counts, not by resizing geometry.
 
 ### The gate — one question
 
@@ -110,8 +116,10 @@ mutates the map.
 
 ## Next
 
-Read the RAW bubbles in `probe-runs/mr-brightside.json` → answer the one
-question. (Lyrics and run are done.)
+Phase 2 — the loop, first usable version. Apply D18's verb counts (seed 3+3,
+descend 3-candidates-keep-1, interrogate on-demand max 3) and D17 #3
+(parallelise descends) with the verb wiring. Done when a new song maps start
+to finish in under ten minutes, timed.
 
 Then run PRODUCT §6.5's five-question phase gate in writing before opening Phase 1.
 
@@ -122,8 +130,8 @@ Then run PRODUCT §6.5's five-question phase gate in writing before opening Phas
 | phase | status | commit | note |
 |---|---|---|---|
 | 0 — probe v1 | superseded | `a106b70`, `6dda483` | seed-only, 6 songs, title-only. Category spread cleared; RAW untestable by construction |
-| 0 — probe v2 | run done, **gate open** | see "full chain" commit | four-verb chain, Mr. Brightside, lyrics-grounded. 38 bubbles: seed 6 SAFE + 3 REAL, descend 9 RAW, interrogate 20 (18 RAW / 2 REAL). interrogate exceeded its 3–5 contract on all 3 calls (6/8/6). Needs human read of RAW |
-| 1 — walking skeleton | not started | — | scope contingent on the canvas-vs-columns call |
+| 0 — probe v2 | **closed — gate passed** | `d2a95d1` | RAW implicates the narrator, lyrics grounding worked, no fabrications (architect read). Decisions D11–D18 |
+| 1 — walking skeleton | **built** | see "Phase 1" commit | geometry + 18 tests, target canvas, drag-to-reassign recolors, D19 reading surface. Renders pre-filter firehose; thins at Phase 2 |
 | 2 — the loop | not started | — | first usable version |
 | 3 — authoring | not started | — | |
 | 4 — depth | not started | — | |

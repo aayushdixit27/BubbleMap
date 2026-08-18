@@ -1,0 +1,118 @@
+/* §9.1 — category is hue, tier is intensity. The center of the target is the
+   most vivid part of the canvas. */
+:root {
+  --bg:         #0d0f14;
+  --text:       #f2f4f8;
+  --text-dim:   #8b93a3;
+  --contradict: #e05a63;   /* the only non-hue-derived accent */
+
+  /* category hues */
+  --h-love:     340;   /* rose   */
+  --h-identity: 275;   /* violet */
+  --h-fitness:  150;   /* green  */
+  --h-earnings:  42;   /* gold   */
+}
+
+/* tier tokens, applied via .tier-safe / .tier-real / .tier-raw on the node */
+.tier-safe { --sat: 32%; --lum: 56%; --border-a: 0.50; --fill-a: 0.07; --glow: none; }
+.tier-real { --sat: 60%; --lum: 60%; --border-a: 0.78; --fill-a: 0.13; --glow: none; }
+.tier-raw  { --sat: 88%; --lum: 64%; --border-a: 1.00; --fill-a: 0.20;
+             --glow: 0 0 22px hsl(var(--h) var(--sat) var(--lum) / 0.28); }
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.app { display: flex; flex-direction: column; height: 100%; }
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #1c2230;
+  font-size: 13px;
+}
+.app-header .title { font-weight: 600; }
+.app-header .health { color: var(--text-dim); font-size: 12px; }
+
+.canvas-wrap { flex: 1; min-height: 0; }
+.react-flow { background: var(--bg); }
+
+/* §9.2 — the bubble. Auto-sizes to content; labels are NEVER clipped or
+   ellipsized, at any zoom (CLAUDE.md rule 7). */
+.bubble {
+  border-radius: 18px;
+  border: 2px solid hsl(var(--h) var(--sat) var(--lum) / var(--border-a));
+  /* fully opaque base — overlapping bubbles must never read through each other */
+  background: var(--bg);
+  box-shadow: var(--glow);
+  padding: 14px 18px;
+  position: relative;
+}
+.bubble::before {
+  /* hue fill layered over the opaque base so edges don't read through */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: hsl(var(--h) var(--sat) var(--lum) / var(--fill-a));
+  pointer-events: none;
+}
+.bubble .label {
+  position: relative;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+  max-width: 200px;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+.bubble .note-preview {
+  position: relative;
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-dim);
+  max-width: 200px;
+}
+
+/* D14 — reading surface: the selected bubble expands in place to its full
+   note. Nothing is clipped; siblings are untouched. */
+.bubble.expanded {
+  border-width: 2px;
+  box-shadow:
+    0 0 0 2px hsl(var(--h) var(--sat) var(--lum) / 0.55),
+    var(--glow, 0 0 0 transparent);
+}
+.bubble.expanded .label,
+.bubble.expanded .note-full { max-width: 300px; }
+.bubble .note-full {
+  position: relative;
+  margin-top: 10px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+  overflow-wrap: break-word;
+}
+
+/* §6.4 — below 0.55 zoom, drop the note preview and shrink padding.
+   Never truncate the label. */
+.zoom-far .bubble { padding: 8px 10px; }
+.zoom-far .bubble:not(.expanded) .note-preview { display: none; }
+
+.bubble-handle {
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  min-width: 1px;
+  min-height: 1px;
+}
