@@ -1,6 +1,6 @@
 # PROGRESS
 
-> **Last updated: 18 Aug 2026, mid–Phase 2 (D25 flow rebuild).**
+> **Last updated: 18 Aug 2026, Phase 2 closed (gate passed); D26 build starting.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -25,7 +25,17 @@ keep/kill, the descend button, and Shift+A/X are gone. The grid remains
 as a presentation-only toggle. Autosave is immediate (a debounce-starvation
 bug lost whole maps on 18 Aug — fixed, round-trip tested). D23 sourceLine
 validation live. Target being tested: lyrics → RAW on screen < 1 minute.
-**Not yet verified end-to-end on a real song under the new flow.**
+
+**Phase 2 gate: PASSED.** The dogfood run on Carole King's "Beautiful"
+(18 Aug) produced genuinely raw output — the flinch test cleared —
+correctly categorised and lyric-grounded, with RAW on screen in 53s.
+
+**Now building D26** (supersedes D25's judgment model; **amends Hard
+Rule 1** — re-read it in CLAUDE.md): library home base, opt-out judging
+(descents land committed, kill is the gesture, undoable), up to 10
+continuous serial descents with always-visible progress, three views
+(Readings / Grid / Target). Building in four committed chunks, in that
+order.
 
 Superseded today: D24's per-bubble flow (→ D25), ARCHITECTURE §7's verb
 table (amended in place, note at §7 top).
@@ -143,12 +153,18 @@ mutates the map.
 
 ## Next
 
-Phase 2 — the loop, first usable version. Apply D18's verb counts (seed 3+3,
-descend 3-candidates-keep-1, interrogate on-demand max 3) and D17 #3
-(parallelise descends) with the verb wiring. Done when a new song maps start
-to finish in under ten minutes, timed.
+The D26 build, four chunks, committed and stopped between each:
 
-Then run PRODUCT §6.5's five-question phase gate in writing before opening Phase 1.
+1. **Home base** — the landing screen is the library (songs, most recent
+   first: title, date made, descent count); "Add a song" is one option on
+   it; opening a song only reads.
+2. **Opt-out judging** — descents land committed; the only gesture is
+   "kill this descent" → rejected[], undoable for the session.
+3. **Continuous descents** — up to 10 per song, serial, appended as each
+   completes; first RAW ~20s; always-visible progress (`4 of 10 · still
+   going` → `done`); stop early honestly if the song runs out of threads.
+4. **Three views** — Readings (default), Grid, Target (Jun Yuh circle:
+   RAW dots by category on geometry.ts, D22 dots-and-hairlines).
 
 ---
 
@@ -159,7 +175,7 @@ Then run PRODUCT §6.5's five-question phase gate in writing before opening Phas
 | 0 — probe v1 | superseded | `a106b70`, `6dda483` | seed-only, 6 songs, title-only. Category spread cleared; RAW untestable by construction |
 | 0 — probe v2 | **closed — gate passed** | `d2a95d1` | RAW implicates the narrator, lyrics grounding worked, no fabrications (architect read). Decisions D11–D18 |
 | 1 — walking skeleton | **built (D20 grid, D22 editorial)** | `474051d`, `bb280b0`, + D22 commit | geometry + 18 tests kept; thread grid + signature (D20/D21); React Flow deleted; editorial restyle (D22). Renders pre-filter firehose; thins at Phase 2 |
-| 2 — the loop | in progress | — | rebuilt around D25 (descent as judgment unit); awaiting first real-song run |
+| 2 — the loop | **closed — gate passed** | `1df5aad` + gate run | D25 descent flow; "Beautiful" (Carole King) cleared the flinch test, lyric-grounded, RAW in 53s. D26 supersedes the judgment model next |
 | 3 — authoring | not started | — | |
 | 4 — depth | not started | — | |
 | 5 — cut list | not started | — | expect to cut most |
