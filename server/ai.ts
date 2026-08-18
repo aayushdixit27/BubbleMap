@@ -8,14 +8,17 @@ import type { Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../sr
 import { SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
-// mutation verb.
-const PROPOSE_TOOL: Anthropic.Tool = {
+// mutation verb. interrogate's bubbles are capped at 5 in the schema, not the
+// prompt (D16) — §8 stays verbatim, schema constraints are free.
+function proposeTool(verb: Verb): Anthropic.Tool {
+  return {
   name: 'propose',
   input_schema: {
     type: 'object',
     properties: {
       bubbles: {
         type: 'array',
+        ...(verb === 'interrogate' ? { maxItems: 5 } : {}),
         items: {
           type: 'object',
           properties: {
@@ -44,7 +47,13 @@ const PROPOSE_TOOL: Anthropic.Tool = {
     },
     required: ['bubbles', 'links'],
   },
-};
+  };
+}
+
+// The one place the model string lives (CLAUDE.md rule 6). Also serves /api/health.
+export function currentModel(): string {
+  return process.env.BUBBLEMAP_MODEL ?? 'claude-opus-5';
+}
 
 interface RawBubble {
   ref: string;
@@ -80,7 +89,15 @@ export interface Proposal {
   usage: { input_tokens: number; output_tokens: number };
 }
 
-export async function propose(verb: Verb, doc: BubbleMapDoc, focusId?: string): Promise<Proposal> {
+// onInputJson streams the accumulating tool-input snapshot as it arrives
+// (D17 #1) — the caller decides what to render; the CLI and Phase 2 UI both
+// hang off this.
+export async function propose(
+  verb: Verb,
+  doc: BubbleMapDoc,
+  focusId?: string,
+  onInputJson?: (snapshot: unknown) => void,
+): Promise<Proposal> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY is not set. Put it in .env (see .env.example).');
@@ -98,15 +115,17 @@ export async function propose(verb: Verb, doc: BubbleMapDoc, focusId?: string): 
   }
 
   const client = new Anthropic({ apiKey });
-  // The model string lives here and only here (CLAUDE.md rule 6).
-  const model = process.env.BUBBLEMAP_MODEL ?? 'claude-opus-5';
+  const model = currentModel();
   const stream = client.messages.stream({
     model,
     max_tokens: 16000,
     system: `${SYSTEM_PROMPT}\n\n${VERB_SUFFIXES[verb]}`,
-    tools: [PROPOSE_TOOL],
+    tools: [proposeTool(verb)],
     messages: [{ role: 'user', content: buildUserMessage(verb, doc, focus) }],
   });
+  if (onInputJson) {
+    stream.on('inputJson', (_partial, snapshot) => onInputJson(snapshot));
+  }
   const response = await stream.finalMessage();
 
   const toolUse = response.content.find(
@@ -149,39 +168,34 @@ function buildUserMessage(verb: Verb, doc: BubbleMapDoc, focus?: Bubble): string
       const chain = ancestorChain(doc, focus!);
       return (
         `Song: ${doc.title}\n\n` +
-        `Focus bubble:\n${describeBubble(focus!)}\n\n` +
+        `Focus bubble:\n${describeBubble(focus!, true)}\n\n` +
         `Its ancestor chain (outermost first):\n` +
-        `${chain.length ? chain.map(describeBubble).join('\n') : '(none)'}\n\n` +
+        `${chain.length ? chain.map((b) => describeBubble(b)).join('\n') : '(none)'}\n\n` +
         `In links, refer to the focus bubble by its id, ${focus!.id}, and to new ` +
         `bubbles by their refs. Respond by calling the propose tool.${source}`
       );
     }
 
     case 'interrogate':
-      // §7's input column says focus + source, but the contract also returns
-      // contradicts links to EXISTING bubbles — impossible without their ids,
-      // so the map's bubbles ride along. Flagged to the architect.
+      // §7's input column said focus + source; D8 adds the map's bubbles —
+      // contradicts links against bubbles the model cannot see are impossible.
       return (
         `Song: ${doc.title}\n\n` +
-        `Focus bubble:\n${describeBubble(focus!)}\n\n` +
-        `Existing bubbles on the map:\n${doc.bubbles.map(describeBubble).join('\n')}\n\n` +
+        `Focus bubble:\n${describeBubble(focus!, true)}\n\n` +
+        `Existing bubbles on the map:\n` +
+        `${doc.bubbles.map((b) => describeBubble(b)).join('\n')}\n\n` +
         `In links, refer to existing bubbles by id and to new bubbles by their ` +
         `refs. Respond by calling the propose tool.${source}`
-      );
-
-    case 'relink':
-      return (
-        `Song: ${doc.title}\n\n` +
-        `All bubbles on the map:\n${doc.bubbles.map(describeBubble).join('\n')}\n\n` +
-        `In links, refer to bubbles by id. Respond by calling the propose tool.`
       );
   }
 }
 
-function describeBubble(b: Bubble): string {
+// Only the focus carries its note (D17 #2): non-focus bubbles cost
+// label + tier + category (+ the id links need, per D8).
+function describeBubble(b: Bubble, withNote = false): string {
   const tier = b.tier ? b.tier.toUpperCase() : 'LYRIC';
   const category = b.category ? b.category.toUpperCase() : '—';
-  return `- id ${b.id} [${tier} / ${category}] ${b.label}${b.note ? ` — ${b.note}` : ''}`;
+  return `- id ${b.id} [${tier} / ${category}] ${b.label}${withNote && b.note ? ` — ${b.note}` : ''}`;
 }
 
 // Walk refines links upward (target → source) from the focus to the surface.

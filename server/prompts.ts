@@ -55,11 +55,12 @@ Link kinds:
   contradicts — the target undercuts the source.
   evidence    — the target is a specific lyric or moment supporting the source.`;
 
-export type Verb = 'seed' | 'descend' | 'interrogate' | 'relink';
+// relink was cut from v1 (DECISIONS.md D15). Three verbs, not four.
+export type Verb = 'seed' | 'descend' | 'interrogate';
 
 // Per-verb instructions appended to the base prompt.
 // `descend` and `interrogate` are §8 verbatim.
-// `seed` and `relink` have no §8 text; they are stated from the §7 contracts.
+// `seed` has no §8 text; it is stated from the §7 contract.
 export const VERB_SUFFIXES: Record<Verb, string> = {
   seed: `Seed a new map for this song. Propose 4 to 6 SAFE bubbles spread across
 whichever LIFE categories the song actually touches, and 2 to 3 REAL bubbles,
@@ -74,8 +75,4 @@ load-bearing assumptions, including the ones the narrator would rather not
 examine. Each assumption is a bubble linked back with kind "assumes". If an
 existing bubble on the map would kill one of these assumptions, add a
 "contradicts" link. Assumptions that survive scrutiny are the path to RAW.`,
-
-  relink: `Propose links between the existing bubbles only. Do not create any new
-bubbles — return an empty bubbles array. Every link carries a one-sentence
-rationale.`,
 };

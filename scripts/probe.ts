@@ -1,8 +1,8 @@
 // Phase 0 prompt probe — full chain (ARCHITECTURE §12 Phase 0).
 // Usage: npm run probe -- "<song> — <artist>"
 //
-// Runs all four verbs per song:
-//   seed → descend on every REAL → interrogate on every REAL → relink once.
+// Runs the three verbs per song (relink was cut — DECISIONS.md D15):
+//   seed → descend on every REAL → interrogate on every REAL.
 //
 // Lyrics are human-supplied ground truth (§7.3): the probe refuses to run
 // without a non-empty probe-runs/lyrics/<name>.txt whose name is a prefix of
@@ -129,7 +129,16 @@ async function runVerb(verb: Verb, focusId?: string): Promise<Proposal> {
   console.error(`→ ${verb}${focus ? ` on [${focus.tier?.toUpperCase()}] ${focus.label}` : ''}...`);
 
   const startedAt = Date.now();
-  const proposal = await propose(verb, doc, focusId);
+  let streamed = 0;
+  const proposal = await propose(verb, doc, focusId, (snapshot) => {
+    // First-content visibility (D17 #1): print each bubble as it lands.
+    const partial = snapshot as { bubbles?: { label?: string; tier?: string }[] };
+    const complete = (partial.bubbles ?? []).filter((b) => b.label && b.tier);
+    for (; streamed < complete.length; streamed++) {
+      const b = complete[streamed];
+      console.error(`  · [${b.tier?.toUpperCase()}] ${b.label}`);
+    }
+  });
   const wallClockMs = Date.now() - startedAt;
   modelUsed = proposal.model;
 
@@ -197,7 +206,6 @@ try {
   const reals = doc.bubbles.filter((b) => b.tier === 'real');
   for (const real of reals) await runVerb('descend', real.id);
   for (const real of reals) await runVerb('interrogate', real.id);
-  await runVerb('relink');
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
