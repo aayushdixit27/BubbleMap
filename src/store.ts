@@ -31,6 +31,9 @@ const LINK_KINDS: LinkKind[] = ['refines', 'assumes', 'contradicts', 'evidence']
 const provisionalId = (runId: string, ref: string) => `p:${runId}:${ref}`;
 const isProvisional = (id: string) => id.startsWith('p:');
 
+// D26 #3: up to this many descents per song, generated one at a time.
+const DESCENT_TARGET = 10;
+
 // One descent path, by bubble id. safe/real may be absent when the model
 // skipped a tier; raw is the unit's anchor.
 export interface DescentPath {
@@ -45,6 +48,14 @@ interface KilledDescent {
   links: Link[];
 }
 
+// D26 #3's always-visible progress state. Never a silent blank screen.
+export interface Progress {
+  done: number;
+  target: number;
+  state: 'going' | 'done' | 'stopped';
+  note?: string; // why we stopped early, said honestly
+}
+
 interface MapState {
   maps: MapMeta[];
   doc: BubbleMapDoc | null;
@@ -54,6 +65,7 @@ interface MapState {
   status: string;
   error: string | null;
   metrics: string | null;
+  progress: Progress | null;
   // Killed descents this session, newest last — the undo stack (D26 #2).
   killed: KilledDescent[];
 
@@ -228,6 +240,7 @@ export const useMapStore = create<MapState>((set, get) => {
     readOnly: false,
     running: 0,
     killed: [],
+    progress: null,
     status: '',
     error: null,
     metrics: null,
@@ -242,7 +255,7 @@ export const useMapStore = create<MapState>((set, get) => {
 
     openMap: async (id) => {
       try {
-        set({ doc: await fetchMap(id), readOnly: false, killed: [], error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), readOnly: false, killed: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -261,62 +274,183 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), readOnly: true, killed: [], error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), readOnly: true, killed: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
-      set({ doc: null, readOnly: false, killed: [], status: '', metrics: null });
+      set({ doc: null, readOnly: false, killed: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
-    // D25: create → seed → the moment seed returns, descend on every REAL
-    // in parallel. No human gate between verbs; the gate is the descent-
-    // level keep/kill that follows.
+    // D26 #3: up to DESCENT_TARGET descents, generated serially, each
+    // appended (and committed, per chunk 2) as it completes — never
+    // batched. The first descend overlaps the tail of the seed stream so
+    // RAW reaches the screen fast; everything after runs one at a time.
+    // Stops early, honestly, when the song runs out of threads.
     createAndSeed: async (title, source) => {
       const t0 = performance.now();
+      let firstRawAt: number | null = null;
+      // "First RAW on screen" means visible, not committed — a streaming
+      // ghost with a label counts the moment it renders.
+      const noteRawGhost = (s: Snapshot) => {
+        if (firstRawAt === null && (s.bubbles ?? []).some((b) => b.tier === 'raw' && b.label)) {
+          firstRawAt = performance.now() - t0;
+          set({ metrics: `first RAW visible in ${(firstRawAt / 1000).toFixed(0)}s` });
+        }
+      };
+      const rawCount = () =>
+        (get().doc?.bubbles ?? []).filter((b) => b.tier === 'raw' && b.status === 'committed').length;
+      const tick = (state: Progress['state'] = 'going', note?: string) => {
+        set({
+          progress: { done: rawCount(), target: DESCENT_TARGET, state, ...(note ? { note } : {}) },
+        });
+      };
+
       try {
         const doc = await apiCreateMap(title, source);
-        set({ doc, readOnly: false, killed: [], error: null, metrics: null, status: 'seeding…', running: 1 });
-        const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) =>
-          applySnapshot('seed', snapshot),
-        );
+        set({
+          doc, readOnly: false, killed: [], error: null, metrics: null,
+          status: '', running: 1,
+          progress: { done: 0, target: DESCENT_TARGET, state: 'going' },
+        });
+
+        // ── Seed, overlapping the first descend (D26 #3's ~20s target).
+        // The moment the first REAL bubble is fully streamed (a later
+        // bubble has started), descend it against the provisional doc;
+        // its links are remapped to final ids once seed resolves.
+        let early: { focusRef: string; promise: Promise<Proposal> } | null = null;
+        const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) => {
+          applySnapshot('seed', snapshot);
+          if (!early) {
+            const bs = snapshot.bubbles ?? [];
+            const i = bs.findIndex((b) => b.tier === 'real' && b.ref && b.label && b.sourceLine);
+            if (i >= 0 && i < bs.length - 1) {
+              const focusRef = bs[i].ref!;
+              early = {
+                focusRef,
+                promise: streamVerb('descend', get().doc!, provisionalId('seed', focusRef), (s) => {
+                  applySnapshot('descend:first', s);
+                  noteRawGhost(s);
+                }),
+              };
+            }
+          }
+        });
         finalizeRun('seed', seedProposal);
         commitArrived(seedProposal);
+        tick();
 
-        const reals = seedProposal.bubbles.filter((b) => b.tier === 'real');
-        if (!reals.length) {
-          set({
-            status: '',
-            running: 0,
-            error: 'seed returned no REAL bubbles — check the server log for rejections',
-          });
+        if (!seedProposal.bubbles.length) {
+          set({ running: 0, error: 'seed returned nothing usable — check the server log for rejections' });
+          tick('stopped', 'seed failed');
           return;
         }
 
-        set({ status: `descending ${reals.length} threads…`, running: reals.length });
-        const results = await Promise.allSettled(
-          reals.map(async (real) => {
-            const runId = `descend:${real.id}`;
-            const proposal = await streamVerb('descend', get().doc!, real.id, (snapshot) =>
-              applySnapshot(runId, snapshot),
-            );
-            finalizeRun(runId, proposal);
-            commitArrived(proposal);
-            set((s) => ({ running: Math.max(0, s.running - 1) }));
-          }),
-        );
+        // A descend's links may reference bubbles by the ids of the doc
+        // snapshot it was called against — remap provisional seed ids to
+        // their final ones, dropping anything that no longer resolves.
+        const remap = (proposal: Proposal): Proposal => {
+          const mapId = (id: string) => {
+            const m = /^p:seed:(.+)$/.exec(id);
+            return m ? seedProposal.refs[m[1]] ?? id : id;
+          };
+          return {
+            ...proposal,
+            links: proposal.links
+              .map((l) => ({ ...l, source: mapId(l.source), target: mapId(l.target) }))
+              .filter((l) => !isProvisional(l.source) && !isProvisional(l.target)),
+          };
+        };
 
-        const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-        set({
-          status: '',
-          running: 0,
-          metrics: `RAW on screen in ${((performance.now() - t0) / 1000).toFixed(0)}s`,
-          error: failures.length
-            ? `${failures.length} descend call(s) failed: ${failures[0].reason instanceof Error ? failures[0].reason.message : String(failures[0].reason)}`
-            : null,
-        });
+        const land = (runId: string, proposal: Proposal) => {
+          const remapped = remap(proposal);
+          finalizeRun(runId, remapped);
+          commitArrived(remapped);
+          tick();
+          return remapped;
+        };
+
+        // Threads that declined to go deeper — do not ask twice, do not pad.
+        const exhausted = new Set<string>();
+        let errors = 0;
+
+        const descendOn = async (focusId: string, runId: string): Promise<Bubble[]> => {
+          try {
+            const proposal = await streamVerb('descend', get().doc!, focusId, (s) => {
+              applySnapshot(runId, s);
+              noteRawGhost(s);
+            });
+            errors = 0;
+            const landed = land(runId, proposal);
+            if (!landed.bubbles.length) exhausted.add(focusId);
+            return landed.bubbles;
+          } catch (e) {
+            errors += 1;
+            exhausted.add(focusId);
+            set({ error: e instanceof Error ? e.message : String(e) });
+            return [];
+          }
+        };
+
+        if (early !== null) {
+          const { focusRef, promise } = early as { focusRef: string; promise: Promise<Proposal> };
+          const focusId = seedProposal.refs[focusRef];
+          try {
+            const proposal = await promise;
+            land('descend:first', proposal);
+          } catch (e) {
+            if (focusId) exhausted.add(focusId);
+            set({ error: e instanceof Error ? e.message : String(e) });
+          }
+        }
+
+        // ── The serial loop: descend un-descended REALs; when none are
+        // left, spawn a fresh REAL from the least-used SAFE, then descend
+        // it. Two consecutive failures, or no thread to try, ends the run.
+        let stopNote: string | null = null;
+        let spawnCounter = 0;
+        while (rawCount() < DESCENT_TARGET) {
+          if (errors >= 2) {
+            stopNote = `stopped at ${rawCount()} — descend kept failing`;
+            break;
+          }
+          const d = get().doc!;
+          const hasRawChild = (id: string) =>
+            d.links.some(
+              (l) =>
+                l.kind === 'refines' &&
+                l.source === id &&
+                d.bubbles.some((b) => b.id === l.target && b.tier === 'raw'),
+            );
+          const nextReal = d.bubbles.find(
+            (b) =>
+              b.tier === 'real' && b.status === 'committed' &&
+              !hasRawChild(b.id) && !exhausted.has(b.id),
+          );
+          if (nextReal) {
+            await descendOn(nextReal.id, `descend:${nextReal.id}`);
+            continue;
+          }
+          const childCount = (id: string) =>
+            d.links.filter((l) => l.kind === 'refines' && l.source === id).length;
+          const safes = d.bubbles
+            .filter((b) => b.tier === 'safe' && b.status === 'committed' && !exhausted.has(b.id))
+            .sort((a, b) => childCount(a.id) - childCount(b.id));
+          if (!safes.length) {
+            stopNote = `stopped at ${rawCount()} — the song ran out of threads`;
+            break;
+          }
+          spawnCounter += 1;
+          const spawned = await descendOn(safes[0].id, `descend:spawn${spawnCounter}:${safes[0].id}`);
+          if (!spawned.some((b) => b.tier === 'real')) exhausted.add(safes[0].id);
+        }
+
+        set({ running: 0 });
+        if (stopNote) tick('stopped', stopNote);
+        else tick('done');
       } catch (e) {
-        set({ status: '', running: 0, error: e instanceof Error ? e.message : String(e) });
+        set({ running: 0, error: e instanceof Error ? e.message : String(e) });
+        tick('stopped', `stopped at ${rawCount()}`);
       }
     },
 

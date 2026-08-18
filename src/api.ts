@@ -23,6 +23,7 @@ export interface Snapshot {
 export interface Proposal {
   bubbles: Bubble[];
   links: Link[];
+  refs: Record<string, string>; // model ref → committed id (accepted bubbles)
   rejections: { reason: string; item: unknown }[];
   usage: { input_tokens: number; output_tokens: number };
 }

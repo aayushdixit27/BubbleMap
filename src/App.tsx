@@ -124,6 +124,7 @@ export default function App() {
   const closeMap = useMapStore((s) => s.closeMap);
   const killed = useMapStore((s) => s.killed);
   const undoKill = useMapStore((s) => s.undoKill);
+  const progress = useMapStore((s) => s.progress);
   const [health, setHealth] = useState('server: …');
   // Readings is the judgment surface (D25); the grid stays as a toggle.
   const [view, setView] = useState<'grid' | 'readings'>('readings');
@@ -162,7 +163,16 @@ export default function App() {
               undo kill
             </button>
           )}
-          {(status || running > 0) && <span className="status">{status}</span>}
+          {progress && (
+            <span className="status">
+              {progress.state === 'going'
+                ? `${progress.done} of ${progress.target} · still going`
+                : progress.state === 'done'
+                  ? 'done'
+                  : (progress.note ?? 'stopped')}
+            </span>
+          )}
+          {(status || running > 0) && status && <span className="status">{status}</span>}
           {error && <span className="status status-error">{error}</span>}
           {metrics && <span className="metrics">{metrics}</span>}
         </div>

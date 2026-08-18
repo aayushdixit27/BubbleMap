@@ -59,31 +59,39 @@ export function Readings() {
   const readOnly = useMapStore((s) => s.readOnly);
   const killDescent = useMapStore((s) => s.killDescent);
 
+  // One reading per RAW bubble, in arrival order (D26 #3 appends serially).
+  // A thread-based derivation would hide every descent after the first
+  // once one SAFE parents several — walk each RAW's own ancestor chain.
   const readings = useMemo<Reading[]>(() => {
     if (!doc) return [];
     const grid = buildGrid(doc);
-    const result: Reading[] = [];
-    for (const thread of grid.threads) {
-      if (!thread.raw.length) {
-        // Not a reading yet — show the partial descent only while its
-        // RAW is still being generated.
-        if (running > 0 && thread.real.length) {
-          result.push({ safe: thread.safe[0], real: thread.real[0] });
-        }
-        continue;
-      }
-      const raw = thread.raw[0];
+    const chainOf = (start: Bubble) => {
       let safe: Bubble | undefined;
       let real: Bubble | undefined;
-      const seen = new Set([raw.id]);
-      let current = grid.parentOf.get(raw.id);
+      const seen = new Set([start.id]);
+      let current = grid.parentOf.get(start.id);
       while (current && !seen.has(current.id)) {
         seen.add(current.id);
         if (current.tier === 'real' && !real) real = current;
         if (current.tier === 'safe' && !safe) safe = current;
         current = grid.parentOf.get(current.id);
       }
-      result.push({ safe: safe ?? thread.safe[0], real: real ?? thread.real[0], raw });
+      return { safe, real };
+    };
+
+    const result: Reading[] = [];
+    for (const raw of doc.bubbles.filter((b) => b.tier === 'raw')) {
+      result.push({ ...chainOf(raw), raw });
+    }
+    // While descends run, a REAL not yet descended shows as a partial
+    // reading with a quiet "descending…" slot — never a silent blank.
+    if (running > 0) {
+      const descended = new Set(result.map((r) => r.real?.id).filter(Boolean));
+      for (const real of doc.bubbles.filter((b) => b.tier === 'real')) {
+        if (descended.has(real.id)) continue;
+        const parent = grid.parentOf.get(real.id);
+        result.push({ safe: parent?.tier === 'safe' ? parent : undefined, real });
+      }
     }
     return result;
   }, [doc, running]);

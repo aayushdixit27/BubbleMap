@@ -94,6 +94,10 @@ export interface Rejection {
 export interface Proposal {
   bubbles: Bubble[];
   links: Link[];
+  // Model ref ("n1") → committed nanoid, for accepted bubbles. Lets the
+  // client remap references made against a still-streaming run (D26 #3's
+  // seed/descend overlap).
+  refs: Record<string, string>;
   rejections: Rejection[];
   raw: unknown;                // verbatim tool input from the model
   model: string;
@@ -176,12 +180,17 @@ function buildUserMessage(verb: Verb, doc: BubbleMapDoc, focus?: Bubble): string
       return `Song: ${doc.title}\n\nMap this song. Respond by calling the propose tool.${source}`;
 
     case 'descend': {
+      // D26 #3 generates up to ten descents, several from the same SAFE.
+      // Like D8 for interrogate: descend cannot avoid duplicating threads
+      // it cannot see, so the map's bubbles ride along (labels only, D17 #2).
       const chain = ancestorChain(doc, focus!);
       return (
         `Song: ${doc.title}\n\n` +
         `Focus bubble:\n${describeBubble(focus!, true)}\n\n` +
         `Its ancestor chain (outermost first):\n` +
         `${chain.length ? chain.map((b) => describeBubble(b)).join('\n') : '(none)'}\n\n` +
+        `Existing bubbles on the map:\n` +
+        `${doc.bubbles.map((b) => describeBubble(b)).join('\n')}\n\n` +
         `In links, refer to the focus bubble by its id, ${focus!.id}, and to new ` +
         `bubbles by their refs. Respond by calling the propose tool.${source}`
       );
@@ -255,7 +264,7 @@ export function resolveProposal(
   raw: RawProposal,
   doc: BubbleMapDoc,
   verb?: Verb,
-): Pick<Proposal, 'bubbles' | 'links' | 'rejections'> {
+): Pick<Proposal, 'bubbles' | 'links' | 'refs' | 'rejections'> {
   const now = new Date().toISOString();
   const refToId = new Map<string, string>();
   const bubbles: Bubble[] = [];
@@ -278,7 +287,7 @@ export function resolveProposal(
         `seed split must be 3 SAFE + 3 REAL (got ${tally.safe} SAFE, ${tally.real} REAL)`,
         raw.bubbles ?? [],
       );
-      return { bubbles: [], links: [], rejections };
+      return { bubbles: [], links: [], refs: {}, rejections };
     }
   }
 
@@ -375,5 +384,5 @@ export function resolveProposal(
     });
   }
 
-  return { bubbles, links, rejections };
+  return { bubbles, links, refs: Object.fromEntries(refToId), rejections };
 }
