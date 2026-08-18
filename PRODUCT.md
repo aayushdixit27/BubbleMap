@@ -1,0 +1,204 @@
+# BubbleMap — Product
+
+Read this before ARCHITECTURE.md. Architecture answers *how*; this answers *why*
+and *what we're not doing*. When they conflict, this one wins — a correct
+implementation of the wrong thing is still the wrong thing.
+
+---
+
+## 1. Problem statement
+
+> I can tell when a song hits me. I cannot name what it's actually about.
+>
+> When I try to work it out myself I stall at "it's about heartbreak" — one
+> layer under the surface and no further. The honest reading is precisely the
+> one I'm motivated not to reach, because reaching it means admitting the same
+> thing about myself. So I stop at REAL, call it analysis, and learn nothing
+> transferable.
+
+The pain is **the stall at REAL**, not the absence of a diagram. Everything in
+this product exists to break that stall or it doesn't ship.
+
+**Who this is for:** one person — a creator who wants to make things that land,
+using hit songs as the training corpus. Not a general-purpose mind-mapping tool.
+Not for teams. If a feature only makes sense for a second user, it's out.
+
+---
+
+## 2. Desired outcome (behavior change, not feature list)
+
+**Today:** I listen to a song I love, feel something, and can't say what.
+**After:** In under ten minutes I can name the raw thing in that song, see it
+sitting in a LIFE quadrant, and — after twenty songs — recognize the shape they
+share well enough to aim at it in my own work.
+
+**Signal it's working:** the number of maps whose RAW ring contains something
+that made me flinch to type. That's the same test the framework applies to
+songs, turned on the tool. Zero flinches after five maps means the product has
+failed, no matter how good the canvas looks.
+
+**Anti-signal:** a beautiful map I never look at again. Ten completed maps that
+taught me nothing beats one gorgeous one.
+
+---
+
+## 3. Non-goals (load-bearing — these kill scope creep before it starts)
+
+Not a general mind-mapping tool. Not multiplayer, not shareable, no accounts.
+No mobile. No rich text. No audio playback, no lyrics API, no Spotify anything.
+No multiple maps open at once. No `subject: 'self'` prompt variant in v1 — the
+field exists in the data model, the prompt comes later. No export in v1. No
+corpus/cross-map view in v1 (see §7 — that's the trajectory, deliberately deferred).
+No AI that writes to the map without a human accept, ever, at any scope.
+
+**The rule:** if a proposed feature does not shorten the path from *"I like this
+song"* to *"here is the raw thing,"* it is a non-goal by default. Argue it back
+in explicitly or leave it out.
+
+---
+
+## 4. Pre-mortem
+
+*It's three weeks from now and BubbleMap failed. Why?*
+
+**#1 — The RAW output was just SAFE with stronger adjectives.**
+The model produced "he is devastated by betrayal" instead of "I need her to have
+been the villain so I don't have to be." Confident, well-formatted, useless. The
+whole product collapses to a diagram generator and I stop opening it.
+*Likelihood: high. Impact: fatal.*
+
+> **Mitigation — this drives the entire build order.** Phase 0 is a CLI probe
+> that tests the §8 prompt against real songs with **zero UI**. If the prompt
+> can't reach RAW in a terminal, no canvas will save it. Do not write a line of
+> React until Phase 0 passes. This is the single most important decision in the
+> plan.
+
+**#2 — Everything landed in one category.**
+Every bubble came back LOVE because it's a song, making the LIFE axis pure
+decoration and the target a worse version of three horizontal lanes.
+*Likelihood: medium. Impact: severe — it invalidates the canvas design.*
+
+> **Mitigation:** Phase 0 measures category distribution across ~6 songs, not
+> just depth quality. Two songs I'd expect to be non-LOVE go in the probe set on
+> purpose. If the spread doesn't materialize, the geometry decision comes back to
+> the architect *before* it's built, not after.
+
+**#3 — I burned three sessions on canvas polish and never ran the AI.**
+Geometry, ring labels, drag physics, minimap. All satisfying, all yak-shaving.
+Three weeks in there's a beautiful empty target.
+*Likelihood: high — this is the default failure mode of an interesting canvas.*
+
+> **Mitigation:** phase boundaries are hard stops with a report back to this
+> window. Phase 2 is defined as *the first version I can actually use on a real
+> song*, and everything after it is negotiable. The §6 LNO list names the
+> yak-shaving explicitly so it's recognizable when I'm doing it.
+
+**#4 — I used it for three songs and stopped.**
+It worked, and it was a novelty. One map is a party trick; the insight only
+exists across twenty.
+*Likelihood: medium. Impact: slow death.*
+
+> **Mitigation:** the loop must be **under ten minutes end to end** — that's a
+> requirement, not an aspiration, and it's why `seed` proposes 4–6 bubbles at
+> once and `Shift+A` exists. Secondary: maps are plain JSON in `maps/`, so the
+> corpus view (§7) stays cheap to build later. Accumulation must have a payoff
+> even if the payoff isn't built yet.
+
+---
+
+## 5. Why AI at all (vs. an Excalidraw template)
+
+Worth answering honestly, because "we added AI" is product theater and this is
+the question a good judge — or my own six-months-from-now self — asks first.
+
+A static template gives me the target grid. It does not give me the thing I
+lack. **I stall at REAL because the deeper reading is the one I'm defended
+against.** A tool that hands me an empty ring labeled RAW just relocates the
+stall.
+
+The model's job is not to produce the map. It is to **propose three candidate
+deeper readings so I can reject two.** Rejecting is easy; generating from a
+standing start against my own defenses is not. That's the whole value
+proposition, and it's why the human-accept gate isn't a safety feature bolted on
+— it *is* the product. Generation is free now; choosing and cutting is the
+scarce skill, and the design deliberately puts me on the choosing side of that
+line every single time.
+
+If I ever find myself hitting `Shift+A` on everything without reading it, the
+tool has failed in exactly the way this section was written to prevent.
+
+---
+
+## 6. LNO — where the hours go
+
+**Leverage** — deserves the best energy, do not delegate to speed:
+- The system prompt (ARCHITECTURE.md §8). This is the product.
+- `geometry.ts` and its tests. Everything sits on it and a sign error is silent.
+- The accept/reject loop. The core interaction.
+- Cross-category edge rendering. The most valuable output the tool produces.
+
+**Neutral** — necessary, do adequately, don't gold-plate:
+- Persistence, the Inspector, manual editing and hand-drawn links, error toasts,
+  undo (including bulk-accept-as-one-step — accepting six bad bubbles with no
+  undo is genuinely painful).
+
+**Overhead** — do fast and sloppy, or cut entirely:
+- Minimap. PNG/SVG export. Lyric bubbles. Animated quadrant-focus transitions.
+- Empty states. Onboarding of any kind. Anything that looks like polish before
+  Phase 5.
+
+**Opportunity-cost check at every phase boundary:** not *"is this a good use of
+the next session?"* but *"is this the best one?"* The answer is almost always the
+prompt.
+
+---
+
+## 7. Trajectory (deliberately not built in v1)
+
+Where this goes if it works, in order of conviction:
+
+1. **The corpus view.** Twenty maps overlaid on one target. If the RAW cores
+   cluster in IDENTITY across songs I love, that's a finding about me, not about
+   the songs. *This is probably the real product; v1 is the instrument that
+   collects the data for it.*
+2. **`subject: 'self'`.** Same target, pointed at my own LIFE quadrants. The
+   data model already supports it; it's one prompt variant.
+3. **Descent-shape comparison.** Do hits share a path through the rings?
+
+Naming these now is what makes it safe to say no to them in v1.
+
+---
+
+## 8. The four questions, answered
+
+*(Standard judging set — useful discipline even for a tool of one.)*
+
+**Who is the user?** One creator who can feel that a song lands but can't name
+why, and wants the naming skill to transfer to their own work.
+
+**Why is AI necessary here?** Because the stall is motivated, not informational.
+I need candidate readings I'm defended against generating myself. See §5.
+
+**What makes the approach different?** Two axes instead of one. Every other
+canvas is freeform; forcing an explicit `(category, tier)` on every bubble is
+what makes cross-category descent *visible* — and that crossing is the insight,
+not a byproduct.
+
+**What did you trade away to ship?** Corpus view, self-mapping, export, multiple
+open maps, and every collaboration feature. Single user, single map, local disk.
+
+---
+
+## 9. Honest status
+
+Keep this section current. It's the "gap between the demo and the build," and
+the gap is only dangerous when it's undocumented.
+
+| Component | Status |
+|---|---|
+| Prompt validated on real songs | ☐ not started |
+| Target renders, geometry correct | ☐ not started |
+| seed → descend → accept loop usable | ☐ not started |
+| Persistence | ☐ not started |
+| interrogate / relink | ☐ not started |
+| Ten-minute loop verified end to end | ☐ not started |
