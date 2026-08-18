@@ -195,6 +195,10 @@ html, body, #root {
 /* ── Start screen ────────────────────────────────────────────────────── */
 
 .start {
+  /* width:100% + max-width, not shrink-to-fit: as a flex child with auto
+     margins the box otherwise sizes to its content, and the column
+     drifts off the viewport centre. Explicit width pins it. */
+  width: 100%;
   max-width: 620px;
   margin: 0 auto;
   padding: 48px 28px;
@@ -253,6 +257,7 @@ html, body, #root {
   padding: 12px 28px 96px;
 }
 .reading {
+  width: 100%;
   max-width: 560px;
   margin: 0 auto;
   padding: 40px 0;
@@ -260,12 +265,15 @@ html, body, #root {
 }
 .reading:last-child { border-bottom: none; }
 
+/* The numeral is the only thing dividing one descent from the next —
+   a section marker, not metadata. */
 .reading-numeral {
   font-family: var(--sans);
   font-variant: small-caps;
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  color: var(--ink-dim);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: var(--ink);
 }
 .reading-step { margin-top: 20px; }
 .reading-step.t-raw { margin-top: 28px; }
@@ -283,6 +291,7 @@ html, body, #root {
 .reading .entry-note { margin-top: 10px; }
 
 .readings-empty {
+  width: 100%;
   max-width: 560px;
   margin: 48px auto;
   font-family: var(--serif);
