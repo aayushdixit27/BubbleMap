@@ -298,3 +298,39 @@ html, body, #root {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* ── Library (D26 #1): home base, not a form ─────────────────────────── */
+/* Song rows in the editorial register: serif title, small-caps meta line,
+   hairline rules between rows. */
+
+.library { display: flex; flex-direction: column; margin-top: 4px; }
+.library-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  width: 100%;
+  padding: 16px 0;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  cursor: pointer;
+  text-align: left;
+}
+.library-row:hover .library-title { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--hairline); }
+.library-title { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+.library-meta {
+  font-family: var(--sans);
+  font-variant: small-caps;
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  color: var(--ink-dim);
+}
+.library-empty {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-dim);
+  padding: 16px 0;
+}
+.add-song { margin-top: 24px; font-size: 14px; }

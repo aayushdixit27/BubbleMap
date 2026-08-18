@@ -12,7 +12,9 @@ const MAPS_DIR = process.env.BUBBLEMAP_MAPS_DIR ?? 'maps';
 export interface MapMeta {
   id: string;
   title: string;
+  createdAt: string;
   updatedAt: string;
+  descents: number; // committed RAW bubbles — one per descent (D25/D26)
 }
 
 const slugify = (s: string): string =>
@@ -42,12 +44,20 @@ export function listMaps(): MapMeta[] {
   for (const f of files) {
     try {
       const doc = JSON.parse(readFileSync(join(MAPS_DIR, f), 'utf8')) as BubbleMapDoc;
-      metas.push({ id: doc.id, title: doc.title, updatedAt: doc.updatedAt });
+      metas.push({
+        id: doc.id,
+        title: doc.title,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+        // Files hold committed bubbles only, so this is the kept-descent count.
+        descents: doc.bubbles.filter((b) => b.tier === 'raw').length,
+      });
     } catch (e) {
       console.warn(`[storage] skipping unreadable map file ${f}:`, e);
     }
   }
-  return metas.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  // The library is "most recent first" by when the song was made (D26 #1).
+  return metas.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export function readMap(id: string): BubbleMapDoc | null {

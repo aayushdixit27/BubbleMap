@@ -6,7 +6,9 @@ import type { Bubble, BubbleMapDoc, Link, LinkKind } from './types';
 export interface MapMeta {
   id: string;
   title: string;
+  createdAt: string;
   updatedAt: string;
+  descents: number; // kept descents in the saved map (one committed RAW each)
 }
 
 export interface Snapshot {
