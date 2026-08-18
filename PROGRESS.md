@@ -12,20 +12,26 @@ spec. Fable updates it at every phase boundary, before committing.
 
 ## Where we are
 
-**Phase 1 — rebuilt per D20 as the thread grid, verified in Chrome. Phase 0
-closed (gate passed, D11–D17).**
+**Phase 1 — D20 thread grid with the D22 editorial treatment, verified in
+Chrome. Phase 0 closed (gate passed, D11–D17).**
 
 What runs: `npm run dev` → Express on `127.0.0.1:8787` (`/api/health` green,
 reports the model) + Vite on `127.0.0.1:5173`, proxied. The Phase 0 chain
 output (`probe-runs/mr-brightside.json`) renders as the D20 grid: threads as
 rows (derived from the doc's links in `src/grid/threads.ts` — refines >
 assumes > evidence parenting, contradicts never parents), tiers as columns
-with RAW widest and flowing multi-column. Cards carry category hue on the
-left border, tier intensity, labels always whole. Cross-category descent is
-a gradient badge on the card (`LOVE → IDENTITY`), not a line. DOI: clicking
-a row expands every card in it to full notes; other rows stay labels-only.
-The target survives as a 96px dots-only signature in the header (D20),
-positioned by the same geometry. Overlap is structurally impossible.
+with RAW widest and flowing multi-column. DOI: clicking a row expands every
+entry in it to full notes; other rows stay labels-only. Overlap is
+structurally impossible.
+
+Visual layer is D22 (supersedes ARCHITECTURE §9): paper `#f6f3ec`, ink
+`#1a1814`, no dark mode. Tier is typographic — SAFE 13px grey sans, REAL
+15px darker sans, RAW 21px Source Serif 4 near-black with 14px serif notes.
+Category is small-caps marginalia in muted inks; cross-category reads
+`Identity → Love` in the marginalia, no pills. Hairline rules `#ddd7ca`
+between rows; nothing is a card — no radius, shadow, or glow. The signature
+is hairline circles + category-ink dots. Font ships locally via
+`@fontsource/source-serif-4` (no CDN). The old §9.1 tokens are deleted.
 
 React Flow and the canvas components are **deleted** (D21) — grid + static
 SVG need neither. `src/canvas/geometry.ts` + 18 passing tests untouched.
@@ -132,7 +138,7 @@ Then run PRODUCT §6.5's five-question phase gate in writing before opening Phas
 |---|---|---|---|
 | 0 — probe v1 | superseded | `a106b70`, `6dda483` | seed-only, 6 songs, title-only. Category spread cleared; RAW untestable by construction |
 | 0 — probe v2 | **closed — gate passed** | `d2a95d1` | RAW implicates the narrator, lyrics grounding worked, no fabrications (architect read). Decisions D11–D18 |
-| 1 — walking skeleton | **built (D20 grid)** | `474051d` + D20 rebuild commit | geometry + 18 tests kept; target canvas replaced by thread grid + signature (D20/D21); React Flow deleted. Renders pre-filter firehose; thins at Phase 2 |
+| 1 — walking skeleton | **built (D20 grid, D22 editorial)** | `474051d`, `bb280b0`, + D22 commit | geometry + 18 tests kept; thread grid + signature (D20/D21); React Flow deleted; editorial restyle (D22). Renders pre-filter firehose; thins at Phase 2 |
 | 2 — the loop | not started | — | first usable version |
 | 3 — authoring | not started | — | |
 | 4 — depth | not started | — | |

@@ -1,34 +1,37 @@
 // The D20 workspace: threads as rows, tiers as columns, RAW widest.
-// Degree-of-interest: only the selected row expands to full notes; every
-// other row shows labels only. Labels are never clipped (CLAUDE.md rule 7).
-// Cross-category descent renders as a badge on the card, not a drawn line.
+// D22 visual layer: tier is expressed in type, not chrome — entries are bare
+// text under small-caps category marginalia; cross-category descent reads
+// "Love → Identity" in the marginalia line. Labels are never clipped.
+// Degree-of-interest: only the selected row expands to full notes.
 
 import { useMemo, useState } from 'react';
 import { useMapStore } from '../store';
-import type { Bubble, Tier } from '../types';
+import type { Bubble, Category, Tier } from '../types';
 import { buildGrid } from './threads';
 
 const COLUMNS: Tier[] = ['safe', 'real', 'raw'];
 
-function Card({ bubble, parent, expanded }: { bubble: Bubble; parent?: Bubble; expanded: boolean }) {
-  const cross = Boolean(
-    parent?.category && bubble.category && parent.category !== bubble.category,
-  );
+const CATEGORY_LABEL: Record<Category, string> = {
+  love: 'Love',
+  identity: 'Identity',
+  fitness: 'Fitness',
+  earnings: 'Earnings',
+};
+
+function Entry({ bubble, parent, expanded }: { bubble: Bubble; parent?: Bubble; expanded: boolean }) {
+  const category = bubble.category;
+  const cross = Boolean(parent?.category && category && parent.category !== category);
   return (
-    <div
-      className={`card tier-${bubble.tier ?? 'safe'}`}
-      style={{ ['--h' as string]: `var(--h-${bubble.category ?? 'love'})` }}
-    >
-      {cross && (
-        <span
-          className="cross-badge"
-          style={{ ['--h2' as string]: `var(--h-${parent!.category})` }}
-        >
-          {parent!.category!.toUpperCase()} → {bubble.category!.toUpperCase()}
-        </span>
+    <div className={`entry t-${bubble.tier ?? 'safe'}`}>
+      {category && (
+        <div className="marginalia" style={{ color: `var(--ink-${category})` }}>
+          {cross
+            ? `${CATEGORY_LABEL[parent!.category!]} → ${CATEGORY_LABEL[category]}`
+            : CATEGORY_LABEL[category]}
+        </div>
       )}
-      <div className="card-label">{bubble.label}</div>
-      {expanded && bubble.note && <div className="card-note">{bubble.note}</div>}
+      <div className="entry-label">{bubble.label}</div>
+      {expanded && bubble.note && <div className="entry-note">{bubble.note}</div>}
     </div>
   );
 }
@@ -52,13 +55,13 @@ export function ThreadGrid() {
         return (
           <div
             key={thread.rootId}
-            className={`thread-row${expanded ? ' selected' : ''}`}
+            className="thread-row"
             onClick={() => setSelected(expanded ? null : thread.rootId)}
           >
             {COLUMNS.map((tier) => (
               <div key={tier} className={`cell cell-${tier}`}>
                 {thread[tier].map((bubble) => (
-                  <Card
+                  <Entry
                     key={bubble.id}
                     bubble={bubble}
                     parent={grid.parentOf.get(bubble.id)}
