@@ -177,6 +177,16 @@ export function Readings() {
           </div>
         );
       })}
+      {/* While the run generates, the page is never blank: the pasted
+          lyrics render as a quiet sheet below whatever has arrived —
+          you're about to read about this song, so read the song. New
+          readings land above it; the sheet leaves when the run ends. */}
+      {running > 0 && doc.source && (
+        <div className="reading lyric-sheet">
+          <div className="marginalia">the song, while it reads</div>
+          <div className="lyric-text">{doc.source}</div>
+        </div>
+      )}
     </div>
   );
 }

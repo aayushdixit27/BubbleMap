@@ -440,11 +440,19 @@ export const useMapStore = create<MapState>((set, get) => {
       };
 
       // "First RAW on screen" means visible, not committed — a streaming
-      // ghost with a label counts the moment it renders.
+      // ghost with a label counts the moment it renders. The metric is
+      // LIVE while it matters: a ticking count until the first RAW, then
+      // it freezes at the real number (D28's blocked-time lens).
+      let rawTimer: ReturnType<typeof setInterval> | null = null;
+      const stopRawTimer = () => {
+        if (rawTimer !== null) clearInterval(rawTimer);
+        rawTimer = null;
+      };
       const noteRawGhost = (s: Snapshot) => {
         if (firstRawAt === null && (s.bubbles ?? []).some((b) => b.tier === 'raw' && b.label)) {
           firstRawAt = performance.now() - t0;
-          pubMetrics(`first RAW visible in ${(firstRawAt / 1000).toFixed(0)}s`);
+          stopRawTimer();
+          pubMetrics(`first RAW in ${(firstRawAt / 1000).toFixed(0)}s`);
         }
       };
       // The run's own bookkeeping keys off ARRIVED (final id), not
@@ -498,6 +506,13 @@ export const useMapStore = create<MapState>((set, get) => {
           set({ ahead: { docId: run.docId, title, progress: run.progress } });
           void get().loadMaps();
         }
+        rawTimer = setInterval(() => {
+          if (firstRawAt === null) {
+            pubMetrics(`waiting for the first RAW · ${Math.round((performance.now() - t0) / 1000)}s`);
+          } else {
+            stopRawTimer();
+          }
+        }, 1000);
 
         // D34: server-rejected items reach the toolbar, never only the
         // server console — silent rejection broke a map once (descent v).
@@ -738,6 +753,7 @@ export const useMapStore = create<MapState>((set, get) => {
           }
         }
       } finally {
+        stopRawTimer();
         // The buffer holds a finished-but-unopened run until it is opened
         // (openMap adopts and releases it). An open, fully-committed run
         // releases immediately.

@@ -238,6 +238,18 @@ html, body, #root {
 }
 .rejection { font-size: 12px; color: var(--ink-dim); }
 
+/* The waiting sheet: the pasted lyrics, quiet serif, while a run
+   generates. Never a blank screen. */
+.lyric-sheet .marginalia { color: var(--ink-dim); }
+.lyric-text {
+  margin-top: 10px;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink-mid);
+  white-space: pre-wrap;
+}
+
 /* D39: unverified provenance — quiet, upright sans against the italic
    serif citation, dim ink. A fact, not an alarm. */
 .citation-flag {
