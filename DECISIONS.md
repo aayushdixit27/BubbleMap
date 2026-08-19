@@ -270,9 +270,53 @@ Every remaining feature is downstream of a corpus that does not exist.
 cheaper to get through.** Anything else waits. The corpus Target builds itself as a
 consequence — every judged song is a row in it. *18 Aug.*
 
+**D39 — The sourceLine guard FLAGS, it does not reject. Amends D23.**
+
+Evidence, "Be Her" run, 18 Aug: 20 rejections = **6 bubbles failing the sourceLine
+match, plus 14 links that failed only because their endpoints had just been deleted.**
+All six bubbles were strong material, not fabrications — including *"I offer the money
+because I know nobody will take it"* and *"She isn't disciplined, she just has nothing
+she needs to numb."*
+
+**Proof the guard checks form, not truth:** the same insight appeared twice. *"I can
+offer everything because nobody is able to take it"* cited a lyric verbatim and
+survived; *"I offer the money because I know nobody will take it"* didn't and died.
+
+D23 conflated two things. **The reading is the product; the citation is provenance.**
+A bad citation makes provenance unverified — a fact to surface — not the reading
+false. And D23 predates the D26 amendment to Hard Rule 1: silent rejection is the AI
+deciding for the human, which we removed from every other path.
+
+- A bubble whose `sourceLine` doesn't match **keeps its content**, gains
+  `citationUnverified: true`, and renders with a visible quiet marker.
+- Links resolve normally, since their endpoints now exist. 14 of 20 fixed for free.
+- The **flag rate becomes the diagnostic** — if it stays high, that's a §8 problem
+  about how the model cites, and it belongs to the architect. *18 Aug.*
+
+**D40 — Run-end messages must be true.** The same run said *"no deeper reading found"*
+on two descents whose RAW had been discarded, and *"stopped at 4 — the song ran out
+of threads"* when the guard had eaten them. Three surfaces, all false, one cause.
+
+A terminal state must distinguish **declined** (the model was asked and had nothing)
+from **discarded** (something was produced and removed). Never report exhaustion the
+system caused as exhaustion the song caused. *18 Aug.*
+
 ---
 
 ## Open — architect owes an answer
+
+**Q6 — "Explain this" on a highlighted RAW line.** User-discovered in the "Be Her"
+run: *"I read something from the raw section and say ooh that's good, but it just
+sort of ends there."* Proposed shape — highlight text, a hovering "explain this"
+appears, an AI answer appears in a second hover box, dismissed by clicking away.
+
+**Approved in principle.** It serves PRODUCT §2's outcome directly and it's a real
+gap in the core experience, not a whiteboard feature.
+
+**Sequenced after the current fix batch and one more song**, because it's a fifth AI
+verb and D38's standing bias says build only what makes the next eight songs cheaper.
+This makes each song deeper, not cheaper. If the "it just ends there" feeling persists
+after the guard fix, that reorders it.
 
 **Q5 — Should the Target eventually plot all three tiers as paths?**
 Each descent drawn as a line from the outer ring inward, so cross-category descents

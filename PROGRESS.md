@@ -1,10 +1,13 @@
 # PROGRESS
 
-> **Last updated: 19 Aug 2026. Phase 2 closed. D26 complete; D30–D38
-> ruled and built (Target = RAW disc, muted repeats, terminal partials,
-> rejection surface, persisted exhausted, one-ahead buffer). D38 standing
-> bias is live: until ~10 judged maps exist, build only what makes the
-> next eight songs cheaper. Next: map songs, not features.**
+> **Last updated: 19 Aug 2026. Phase 2 closed. D26 complete; D30–D40
+> ruled and built. Latest batch: the sourceLine guard FLAGS instead of
+> rejecting (D39, `citationUnverified`), run-end messages are true —
+> declined vs discarded (D40), the generating screen shows the lyrics,
+> and the first-RAW metric is live. D38 standing bias holds: until ~10
+> judged maps, build only what makes the next songs cheaper. Q6
+> ("explain this") approved but sequenced after one more song.
+> Next: map songs.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
