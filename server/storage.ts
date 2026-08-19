@@ -15,6 +15,10 @@ export interface MapMeta {
   createdAt: string;
   updatedAt: string;
   descents: number; // committed RAW bubbles — one per descent (D25/D26)
+  killed: number;   // RAW bubbles parked in rejected[] — killed descents.
+                    // With descents, this is Q3's kill-rate, per song: the
+                    // number PRODUCT §2 wants measured, and the tripwire
+                    // input for D25 (all-keeps across songs = choice missing).
   rawLine?: string; // the most recently committed RAW bubble's label — what you found
 }
 
@@ -56,6 +60,7 @@ export function listMaps(): MapMeta[] {
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
         descents: raws.length,
+        killed: (doc.rejected ?? []).filter((b) => b.tier === 'raw').length,
         ...(latest ? { rawLine: latest.label } : {}),
       });
     } catch (e) {

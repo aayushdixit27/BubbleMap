@@ -9,6 +9,7 @@ export interface MapMeta {
   createdAt: string;
   updatedAt: string;
   descents: number; // kept descents in the saved map (one committed RAW each)
+  killed: number;   // killed descents (RAWs in rejected[]) — Q3's kill-rate
   rawLine?: string; // most recently committed RAW label — the sharpest find
 }
 

@@ -30,8 +30,13 @@ function Library() {
     new Date(iso).toLocaleString('en-GB', {
       day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
     });
-  const descents = (n: number) =>
-    n === 0 ? 'no descents yet' : n === 1 ? '1 descent' : `${n} descents`;
+  // Q3's number, read at a glance: kills are the judgment record, so a row
+  // reads "7 kept · 3 killed". All-keeps across songs is D25's tripwire.
+  const descents = (kept: number, killed: number) => {
+    if (kept === 0 && killed === 0) return 'no descents yet';
+    const k = kept === 1 ? '1 kept' : `${kept} kept`;
+    return killed > 0 ? `${k} · ${killed} killed` : k;
+  };
 
   return (
     <div className="start">
@@ -42,7 +47,7 @@ function Library() {
               <span className="library-title">{m.title}</span>
               {m.rawLine && <span className="library-raw">{m.rawLine}</span>}
               <span className="library-meta">
-                {madeOn(m.createdAt)} · {descents(m.descents)}
+                {madeOn(m.createdAt)} · {descents(m.descents, m.killed)}
               </span>
             </button>
             <div className={`library-actions${deleting === m.id ? ' confirming' : ''}`}>
