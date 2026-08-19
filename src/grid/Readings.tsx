@@ -29,17 +29,24 @@ const isProvisional = (id: string) => id.startsWith('p:');
 interface Reading {
   safe?: Bubble;
   real?: Bubble;
-  raw?: Bubble; // absent only for a still-descending thread
+  raw?: Bubble; // absent for a still-descending or exhausted thread
+  exhausted?: boolean; // D33: asked to go deeper, declined — terminal, visible
+  safeRepeat?: boolean; // D32: ancestor already shown in an earlier reading
+  realRepeat?: boolean;
 }
 
-function Step({ bubble, parent, withNote }: { bubble: Bubble; parent?: Bubble; withNote?: boolean }) {
+// D32: a repeated ancestor renders its FULL text in muted ink — skippable
+// at no cost, never truncated to a fragment.
+function Step({ bubble, parent, withNote, repeat }: { bubble: Bubble; parent?: Bubble; withNote?: boolean; repeat?: boolean }) {
   const category = bubble.category;
   const cross = Boolean(parent?.category && category && parent.category !== category);
   const pending = isProvisional(bubble.id);
   return (
-    <div className={`reading-step t-${bubble.tier ?? 'safe'}${bubble.status === 'proposed' ? ' ghost' : ''}`}>
+    <div
+      className={`reading-step t-${bubble.tier ?? 'safe'}${bubble.status === 'proposed' ? ' ghost' : ''}${repeat ? ' repeat' : ''}`}
+    >
       {category && (
-        <div className="marginalia" style={{ color: `var(--ink-${category})` }}>
+        <div className="marginalia" style={{ color: repeat ? 'var(--ink-dim)' : `var(--ink-${category})` }}>
           {cross
             ? `${CATEGORY_LABEL[parent!.category!]} → ${CATEGORY_LABEL[category]}`
             : CATEGORY_LABEL[category]}
@@ -58,6 +65,7 @@ export function Readings() {
   const running = useMapStore((s) => s.running);
   const readOnly = useMapStore((s) => s.readOnly);
   const killDescent = useMapStore((s) => s.killDescent);
+  const exhausted = useMapStore((s) => s.exhausted);
 
   // One reading per RAW bubble, in arrival order (D26 #3 appends serially).
   // A thread-based derivation would hide every descent after the first
@@ -85,16 +93,30 @@ export function Readings() {
     }
     // While descends run, a REAL not yet descended shows as a partial
     // reading with a quiet "descending…" slot — never a silent blank.
-    if (running > 0) {
+    // D33: a REAL that was asked and declined RESOLVES to a terminal
+    // "no deeper reading found" slot; it stays after the run ends.
+    // Nothing that appeared may vanish.
+    if (running > 0 || exhausted.length > 0) {
       const descended = new Set(result.map((r) => r.real?.id).filter(Boolean));
       for (const real of doc.bubbles.filter((b) => b.tier === 'real')) {
         if (descended.has(real.id)) continue;
+        const isExhausted = exhausted.includes(real.id);
+        if (running === 0 && !isExhausted) continue;
         const parent = grid.parentOf.get(real.id);
-        result.push({ safe: parent?.tier === 'safe' ? parent : undefined, real });
+        result.push({ safe: parent?.tier === 'safe' ? parent : undefined, real, exhausted: isExhausted });
       }
     }
+    // D32: mark ancestors already shown in an earlier reading, by id, in
+    // render order — they render at full text in muted ink.
+    const seen = new Set<string>();
+    for (const r of result) {
+      r.safeRepeat = r.safe ? seen.has(r.safe.id) : false;
+      r.realRepeat = r.real ? seen.has(r.real.id) : false;
+      if (r.safe) seen.add(r.safe.id);
+      if (r.real) seen.add(r.real.id);
+    }
     return result;
-  }, [doc, running]);
+  }, [doc, running, exhausted]);
 
   if (!doc) return null;
 
@@ -111,13 +133,15 @@ export function Readings() {
           // reading that streamed in never remounts when it lands.
           <div key={stableKey(raw?.id ?? reading.real?.id ?? String(i))} className="reading">
             <div className="reading-numeral">{NUMERAL[i] ?? String(i + 1)}</div>
-            {reading.safe && <Step bubble={reading.safe} />}
-            {reading.real && <Step bubble={reading.real} parent={reading.safe} />}
+            {reading.safe && <Step bubble={reading.safe} repeat={reading.safeRepeat} />}
+            {reading.real && <Step bubble={reading.real} parent={reading.safe} repeat={reading.realRepeat} />}
             {raw ? (
               <Step bubble={raw} parent={reading.real} withNote />
             ) : (
               <div className="reading-step t-raw">
-                <div className="reading-line">descending…</div>
+                <div className="reading-line">
+                  {reading.exhausted ? 'no deeper reading found' : 'descending…'}
+                </div>
               </div>
             )}
             {killable && (

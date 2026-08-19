@@ -130,6 +130,10 @@ export default function App() {
   const killed = useMapStore((s) => s.killed);
   const undoKill = useMapStore((s) => s.undoKill);
   const progress = useMapStore((s) => s.progress);
+  const rejections = useMapStore((s) => s.rejections);
+  // D34: rejected proposals surface as a quiet toolbar count expanding to
+  // reasons — not a toast, nothing modal.
+  const [showRejections, setShowRejections] = useState(false);
   const [health, setHealth] = useState('server: …');
   // D26 #4: three views. Readings is the judgment surface (D25); grid
   // compares; target is where this song's RAW landed. The view lives in
@@ -171,6 +175,14 @@ export default function App() {
               undo kill
             </button>
           )}
+          {rejections.length > 0 && (
+            <button
+              className="text-action rejections-toggle"
+              onClick={() => setShowRejections((s) => !s)}
+            >
+              {rejections.length} proposal{rejections.length === 1 ? '' : 's'} rejected
+            </button>
+          )}
           {progress && (
             <span className="status">
               {progress.state === 'going'
@@ -183,6 +195,21 @@ export default function App() {
           {(status || running > 0) && status && <span className="status">{status}</span>}
           {error && <span className="status status-error">{error}</span>}
           {metrics && <span className="metrics">{metrics}</span>}
+        </div>
+      )}
+
+      {doc && showRejections && rejections.length > 0 && (
+        <div className="rejections">
+          {rejections.map((r, i) => {
+            const item = r.item as { label?: string; kind?: string } | null;
+            const hint = item?.label ?? item?.kind;
+            return (
+              <div key={i} className="rejection">
+                {r.reason}
+                {hint ? ` — “${hint}”` : ''}
+              </div>
+            );
+          })}
         </div>
       )}
 

@@ -110,6 +110,15 @@ interface MapState {
   progress: Progress | null;
   // Killed descents this session, newest last — the undo stack (D26 #2).
   killed: KilledDescent[];
+  // REALs (and SAFEs) that were asked to go deeper and declined, this
+  // session. D33: an exhausted thread resolves to a visible terminal
+  // state, it never vanishes. Session memory — persisting it is a data-
+  // model question the architect hasn't been asked.
+  exhausted: string[];
+  // Server-rejected proposal items for the open map, D34: a quiet count
+  // in the toolbar, expanding to reasons. Silent rejection produced a
+  // broken map once (Money, descent v); never again invisible.
+  rejections: { reason: string; item: unknown }[];
 
   setView: (view: View) => void;
   loadMaps: () => Promise<void>;
@@ -289,6 +298,8 @@ export const useMapStore = create<MapState>((set, get) => {
     readOnly: false,
     running: 0,
     killed: [],
+    exhausted: [],
+    rejections: [],
     progress: null,
     status: '',
     error: null,
@@ -306,7 +317,7 @@ export const useMapStore = create<MapState>((set, get) => {
 
     openMap: async (id) => {
       try {
-        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], progress: null, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], exhausted: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -325,11 +336,11 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], progress: null, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], exhausted: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
-      set({ doc: null, readOnly: false, killed: [], progress: null, status: '', metrics: null });
+      set({ doc: null, readOnly: false, killed: [], exhausted: [], rejections: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -360,10 +371,16 @@ export const useMapStore = create<MapState>((set, get) => {
       try {
         const doc = await apiCreateMap(title, source);
         set({
-          doc, view: 'readings', readOnly: false, killed: [], error: null, metrics: null,
-          status: '', running: 1,
+          doc, view: 'readings', readOnly: false, killed: [], exhausted: [], rejections: [],
+          error: null, metrics: null, status: '', running: 1,
           progress: { done: 0, target: DESCENT_TARGET, state: 'going' },
         });
+
+        // D34: server-rejected items reach the toolbar, never only the
+        // server console — silent rejection broke a map once (descent v).
+        const noteRejections = (p: Proposal) => {
+          if (p.rejections?.length) set({ rejections: [...get().rejections, ...p.rejections] });
+        };
 
         // ── Seed, overlapping the first descend (D26 #3's ~20s target).
         // The moment the first REAL bubble is fully streamed (a later
@@ -387,6 +404,7 @@ export const useMapStore = create<MapState>((set, get) => {
             }
           }
         });
+        noteRejections(seedProposal);
         finalizeRun('seed', seedProposal);
         commitArrived(seedProposal);
         tick();
@@ -447,6 +465,7 @@ export const useMapStore = create<MapState>((set, get) => {
         };
 
         const land = (runId: string, proposal: Proposal, focusId?: string) => {
+          noteRejections(proposal);
           let remapped = remap(proposal);
           if (focusId) remapped = ensureParentLink(remapped, focusId);
           finalizeRun(runId, remapped);
@@ -455,8 +474,14 @@ export const useMapStore = create<MapState>((set, get) => {
           return remapped;
         };
 
-        // Threads that declined to go deeper — do not ask twice, do not pad.
+        // Threads that declined to go deeper — do not ask twice, do not
+        // pad. Mirrored into state so the UI renders the terminal
+        // "no deeper reading found" slot instead of vanishing them (D33).
         const exhausted = new Set<string>();
+        const exhaust = (id: string) => {
+          exhausted.add(id);
+          set({ exhausted: [...exhausted] });
+        };
         let errors = 0;
 
         const descendOn = async (focusId: string, runId: string): Promise<Bubble[]> => {
@@ -467,11 +492,11 @@ export const useMapStore = create<MapState>((set, get) => {
             });
             errors = 0;
             const landed = land(runId, proposal, focusId);
-            if (!landed.bubbles.length) exhausted.add(focusId);
+            if (!landed.bubbles.length) exhaust(focusId);
             return landed.bubbles;
           } catch (e) {
             errors += 1;
-            exhausted.add(focusId);
+            exhaust(focusId);
             set({ error: e instanceof Error ? e.message : String(e) });
             return [];
           }
@@ -484,7 +509,7 @@ export const useMapStore = create<MapState>((set, get) => {
             const proposal = await promise;
             land('descend:first', proposal, focusId);
           } catch (e) {
-            if (focusId) exhausted.add(focusId);
+            if (focusId) exhaust(focusId);
             set({ error: e instanceof Error ? e.message : String(e) });
           }
         }
@@ -527,7 +552,7 @@ export const useMapStore = create<MapState>((set, get) => {
           }
           spawnCounter += 1;
           const spawned = await descendOn(safes[0].id, `descend:spawn${spawnCounter}:${safes[0].id}`);
-          if (!spawned.some((b) => b.tier === 'real')) exhausted.add(safes[0].id);
+          if (!spawned.some((b) => b.tier === 'real')) exhaust(safes[0].id);
         }
 
         set({ running: 0 });
