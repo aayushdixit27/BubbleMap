@@ -66,14 +66,29 @@ html, body, #root {
 }
 /* The SVG fills whatever height the view has; preserveAspectRatio keeps the
    circle whole. Sizing from the container, not vmin — vmin overflowed and
-   clipped the bottom quadrants on a short window. */
+   clipped the bottom quadrants on a short window. flex + min-width lets it
+   yield room to the provenance panel instead of pushing it off-screen. */
 .target-view svg {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   max-height: 640px;
 }
 /* Marginalia scale (D22): sizes are SVG user units in the 960-unit viewBox,
    so ~24 units reads as ~11–13px across the panel's size range. */
+.target-dot { cursor: pointer; }
+/* Provenance: the SAFE → REAL → RAW chain behind a clicked dot — the
+   cheap answer to Q5. A panel beside the disc, hairline-bounded on the
+   left, reusing the readings' type crescendo. */
+.target-panel {
+  width: 380px;
+  max-height: 100%;
+  overflow-y: auto;
+  flex: none;
+  padding: 8px 28px 24px;
+  border-left: 1px solid var(--hairline);
+}
+.target-panel .reading-step { margin-top: 18px; }
 .target-label {
   font-family: var(--sans);
   font-size: 24px;
@@ -138,6 +153,8 @@ html, body, #root {
   letter-spacing: 0.09em;
   margin-bottom: 3px;
 }
+/* The tier, named in the marginalia — dim so category keeps its ink. */
+.tier-label { color: var(--ink-dim); }
 
 .entry-label { overflow-wrap: break-word; } /* wraps, never clips (rule 7) */
 

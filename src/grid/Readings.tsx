@@ -50,6 +50,9 @@ function Step({ bubble, parent, withNote, repeat }: { bubble: Bubble; parent?: B
     >
       {category && (
         <div className="marginalia" style={{ color: repeat ? 'var(--ink-dim)' : `var(--ink-${category})` }}>
+          {/* Tier is named, not only sized — watching the descent happen
+              is the point. Dim, so category keeps its ink. */}
+          {bubble.tier && <span className="tier-label">{bubble.tier} · </span>}
           {cross
             ? `${CATEGORY_LABEL[parent!.category!]} → ${CATEGORY_LABEL[category]}`
             : CATEGORY_LABEL[category]}
@@ -153,6 +156,7 @@ export function Readings() {
               <Step bubble={raw} parent={reading.real} withNote />
             ) : (
               <div className="reading-step t-raw">
+                <div className="marginalia tier-label">raw</div>
                 <div className="reading-line">
                   {reading.terminal === 'declined'
                     ? 'no deeper reading found'
