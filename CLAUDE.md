@@ -6,6 +6,10 @@
 2. `DECISIONS.md` — what's already been answered. Do not re-decide these.
 3. `PRODUCT.md` — the *why*. Short.
 
+`DECISIONS-superseded.md` is **not** part of that read. It holds dead decisions so
+they can't be quietly reintroduced. Open the relevant entry only when you're about to
+propose something that resembles one — the reason it died is usually still true.
+
 `ARCHITECTURE.md` is a reference document, not a briefing. **Read the sections you
 need, when you need them**, not the whole file at session start. Subfolders carry
 their own CLAUDE.md pointing at the relevant sections.
@@ -47,9 +51,12 @@ One user. Local only. No accounts, no cloud, no collaboration, ever.
 
 ## Hard rules
 
-1. **AI never mutates the map.** Every AI-produced bubble or link arrives with
-   `status: 'proposed'` and requires a human accept. There is no code path where
-   an API response writes committed state.
+1. **AI never commits anything the human has not seen, and anything committed can
+   be killed in one gesture.** *(Amended by D26 — was: every bubble requires an
+   explicit accept.)* Descents land by default because they arrive one at a time and
+   are read as they land. What survives unchanged: nothing may be committed
+   off-screen, in bulk, or without a visible way to remove it. If you find yourself
+   writing a code path that adds content the human could not have seen, stop.
 2. **The system prompt in ARCHITECTURE §8 is verbatim.** Do not reword, compress,
    reformat, or "clean up" it. It is product copy. Changing it is a product
    decision made by the architect.
@@ -67,6 +74,24 @@ One user. Local only. No accounts, no cloud, no collaboration, ever.
 10. **Check PRODUCT §3 before adding anything.** If a feature doesn't shorten the
     path from "I like this song" to "here is the raw thing," it's a non-goal by
     default. Say so out loud rather than quietly building it.
+
+## Standards that held under pressure — keep holding them
+
+These were earned during the hard part of the build. Phase 2's gate has now cleared,
+which means nothing but this file enforces them. That is exactly when standards sag.
+
+- **Render before deciding.** A question about how something looks or feels cannot be
+  answered from a description of it. Build the cheap version and look. Two layout
+  decisions were made from data structures and both were wrong within a day.
+- **Record the reasoning, not just the ruling.** A decision with its argument attached
+  can be overturned by anyone who finds the argument false. A bare ruling can only be
+  overturned by whoever made it, which means it usually isn't.
+- **The specifier inspects the artifact, not the report.** Reports carry what was
+  built; they cannot carry what it feels like. Every significant UI defect in this
+  project — the empty RAW column, the invisible descend link, the off-centre column —
+  was found by opening the app, and none appeared in any written report.
+- **Write the runbook on the first failure, not the second.** The API content filter
+  killed two long generations before anyone wrote down what to do about it.
 
 ## Conventions
 
