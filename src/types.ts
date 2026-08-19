@@ -23,6 +23,9 @@ export interface Bubble {
                               // Server-validated against doc.source; fabrication guard.
                               // For kind 'lyric' it is the line itself.
   note?: string;              // longer expansion, shown in Inspector.
+  exhausted?: boolean;        // D35: asked to go deeper and declined. Set by the
+                              // client when a descend returns nothing. Optional;
+                              // pre-D35 files backfill undefined. No migration.
   position: { x: number; y: number };
   origin: Origin;
   status: Status;

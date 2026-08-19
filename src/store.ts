@@ -110,11 +110,6 @@ interface MapState {
   progress: Progress | null;
   // Killed descents this session, newest last — the undo stack (D26 #2).
   killed: KilledDescent[];
-  // REALs (and SAFEs) that were asked to go deeper and declined, this
-  // session. D33: an exhausted thread resolves to a visible terminal
-  // state, it never vanishes. Session memory — persisting it is a data-
-  // model question the architect hasn't been asked.
-  exhausted: string[];
   // Server-rejected proposal items for the open map, D34: a quiet count
   // in the toolbar, expanding to reasons. Silent rejection produced a
   // broken map once (Money, descent v); never again invisible.
@@ -298,7 +293,6 @@ export const useMapStore = create<MapState>((set, get) => {
     readOnly: false,
     running: 0,
     killed: [],
-    exhausted: [],
     rejections: [],
     progress: null,
     status: '',
@@ -317,7 +311,7 @@ export const useMapStore = create<MapState>((set, get) => {
 
     openMap: async (id) => {
       try {
-        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], exhausted: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -336,11 +330,11 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], exhausted: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
-      set({ doc: null, readOnly: false, killed: [], exhausted: [], rejections: [], progress: null, status: '', metrics: null });
+      set({ doc: null, readOnly: false, killed: [], rejections: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -371,7 +365,7 @@ export const useMapStore = create<MapState>((set, get) => {
       try {
         const doc = await apiCreateMap(title, source);
         set({
-          doc, view: 'readings', readOnly: false, killed: [], exhausted: [], rejections: [],
+          doc, view: 'readings', readOnly: false, killed: [], rejections: [],
           error: null, metrics: null, status: '', running: 1,
           progress: { done: 0, target: DESCENT_TARGET, state: 'going' },
         });
@@ -475,16 +469,25 @@ export const useMapStore = create<MapState>((set, get) => {
         };
 
         // Threads that declined to go deeper — do not ask twice, do not
-        // pad. Mirrored into state so the UI renders the terminal
-        // "no deeper reading found" slot instead of vanishing them (D33).
+        // pad. The local set guards re-asking (errors included); a genuine
+        // DECLINE additionally sets the persisted `exhausted` flag on the
+        // bubble (D35), which is what renders the terminal
+        // "no deeper reading found" slot and survives reload (D33).
         const exhausted = new Set<string>();
         const exhaust = (id: string) => {
           exhausted.add(id);
-          set({ exhausted: [...exhausted] });
+          const d = get().doc;
+          if (!d) return;
+          set({
+            doc: { ...d, bubbles: d.bubbles.map((b) => (b.id === id ? { ...b, exhausted: true } : b)) },
+          });
+          scheduleSave();
         };
         let errors = 0;
 
-        const descendOn = async (focusId: string, runId: string): Promise<Bubble[]> => {
+        // Returns the landed bubbles, or null when the call errored — an
+        // error is not a decline, and callers must not flag one as such.
+        const descendOn = async (focusId: string, runId: string): Promise<Bubble[] | null> => {
           try {
             const proposal = await streamVerb('descend', get().doc!, focusId, (s) => {
               applySnapshot(runId, s);
@@ -495,10 +498,12 @@ export const useMapStore = create<MapState>((set, get) => {
             if (!landed.bubbles.length) exhaust(focusId);
             return landed.bubbles;
           } catch (e) {
+            // An API error is not a decline — no persisted flag, no terminal
+            // "no deeper reading found" claim. Session-only: don't re-ask.
             errors += 1;
-            exhaust(focusId);
+            exhausted.add(focusId);
             set({ error: e instanceof Error ? e.message : String(e) });
-            return [];
+            return null;
           }
         };
 
@@ -509,7 +514,7 @@ export const useMapStore = create<MapState>((set, get) => {
             const proposal = await promise;
             land('descend:first', proposal, focusId);
           } catch (e) {
-            if (focusId) exhaust(focusId);
+            if (focusId) exhausted.add(focusId);
             set({ error: e instanceof Error ? e.message : String(e) });
           }
         }
@@ -552,7 +557,7 @@ export const useMapStore = create<MapState>((set, get) => {
           }
           spawnCounter += 1;
           const spawned = await descendOn(safes[0].id, `descend:spawn${spawnCounter}:${safes[0].id}`);
-          if (!spawned.some((b) => b.tier === 'real')) exhaust(safes[0].id);
+          if (spawned !== null && !spawned.some((b) => b.tier === 'real')) exhaust(safes[0].id);
         }
 
         set({ running: 0 });
