@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Readings } from './grid/Readings';
 import { ThreadGrid } from './grid/ThreadGrid';
 import { Signature } from './signature/Signature';
+import { Target } from './target/Target';
 import { useMapStore } from './store';
 
 // D26 #1: home base. The landing screen is the library — your songs, most
@@ -126,8 +127,15 @@ export default function App() {
   const undoKill = useMapStore((s) => s.undoKill);
   const progress = useMapStore((s) => s.progress);
   const [health, setHealth] = useState('server: …');
-  // Readings is the judgment surface (D25); the grid stays as a toggle.
-  const [view, setView] = useState<'grid' | 'readings'>('readings');
+  // D26 #4: three views. Readings is the judgment surface (D25); grid
+  // compares; target is where this song's RAW landed. The toggle names the
+  // destination, never the current state — so the current view has no button.
+  type View = 'readings' | 'grid' | 'target';
+  const VIEWS: View[] = ['readings', 'grid', 'target'];
+  const [view, setView] = useState<View>('readings');
+
+  // Opening a song always lands on Readings, the default.
+  useEffect(() => setView('readings'), [doc?.id]);
 
   useEffect(() => {
     void loadMaps();
@@ -152,12 +160,11 @@ export default function App() {
       {doc && (
         <div className="toolbar">
           <button className="text-action" onClick={closeMap}>← maps</button>
-          <button
-            className="text-action"
-            onClick={() => setView(view === 'grid' ? 'readings' : 'grid')}
-          >
-            {view === 'grid' ? 'readings' : 'grid'}
-          </button>
+          {VIEWS.filter((v) => v !== view).map((v) => (
+            <button key={v} className="text-action" onClick={() => setView(v)}>
+              {v}
+            </button>
+          ))}
           {killed.length > 0 && (
             <button className="text-action" onClick={undoKill}>
               undo kill
@@ -178,7 +185,11 @@ export default function App() {
         </div>
       )}
 
-      {doc ? view === 'readings' ? <Readings /> : <ThreadGrid /> : <Library />}
+      {doc ? (
+        view === 'readings' ? <Readings /> : view === 'grid' ? <ThreadGrid /> : <Target doc={doc} />
+      ) : (
+        <Library />
+      )}
     </div>
   );
 }
