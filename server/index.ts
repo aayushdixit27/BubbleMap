@@ -129,7 +129,9 @@ app.post('/api/ai/seed', (req, res) => streamVerb('seed', req, res));
 app.post('/api/ai/descend', (req, res) => streamVerb('descend', req, res));
 app.post('/api/ai/interrogate', (req, res) => streamVerb('interrogate', req, res));
 
-const PORT = 8787;
+// Overridable so integration harnesses run on a scratch port and never
+// contend with the human-owned dev server. Always 127.0.0.1 (hard rule 4).
+const PORT = Number(process.env.BUBBLEMAP_PORT ?? 8787);
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`BubbleMap server listening on http://127.0.0.1:${PORT}`);
 });

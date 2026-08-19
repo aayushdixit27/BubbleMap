@@ -1,8 +1,10 @@
 # PROGRESS
 
-> **Last updated: 18 Aug 2026, late session. Phase 2 closed (gate passed).
-> D26 complete — all four chunks built and verified. Next: a real song
-> end-to-end under the full D26 flow. Nothing is half-built.**
+> **Last updated: 19 Aug 2026. Phase 2 closed. D26 complete; D30–D38
+> ruled and built (Target = RAW disc, muted repeats, terminal partials,
+> rejection surface, persisted exhausted, one-ahead buffer). D38 standing
+> bias is live: until ~10 judged maps exist, build only what makes the
+> next eight songs cheaper. Next: map songs, not features.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -94,6 +96,18 @@ Rule 1** — re-read it in CLAUDE.md):
 - **`maps/` is gitignored — no VCS safety net.** Copy a map to the
   scratchpad before any risky operation on it (that's how kill/undo was
   tested against the real Beautiful map).
+- **D37 one-ahead buffer** (`src/store.ts`): the active run OWNS its doc
+  (module-level `activeRun`); every run mutation targets `run.doc` and
+  publishes to the store only while that map is open. Unopened arrivals
+  queue as `proposed` (nothing on disk); `openMap` adopts — commits the
+  queue in the frame it first renders. The loop keys off ARRIVED (final
+  id), not committed, so an unopened run never stalls. Kill/undo write
+  through to `run.doc` — one truth. One run total; a third song is
+  structurally impossible. **Verified live** by a headless harness
+  (scratchpad `d37-harness.mts` pattern: patch fetch to a scratch server
+  on `BUBBLEMAP_PORT=8899`, `BUBBLEMAP_MAPS_DIR` scratch, cheap
+  `BUBBLEMAP_MODEL`, drive the real store, assert gate/adoption/
+  no-orphans/disk-parity). Rebuild it from this note if needed.
 - **One owner per mutable resource** (field-guides/systems #5, written
   down as instructed): dev servers — **the human**, implementer never
   relaunches; map files — **the running app exclusively**, no hand-edits

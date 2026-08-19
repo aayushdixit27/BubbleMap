@@ -64,6 +64,34 @@ const replaceRun = <T extends { id: string }>(items: T[], runId: string, next: T
 // D26 #3: up to this many descents per song, generated one at a time.
 const DESCENT_TARGET = 10;
 
+// ── D37: "one song ahead, never more." ─────────────────────────────────
+// The active run OWNS its doc. Everything the run does mutates run.doc,
+// which is published to the store only while that map is the open one.
+// While the map is unopened, arrivals stay `proposed` and queue in
+// `uncommitted`; opening the map commits them — they render in the same
+// frame they commit, so nothing commits off-screen (Hard Rule 1). This is
+// a one-slot buffer, not a queue: while `activeRun` exists (generating OR
+// finished-but-unopened), no new run can start. Flow control, not WIP.
+interface ActiveRun {
+  docId: string;
+  title: string;
+  doc: BubbleMapDoc;
+  uncommitted: Proposal[]; // arrived while unopened — commit on open
+  progress: Progress;
+  metrics: string | null;
+  rejections: { reason: string; item: unknown }[];
+  error: string | null;
+  finished: boolean;
+}
+let activeRun: ActiveRun | null = null;
+
+// The quiet toolbar indicator for a run whose map is not open.
+export interface AheadRun {
+  docId: string;
+  title: string;
+  progress: Progress;
+}
+
 // D26 #4's three views. UI state, not doc schema — deliberately not in
 // types.ts.
 export type View = 'readings' | 'grid' | 'target';
@@ -114,6 +142,10 @@ interface MapState {
   // in the toolbar, expanding to reasons. Silent rejection produced a
   // broken map once (Money, descent v); never again invisible.
   rejections: { reason: string; item: unknown }[];
+  // D37: the run whose map is NOT open, if any — drives the quiet
+  // "next song · N of 10" toolbar indicator. null when no run, or when
+  // the running map is the open one (its progress shows normally).
+  ahead: AheadRun | null;
 
   setView: (view: View) => void;
   loadMaps: () => Promise<void>;
@@ -121,7 +153,9 @@ interface MapState {
   removeMap: (id: string) => Promise<void>;
   openProbeRun: () => void;
   closeMap: () => void;
-  createAndSeed: (title: string, source: string) => Promise<void>;
+  // openNow=false is D37's "start the next song while reading this one":
+  // the run generates against its own doc and the current map stays open.
+  createAndSeed: (title: string, source: string, opts?: { openNow?: boolean }) => Promise<void>;
   killDescent: (path: DescentPath) => void;
   undoKill: () => void;
 }
@@ -164,10 +198,10 @@ export const useMapStore = create<MapState>((set, get) => {
     }
   };
 
-  // Rebuild one run's provisional ghosts from the latest streamed snapshot.
-  const applySnapshot = (runId: string, snapshot: Snapshot) => {
-    const doc = get().doc;
-    if (!doc) return;
+  // Rebuild one run's provisional ghosts from the latest streamed
+  // snapshot. Pure: takes and returns the RUN's doc (D37 — a run owns its
+  // doc; the store's open doc may be a different map entirely).
+  const applySnapshot = (doc: BubbleMapDoc, runId: string, snapshot: Snapshot): BubbleMapDoc => {
     const now = new Date().toISOString();
 
     const refToId = new Map<string, string>();
@@ -212,43 +246,25 @@ export const useMapStore = create<MapState>((set, get) => {
       });
     }
 
-    set({
-      doc: {
-        ...doc,
-        bubbles: nextBubbles,
-        links: replaceRun(doc.links, runId, links),
-      },
-    });
-  };
-
-  // D26 #2 (amended Hard Rule 1): a completed arrival commits. The human
-  // watched it stream in and reads it as it lands; judgment is by
-  // exception — the kill gesture — not by approval. Nothing commits
-  // off-screen: this runs only after the run's ghosts have rendered.
-  const commitArrived = (proposal: Proposal) => {
-    let next = get().doc;
-    if (!next) return;
-    for (const bubble of proposal.bubbles) next = commitInto(next, bubble.id);
-    set({ doc: next });
-    scheduleSave();
+    return {
+      ...doc,
+      bubbles: nextBubbles,
+      links: replaceRun(doc.links, runId, links),
+    };
   };
 
   // Swap a run's provisional ghosts for the server-resolved proposal —
   // in place (stable order), and with each final id aliased back to its
-  // ghost key so the rendered reading never remounts or moves.
-  const finalizeRun = (runId: string, proposal: Proposal) => {
-    const doc = get().doc;
-    if (!doc) return;
+  // ghost key so the rendered reading never remounts or moves. Pure.
+  const finalizeRun = (doc: BubbleMapDoc, runId: string, proposal: Proposal): BubbleMapDoc => {
     for (const [ref, finalId] of Object.entries(proposal.refs)) {
       keyAlias.set(finalId, provisionalId(runId, ref));
     }
-    set({
-      doc: {
-        ...doc,
-        bubbles: replaceRun(doc.bubbles, runId, proposal.bubbles),
-        links: replaceRun(doc.links, runId, proposal.links),
-      },
-    });
+    return {
+      ...doc,
+      bubbles: replaceRun(doc.bubbles, runId, proposal.bubbles),
+      links: replaceRun(doc.links, runId, proposal.links),
+    };
   };
 
   const removeBubbles = (doc: BubbleMapDoc, ids: Set<string>): BubbleMapDoc => ({
@@ -294,6 +310,7 @@ export const useMapStore = create<MapState>((set, get) => {
     running: 0,
     killed: [],
     rejections: [],
+    ahead: null,
     progress: null,
     status: '',
     error: null,
@@ -310,6 +327,35 @@ export const useMapStore = create<MapState>((set, get) => {
     },
 
     openMap: async (id) => {
+      // D37: opening the ahead-run's map ADOPTS it — the run's doc is
+      // fresher than disk, and everything that arrived while unopened
+      // commits now, rendering in the same frame it commits. From here
+      // the run publishes into the open doc and commits live, exactly
+      // like a run that was open from the start.
+      if (activeRun && activeRun.docId === id) {
+        let doc = activeRun.doc;
+        for (const p of activeRun.uncommitted) {
+          for (const b of p.bubbles) doc = commitInto(doc, b.id);
+        }
+        activeRun.uncommitted = [];
+        activeRun.doc = doc;
+        set({
+          doc,
+          view: 'readings',
+          readOnly: false,
+          killed: [],
+          ahead: null,
+          running: activeRun.finished ? 0 : 1,
+          progress: activeRun.progress,
+          metrics: activeRun.metrics,
+          rejections: activeRun.rejections,
+          error: activeRun.error,
+          status: '',
+        });
+        scheduleSave();
+        if (activeRun.finished) activeRun = null;
+        return;
+      }
       try {
         set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
@@ -318,6 +364,10 @@ export const useMapStore = create<MapState>((set, get) => {
     },
 
     removeMap: async (id) => {
+      if (activeRun?.docId === id) {
+        set({ error: 'that song is still generating — open it or wait for it to finish' });
+        return;
+      }
       try {
         await apiDeleteMap(id);
         set({ error: null });
@@ -334,7 +384,9 @@ export const useMapStore = create<MapState>((set, get) => {
     },
 
     closeMap: () => {
-      set({ doc: null, readOnly: false, killed: [], rejections: [], progress: null, status: '', metrics: null });
+      // Navigating away from a still-running map is legal under D37: the
+      // run keeps going against its own doc and shows up as `ahead`.
+      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -343,37 +395,107 @@ export const useMapStore = create<MapState>((set, get) => {
     // batched. The first descend overlaps the tail of the seed stream so
     // RAW reaches the screen fast; everything after runs one at a time.
     // Stops early, honestly, when the song runs out of threads.
-    createAndSeed: async (title, source) => {
+    createAndSeed: async (title, source, opts) => {
+      // D37: a one-slot buffer, not a queue. While any run exists —
+      // generating, or finished but never opened — a new one cannot start.
+      if (activeRun) {
+        set({ error: 'a song is already generating — one ahead, never more' });
+        return;
+      }
+      const openNow = opts?.openNow ?? true;
+
       const t0 = performance.now();
       let firstRawAt: number | null = null;
+
+      let run: ActiveRun; // assigned right after the map is created
+
+      // ── Run-aware publishing. The run owns run.doc; the store's open
+      // doc gets updates only when it IS the run's map. Unopened, the run
+      // surfaces only as the quiet `ahead` indicator.
+      const isOpen = () => get().doc?.id === run.docId;
+      const publishDoc = (next: BubbleMapDoc) => {
+        run.doc = next;
+        if (isOpen()) set({ doc: next });
+      };
+      const pubProgress = (progress: Progress) => {
+        run.progress = progress;
+        if (isOpen()) set({ progress });
+        else set({ ahead: { docId: run.docId, title: run.title, progress } });
+      };
+      const pubMetrics = (metrics: string) => {
+        run.metrics = metrics;
+        if (isOpen()) set({ metrics });
+      };
+      const pubError = (e: unknown) => {
+        run.error = e instanceof Error ? e.message : String(e);
+        if (isOpen()) set({ error: run.error });
+      };
+
       // "First RAW on screen" means visible, not committed — a streaming
       // ghost with a label counts the moment it renders.
       const noteRawGhost = (s: Snapshot) => {
         if (firstRawAt === null && (s.bubbles ?? []).some((b) => b.tier === 'raw' && b.label)) {
           firstRawAt = performance.now() - t0;
-          set({ metrics: `first RAW visible in ${(firstRawAt / 1000).toFixed(0)}s` });
+          pubMetrics(`first RAW visible in ${(firstRawAt / 1000).toFixed(0)}s`);
         }
       };
-      const rawCount = () =>
-        (get().doc?.bubbles ?? []).filter((b) => b.tier === 'raw' && b.status === 'committed').length;
+      // The run's own bookkeeping keys off ARRIVED (final id), not
+      // committed — an unopened run holds everything as proposed, and the
+      // loop must still see what has landed.
+      const arrived = (b: Bubble) => !isProvisional(b.id);
+      const rawCount = () => run.doc.bubbles.filter((b) => b.tier === 'raw' && arrived(b)).length;
       const tick = (state: Progress['state'] = 'going', note?: string) => {
-        set({
-          progress: { done: rawCount(), target: DESCENT_TARGET, state, ...(note ? { note } : {}) },
-        });
+        pubProgress({ done: rawCount(), target: DESCENT_TARGET, state, ...(note ? { note } : {}) });
+      };
+
+      // D26 #2 (amended Hard Rule 1): a completed arrival commits — but
+      // ONLY while its map is on screen. Unopened, it queues as proposed;
+      // openMap commits the queue in the same frame it first renders.
+      const commitArrived = (proposal: Proposal) => {
+        if (!isOpen()) {
+          run.uncommitted.push(proposal);
+          return;
+        }
+        let next = run.doc;
+        for (const bubble of proposal.bubbles) next = commitInto(next, bubble.id);
+        publishDoc(next);
+        scheduleSave();
       };
 
       try {
         const doc = await apiCreateMap(title, source);
-        set({
-          doc, view: 'readings', readOnly: false, killed: [], rejections: [],
-          error: null, metrics: null, status: '', running: 1,
+        run = {
+          docId: doc.id,
+          title,
+          doc,
+          uncommitted: [],
           progress: { done: 0, target: DESCENT_TARGET, state: 'going' },
-        });
+          metrics: null,
+          rejections: [],
+          error: null,
+          finished: false,
+        };
+        activeRun = run;
+        if (openNow) {
+          set({
+            doc, view: 'readings', readOnly: false, killed: [], rejections: [],
+            error: null, metrics: null, status: '', running: 1,
+            ahead: null,
+            progress: run.progress,
+          });
+        } else {
+          // The current map stays open; the new one appears in the
+          // library (apiCreateMap persisted it) and in the ahead chip.
+          set({ ahead: { docId: run.docId, title, progress: run.progress } });
+          void get().loadMaps();
+        }
 
         // D34: server-rejected items reach the toolbar, never only the
         // server console — silent rejection broke a map once (descent v).
         const noteRejections = (p: Proposal) => {
-          if (p.rejections?.length) set({ rejections: [...get().rejections, ...p.rejections] });
+          if (!p.rejections?.length) return;
+          run.rejections = [...run.rejections, ...p.rejections];
+          if (isOpen()) set({ rejections: run.rejections });
         };
 
         // ── Seed, overlapping the first descend (D26 #3's ~20s target).
@@ -382,7 +504,7 @@ export const useMapStore = create<MapState>((set, get) => {
         // its links are remapped to final ids once seed resolves.
         let early: { focusRef: string; promise: Promise<Proposal> } | null = null;
         const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) => {
-          applySnapshot('seed', snapshot);
+          publishDoc(applySnapshot(run.doc, 'seed', snapshot));
           if (!early) {
             const bs = snapshot.bubbles ?? [];
             const i = bs.findIndex((b) => b.tier === 'real' && b.ref && b.label && b.sourceLine);
@@ -390,8 +512,8 @@ export const useMapStore = create<MapState>((set, get) => {
               const focusRef = bs[i].ref!;
               early = {
                 focusRef,
-                promise: streamVerb('descend', get().doc!, provisionalId('seed', focusRef), (s) => {
-                  applySnapshot('descend:first', s);
+                promise: streamVerb('descend', run.doc, provisionalId('seed', focusRef), (s) => {
+                  publishDoc(applySnapshot(run.doc, 'descend:first', s));
                   noteRawGhost(s);
                 }),
               };
@@ -399,12 +521,13 @@ export const useMapStore = create<MapState>((set, get) => {
           }
         });
         noteRejections(seedProposal);
-        finalizeRun('seed', seedProposal);
+        publishDoc(finalizeRun(run.doc, 'seed', seedProposal));
         commitArrived(seedProposal);
         tick();
 
         if (!seedProposal.bubbles.length) {
-          set({ running: 0, error: 'seed returned nothing usable — check the server log for rejections' });
+          if (isOpen()) set({ running: 0 });
+          pubError(new Error('seed returned nothing usable — check the server log for rejections'));
           tick('stopped', 'seed failed');
           return;
         }
@@ -433,7 +556,7 @@ export const useMapStore = create<MapState>((set, get) => {
         // because hasRawChild can't see the child. (Money, descent v.)
         const ensureParentLink = (proposal: Proposal, focusId: string): Proposal => {
           const child = proposal.bubbles[0];
-          const focus = get().doc?.bubbles.find((b) => b.id === focusId);
+          const focus = run.doc.bubbles.find((b) => b.id === focusId);
           if (!child || !focus) return proposal;
           if (!child.tier || !focus.tier || TIERS.indexOf(child.tier) <= TIERS.indexOf(focus.tier)) {
             return proposal;
@@ -462,7 +585,7 @@ export const useMapStore = create<MapState>((set, get) => {
           noteRejections(proposal);
           let remapped = remap(proposal);
           if (focusId) remapped = ensureParentLink(remapped, focusId);
-          finalizeRun(runId, remapped);
+          publishDoc(finalizeRun(run.doc, runId, remapped));
           commitArrived(remapped);
           tick();
           return remapped;
@@ -476,12 +599,12 @@ export const useMapStore = create<MapState>((set, get) => {
         const exhausted = new Set<string>();
         const exhaust = (id: string) => {
           exhausted.add(id);
-          const d = get().doc;
-          if (!d) return;
-          set({
-            doc: { ...d, bubbles: d.bubbles.map((b) => (b.id === id ? { ...b, exhausted: true } : b)) },
+          const d = run.doc;
+          publishDoc({
+            ...d,
+            bubbles: d.bubbles.map((b) => (b.id === id ? { ...b, exhausted: true } : b)),
           });
-          scheduleSave();
+          if (isOpen()) scheduleSave();
         };
         let errors = 0;
 
@@ -489,8 +612,8 @@ export const useMapStore = create<MapState>((set, get) => {
         // error is not a decline, and callers must not flag one as such.
         const descendOn = async (focusId: string, runId: string): Promise<Bubble[] | null> => {
           try {
-            const proposal = await streamVerb('descend', get().doc!, focusId, (s) => {
-              applySnapshot(runId, s);
+            const proposal = await streamVerb('descend', run.doc, focusId, (s) => {
+              publishDoc(applySnapshot(run.doc, runId, s));
               noteRawGhost(s);
             });
             errors = 0;
@@ -502,7 +625,7 @@ export const useMapStore = create<MapState>((set, get) => {
             // "no deeper reading found" claim. Session-only: don't re-ask.
             errors += 1;
             exhausted.add(focusId);
-            set({ error: e instanceof Error ? e.message : String(e) });
+            pubError(e);
             return null;
           }
         };
@@ -515,7 +638,7 @@ export const useMapStore = create<MapState>((set, get) => {
             land('descend:first', proposal, focusId);
           } catch (e) {
             if (focusId) exhausted.add(focusId);
-            set({ error: e instanceof Error ? e.message : String(e) });
+            pubError(e);
           }
         }
 
@@ -529,7 +652,7 @@ export const useMapStore = create<MapState>((set, get) => {
             stopNote = `stopped at ${rawCount()} — descend kept failing`;
             break;
           }
-          const d = get().doc!;
+          const d = run.doc;
           const hasRawChild = (id: string) =>
             d.links.some(
               (l) =>
@@ -539,7 +662,7 @@ export const useMapStore = create<MapState>((set, get) => {
             );
           const nextReal = d.bubbles.find(
             (b) =>
-              b.tier === 'real' && b.status === 'committed' &&
+              b.tier === 'real' && arrived(b) &&
               !hasRawChild(b.id) && !exhausted.has(b.id),
           );
           if (nextReal) {
@@ -549,7 +672,7 @@ export const useMapStore = create<MapState>((set, get) => {
           const childCount = (id: string) =>
             d.links.filter((l) => l.kind === 'refines' && l.source === id).length;
           const safes = d.bubbles
-            .filter((b) => b.tier === 'safe' && b.status === 'committed' && !exhausted.has(b.id))
+            .filter((b) => b.tier === 'safe' && arrived(b) && !exhausted.has(b.id))
             .sort((a, b) => childCount(a.id) - childCount(b.id));
           if (!safes.length) {
             stopNote = `stopped at ${rawCount()} — the song ran out of threads`;
@@ -560,12 +683,40 @@ export const useMapStore = create<MapState>((set, get) => {
           if (spawned !== null && !spawned.some((b) => b.tier === 'real')) exhaust(safes[0].id);
         }
 
-        set({ running: 0 });
+        if (isOpen()) set({ running: 0 });
         if (stopNote) tick('stopped', stopNote);
         else tick('done');
       } catch (e) {
-        set({ running: 0, error: e instanceof Error ? e.message : String(e) });
-        tick('stopped', `stopped at ${rawCount()}`);
+        // May fire before the run exists (map creation failed) — handle
+        // both without touching `run` directly.
+        const message = e instanceof Error ? e.message : String(e);
+        if (activeRun === null) {
+          set({ error: message });
+        } else {
+          activeRun.error = message;
+          const done = activeRun.doc.bubbles.filter(
+            (b) => b.tier === 'raw' && !isProvisional(b.id),
+          ).length;
+          const progress: Progress = {
+            done, target: DESCENT_TARGET, state: 'stopped', note: `stopped at ${done}`,
+          };
+          activeRun.progress = progress;
+          if (get().doc?.id === activeRun.docId) {
+            set({ running: 0, error: message, progress });
+          } else {
+            set({ ahead: { docId: activeRun.docId, title: activeRun.title, progress } });
+          }
+        }
+      } finally {
+        // The buffer holds a finished-but-unopened run until it is opened
+        // (openMap adopts and releases it). An open, fully-committed run
+        // releases immediately.
+        if (activeRun !== null) {
+          activeRun.finished = true;
+          if (get().doc?.id === activeRun.docId && activeRun.uncommitted.length === 0) {
+            activeRun = null;
+          }
+        }
       }
     },
 
@@ -591,7 +742,11 @@ export const useMapStore = create<MapState>((set, get) => {
         bubbles: doc.bubbles.filter((b) => toPark.has(b.id)),
         links: doc.links.filter((l) => toPark.has(l.source) || toPark.has(l.target)),
       };
-      set({ doc: parkInRejected(doc, toPark), killed: [...get().killed, record] });
+      const next = parkInRejected(doc, toPark);
+      // Write through to the active run's doc (D37): when the open map is
+      // also the running one, run.doc is the single truth.
+      if (activeRun?.docId === next.id) activeRun.doc = next;
+      set({ doc: next, killed: [...get().killed, record] });
       scheduleSave();
     },
 
@@ -604,15 +759,14 @@ export const useMapStore = create<MapState>((set, get) => {
       const last = killed[killed.length - 1];
       const bubbleIds = new Set(last.bubbles.map((b) => b.id));
       const linkIds = new Set(last.links.map((l) => l.id));
-      set({
-        doc: {
-          ...doc,
-          bubbles: [...doc.bubbles, ...last.bubbles],
-          links: [...doc.links.filter((l) => !linkIds.has(l.id)), ...last.links],
-          rejected: (doc.rejected ?? []).filter((b) => !bubbleIds.has(b.id)),
-        },
-        killed: killed.slice(0, -1),
-      });
+      const next: BubbleMapDoc = {
+        ...doc,
+        bubbles: [...doc.bubbles, ...last.bubbles],
+        links: [...doc.links.filter((l) => !linkIds.has(l.id)), ...last.links],
+        rejected: (doc.rejected ?? []).filter((b) => !bubbleIds.has(b.id)),
+      };
+      if (activeRun?.docId === next.id) activeRun.doc = next;
+      set({ doc: next, killed: killed.slice(0, -1) });
       scheduleSave();
     },
   };

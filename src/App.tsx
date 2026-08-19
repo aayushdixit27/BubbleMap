@@ -136,9 +136,18 @@ export default function App() {
   const undoKill = useMapStore((s) => s.undoKill);
   const progress = useMapStore((s) => s.progress);
   const rejections = useMapStore((s) => s.rejections);
+  const ahead = useMapStore((s) => s.ahead);
+  const openMap = useMapStore((s) => s.openMap);
+  const readOnly = useMapStore((s) => s.readOnly);
+  const createAndSeed = useMapStore((s) => s.createAndSeed);
   // D34: rejected proposals surface as a quiet toolbar count expanding to
   // reasons — not a toast, nothing modal.
   const [showRejections, setShowRejections] = useState(false);
+  // D37: start the next song while reading this one. One slot — the form
+  // only offers itself when no run exists anywhere.
+  const [nextOpen, setNextOpen] = useState(false);
+  const [nextTitle, setNextTitle] = useState('');
+  const [nextSource, setNextSource] = useState('');
   const [health, setHealth] = useState('server: …');
   // D26 #4: three views. Readings is the judgment surface (D25); grid
   // compares; target is where this song's RAW landed. The view lives in
@@ -188,6 +197,21 @@ export default function App() {
               {rejections.length} proposal{rejections.length === 1 ? '' : 's'} rejected
             </button>
           )}
+          {ahead ? (
+            <button className="text-action ahead-chip" onClick={() => void openMap(ahead.docId)}>
+              next song ·{' '}
+              {ahead.progress.state === 'going'
+                ? `${ahead.progress.done} of ${ahead.progress.target}`
+                : ahead.progress.state}
+            </button>
+          ) : (
+            running === 0 &&
+            !readOnly && (
+              <button className="text-action ahead-chip" onClick={() => setNextOpen((s) => !s)}>
+                next song
+              </button>
+            )
+          )}
           {progress && (
             <span className="status">
               {progress.state === 'going'
@@ -201,6 +225,44 @@ export default function App() {
           {error && <span className="status status-error">{error}</span>}
           {metrics && <span className="metrics">{metrics}</span>}
         </div>
+      )}
+
+      {doc && nextOpen && !ahead && running === 0 && (
+        <form
+          className="start-form next-song-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!nextTitle.trim() || !nextSource.trim()) return;
+            void createAndSeed(nextTitle, nextSource, { openNow: false });
+            setNextTitle('');
+            setNextSource('');
+            setNextOpen(false);
+          }}
+        >
+          <label className="field-label" htmlFor="next-title">Next song — Artist</label>
+          <input
+            id="next-title"
+            value={nextTitle}
+            onChange={(e) => setNextTitle(e.target.value)}
+            autoFocus
+          />
+          <label className="field-label" htmlFor="next-source">
+            Lyrics / notes / your analysis — the ground truth the model works from
+          </label>
+          <textarea
+            id="next-source"
+            rows={8}
+            value={nextSource}
+            onChange={(e) => setNextSource(e.target.value)}
+          />
+          <button
+            className="text-action start-submit"
+            type="submit"
+            disabled={!nextTitle.trim() || !nextSource.trim()}
+          >
+            Map it next
+          </button>
+        </form>
       )}
 
       {doc && showRejections && rejections.length > 0 && (

@@ -249,6 +249,27 @@ wording, error handling, verb plumbing, test strategy, dependencies.
 that class of decision comes back under the gate. If rulings keep ratifying, widen
 further. Ref: `field-guides/systems_that_worked.md` §1. *18 Aug.*
 
+**D37 — One song ahead, never a queue.** Revives the crucible's parked idea C in
+mutated form. The friction is the ~8 minutes of dead time between finishing song N
+and having N+1 ready; across the eight songs a corpus needs, that is roughly an hour
+of the remaining wall-clock and the largest single block left.
+
+**Not a pipeline.** You may start N+1 while still reading N. Its arrivals stay
+`proposed` until you open its map. You cannot queue a third.
+
+A queue is unlimited WIP dumped in front of the constraint; a one-slot buffer is flow
+control. Read-as-it-lands survives — you still open a map to an empty page and watch
+it fill, you just don't watch a spinner first. Amended HR1 holds: nothing commits
+off-screen. *18 Aug.*
+
+**D38 — The value-creating direction is songs, not features.** `PRODUCT §7` names the
+corpus view as probably the real product; it needs ~10 judged maps and there are two.
+Every remaining feature is downstream of a corpus that does not exist.
+
+**Standing bias until ~10 maps exist: build only what makes the next eight songs
+cheaper to get through.** Anything else waits. The corpus Target builds itself as a
+consequence — every judged song is a row in it. *18 Aug.*
+
 ---
 
 ## Open — architect owes an answer

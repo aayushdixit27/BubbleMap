@@ -221,6 +221,14 @@ html, body, #root {
 
 /* D34: rejected proposals — a quiet count, expanding to reasons. */
 .rejections-toggle { color: var(--ink-dim); }
+
+/* D37: the one-ahead buffer — a quiet chip, and an inline form. */
+.ahead-chip { color: var(--ink-dim); }
+.next-song-form {
+  max-width: 616px;
+  padding: 14px 28px 20px;
+  border-bottom: 1px solid var(--hairline);
+}
 .rejections {
   display: flex;
   flex-direction: column;
