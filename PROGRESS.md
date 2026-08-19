@@ -1,8 +1,8 @@
 # PROGRESS
 
-> **Last updated: 18 Aug 2026, end of session. Phase 2 closed (gate passed).
-> D26 chunks 1–3 built and verified; chunk 4 (three views) is next. Nothing
-> is half-built.**
+> **Last updated: 18 Aug 2026, late session. Phase 2 closed (gate passed).
+> D26 complete — all four chunks built and verified. Next: a real song
+> end-to-end under the full D26 flow. Nothing is half-built.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -52,11 +52,19 @@ Rule 1** — re-read it in CLAUDE.md):
   REALs run out, a new REAL is spawned from the least-used SAFE. Honest
   early stop; progress line "N of 10 · still going" → "done". Verified
   live: 10/10 distinct readings, no provisional-id leakage.
-- **Chunk 4 — NEXT: three views.** Readings (default) / Grid / Target.
-  Toggle names the destination. Target = Jun Yuh circle: this song's
-  RAW bubbles as dots by category on the existing `canvas/geometry.ts`
-  (18 tests, untouched), D22 dots-and-hairlines. `Signature.tsx` already
-  does a tiny version of this — start there.
+- **Chunk 4 ✓ three views** (`81d099e`). Readings (default) / Grid /
+  Target; the toolbar shows only the two views you're *not* in, so every
+  label names a destination by construction. Target = the RAW disc
+  (**D30**, which cropped the spec's three-ring frame after a two-render
+  comparison): committed RAW dots by category on `canvas/geometry.ts`
+  positions (18 tests, untouched), one hairline circle + axes, corner
+  labels in category ink, D22 treatment. The committed-only filter is
+  load-bearing — pre-commit bubbles sit at (0,0) until `placeInRegion`
+  runs, so a streaming descent would otherwise render a phantom centre
+  dot. Verified on a synthetic 10-RAW map (5 identity / 3 fitness /
+  1 love / 1 earnings, positioned by the real `placeInRegion`): reads
+  Identity-heavy at a glance from position alone, all five clustered
+  identity dots separated, no overlap. Synthetic map deleted after.
 
 **Known facts not written anywhere else:**
 
@@ -97,6 +105,18 @@ Rule 1** — re-read it in CLAUDE.md):
 - Autosave is immediate/serialized/coalescing with `keepalive` PUTs —
   the 800ms debounce starved under rapid clicks and lost whole maps.
   Do not reintroduce a debounce.
+- **Never measure layout from screenshot pixels** (D31) — browser-
+  extension screenshots compound device-pixel scaling, page zoom, and
+  side-panel width, and on 18 Aug the capture path also served stale
+  frames that contradicted the live DOM. Measure with
+  `getBoundingClientRect` against `window.innerWidth/Height`; use
+  screenshots for *feel*, and when the two disagree, trust the DOM and
+  confirm with human eyes.
+- A synthetic map for view-testing is ~20 lines: import `placeInRegion`
+  from `src/canvas/geometry.ts` under `tsx`, emit committed bubbles into
+  `maps/<slug>-<id>.json` — the filename **must** end `-<id>.json` or
+  `storage.ts` can't find it. Delete the file when done (`maps/` is
+  gitignored; the library shows it immediately).
 
 Superseded today: D24's per-bubble flow (→ D25), ARCHITECTURE §7's verb
 table (amended in place, note at §7 top).
@@ -214,13 +234,12 @@ mutates the map.
 
 ## Next
 
-**D26 chunk 4 — three views.** Readings (default), Grid, Target. The
-toggle names where it takes you, not where you are. Target is the Jun
-Yuh circle: this song's RAW bubbles plotted by category using
-`canvas/geometry.ts`, dots and hairlines only, D22 treatment. Chunks
-1–3 are done and committed (see status above). After chunk 4: run a
-real song end-to-end under the full D26 flow, then the architect's
-next call.
+**Run a real song end-to-end under the full D26 flow.** D26 is complete
+(all four chunks committed — see status above). The dogfood run answers
+Q3's kill-rate question with real numbers and is the first time the
+Target view meets real data at ten descents. Q5 (three-tier inward
+paths in the Target) is logged and deliberately deferred — do not start
+it before the dogfood run. After that: the architect's next call.
 
 ---
 

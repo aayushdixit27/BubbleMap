@@ -178,9 +178,39 @@ Rejected. *18 Aug.*
 thread. Required once a single SAFE parents several descents. This is also the unit
 the Target view plots. *18 Aug.*
 
+**D30 — The Target view is the RAW disc alone, not the three-ring target.**
+Rendered both before ruling. The three-ring frame leaves ~83% of its area empty
+because every dot in this view is RAW *by construction* — the emptiness is a
+consequence of what we chose to plot, not a finding about the song, so it carries no
+information and costs the whole frame. Quadrant membership ended up read from hue
+rather than position, and near-axis dots needed a squint.
+
+The cropped disc passes the glance test on position alone.
+
+**The clean statement of what the two views are for: Readings owns the depth axis,
+Target owns the category axis.** SAFE → RAW is already expressed as a type crescendo,
+which is where it reads best. What Readings cannot show is where a song's raw layer
+sits across LIFE. One circle, four quadrants, all signal. *18 Aug.*
+
+**D31 — Centring is closed. The architect was wrong.** Live DOM measurement:
+216.0/216.0 at 992px, 210.8/210.2 at 1227px outer. The architect's 410/101 came from
+eyeballing a 1.25×-scaled screenshot against the window frame rather than measuring
+the page viewport.
+
+*Standard sharpened:* "the specifier inspects the artifact" does not mean the
+specifier may *measure* from a screenshot. Inspection catches what something feels
+like; numbers come from the DOM. *18 Aug.*
+
 ---
 
 ## Open — architect owes an answer
+
+**Q5 — Should the Target eventually plot all three tiers as paths?**
+Each descent drawn as a line from the outer ring inward, so cross-category descents
+render as lines swinging across the axes. That may be the Jun Yuh frame fully
+realised — or a hairball at ten descents. **Not to be decided from reasoning.** Build
+the cheap version and look, per D20's lesson. **Deliberately deferred past D26** —
+adding an experiment at a final chunk boundary is how projects stop finishing.
 
 **Q3 — What is the expected keep-rate, in real numbers?** `PRODUCT.md §2` guesses
 ~half for `seed`, ~a third for `interrogate`. Those are priors, not measurements. The
