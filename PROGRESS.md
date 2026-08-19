@@ -94,6 +94,12 @@ Rule 1** — re-read it in CLAUDE.md):
 - **`maps/` is gitignored — no VCS safety net.** Copy a map to the
   scratchpad before any risky operation on it (that's how kill/undo was
   tested against the real Beautiful map).
+- **One owner per mutable resource** (field-guides/systems #5, written
+  down as instructed): dev servers — **the human**, implementer never
+  relaunches; map files — **the running app exclusively**, no hand-edits
+  while any tab has the map open (a stale tab's autosave clobbers them;
+  the 19 Aug descent-v repair was done file-first and only survived
+  because the tab was reloaded after).
 - **No native dialogs** (`window.confirm` etc.) — they hang browser
   automation and read as chrome; use inline two-step confirms (see the
   library delete).
