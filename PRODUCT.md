@@ -70,6 +70,15 @@ No AI that writes to the map without a human accept, ever, at any scope.
 song"* to *"here is the raw thing,"* it is a non-goal by default. Argue it back
 in explicitly or leave it out.
 
+**What this rule is not for.** It blocks *speculative* building — things argued for
+from a whiteboard, before anyone has used the tool. It does **not** block findings
+from real use. "I was reading a map and wanted X" is the strongest evidence this
+project has, and it outranks a non-goal written before the thing existed.
+
+Roughly 80% of the design is settled. The remaining 20% surfaces only in use, and it
+is additive as often as subtractive. Anyone invoking §3 against a use-discovered need
+is using it backwards.
+
 ---
 
 ## 4. Pre-mortem

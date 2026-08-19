@@ -201,6 +201,54 @@ the page viewport.
 specifier may *measure* from a screenshot. Inspection catches what something feels
 like; numbers come from the DOM. *18 Aug.*
 
+**D32 — Repeated ancestors render at full text in muted ink.** Seven descents from
+three SAFEs means shared roots repeat verbatim down the page. First occurrence
+renders normally; later occurrences render the **same full text** at metadata weight.
+
+Not truncated to a fragment — truncation makes the reader reconstruct what they're
+looking at, while reduced weight lets them skip or read at no cost either way.
+
+Grouping under a shared SAFE was rejected despite being the honest structure (the
+repetition is a tree flattened into a list): making layout depend on tree shape means
+the page reorganises as it streams, which is the churn we just removed. Preserves
+arrival order, D29's unit, and the visible scope of a kill. *18 Aug.*
+
+**D33 — Partial readings resolve, never vanish.** A REAL that produces no RAW must
+end in a visible terminal state — muted, e.g. *no deeper reading found* — not
+disappear. A thread that didn't go deeper is information, and vanishing content is
+the defect this session was spent on. *18 Aug.*
+
+**D34 — Rejections surface in the UI.** The server validates every proposed link and
+rejects invalid ones; the client ignored `proposal.rejections`, so a malformed
+proposal produced a quietly broken map — that is exactly how descent v lost its
+ancestors and how the loop re-descended the same thread twice.
+
+A quiet count in the toolbar (`2 proposals rejected`), expanding to reasons. Not a
+toast, nothing modal. This is D23's principle — silent dropping hides regressions —
+applied to the interface rather than the console. *18 Aug.*
+
+**D35 — Exhausted state persists.** `Bubble.exhausted?: boolean`, set on a REAL when
+a descend declines it. D33's "nothing disappears, ever" cannot be session-scoped:
+after a reload an exhausted REAL would be indistinguishable from a never-asked one,
+and state-lost-on-reload is the exact failure class that destroyed a whole map on
+18 Aug. Optional field, backfills to `undefined`, no migration. *18 Aug.*
+
+**D36 — The implementer decides without asking, except in four areas.** The architect
+is the throughput constraint: the implementer builds in minutes and then waits
+exchanges for rulings, routed through a human relay. The gate is not earning its cost
+— the implementer has independently caught four specification errors and been right
+every time, and most rulings have ratified its stated lean unchanged.
+
+**Escalate only for:** the data model (`src/types.ts` and the map schema), the §8
+system prompt, a hard rule in `CLAUDE.md`, or a `PRODUCT §3` non-goal.
+
+**Everything else the implementer decides and reports** — layout, interaction,
+wording, error handling, verb plumbing, test strategy, dependencies.
+
+*Test of whether this was right:* if a ruling ever changes the implementer's lean,
+that class of decision comes back under the gate. If rulings keep ratifying, widen
+further. Ref: `field-guides/systems_that_worked.md` §1. *18 Aug.*
+
 ---
 
 ## Open — architect owes an answer

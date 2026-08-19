@@ -104,7 +104,13 @@ which means nothing but this file enforces them. That is exactly when standards 
 
 ## Escalate to the architect rather than deciding
 
-The architect is a separate Opus 5 window. Escalate — don't guess — when:
+**Default: decide it yourself and report.** Per D36, only four areas require a ruling
+— the data model, the §8 prompt, a hard rule in this file, or a PRODUCT §3 non-goal.
+Layout, interaction, wording, error handling, plumbing, tests and dependencies are
+yours. The architect is the slowest step in this system; don't queue behind it for a
+decision it would have ratified.
+
+Beyond those four, escalate — don't guess — when:
 
 - RAW output reads like stronger-worded SAFE. **Prompt problem.**
 - Everything lands in one category. The second axis isn't earning its place.
