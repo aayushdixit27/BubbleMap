@@ -80,6 +80,8 @@ export function Readings() {
   const readOnly = useMapStore((s) => s.readOnly);
   const killDescent = useMapStore((s) => s.killDescent);
   const discarded = useMapStore((s) => s.discarded);
+  const nominations = useMapStore((s) => s.nominations);
+  const setKeeper = useMapStore((s) => s.setKeeper);
 
   // One reading per RAW bubble, in arrival order (D26 #3 appends serially).
   // A thread-based derivation would hide every descent after the first
@@ -150,6 +152,10 @@ export function Readings() {
           // reading that streamed in never remounts when it lands.
           <div key={stableKey(raw?.id ?? reading.real?.id ?? String(i))} className="reading">
             <div className="reading-numeral">{NUMERAL[i] ?? String(i + 1)}</div>
+            {/* D41: the human's chosen raw thing carries a quiet mark. */}
+            {raw && doc.keeperId === raw.id && (
+              <div className="marginalia keeper-mark">the keeper</div>
+            )}
             {reading.safe && <Step bubble={reading.safe} repeat={reading.safeRepeat} />}
             {reading.real && <Step bubble={reading.real} parent={reading.safe} repeat={reading.realRepeat} />}
             {raw ? (
@@ -176,11 +182,39 @@ export function Readings() {
                 >
                   kill this descent
                 </button>
+                {doc.keeperId !== raw!.id && (
+                  <button className="text-action" onClick={() => setKeeper(raw!.id)}>
+                    make this the keeper
+                  </button>
+                )}
               </div>
             )}
           </div>
         );
       })}
+      {/* D41: the natural end of a run — the model's nominations, the
+          human's pick. Not a modal; it sits below the readings like one
+          more entry, and disappears once a keeper exists (the mark on the
+          chosen reading carries it from there). */}
+      {running === 0 && !doc.keeperId && nominations.length > 0 && (
+        <div className="reading keeper-block">
+          <div className="marginalia">the keeper</div>
+          <div className="keeper-prose">
+            Nominated below — pick the one raw thing this song is about, or hover any
+            reading above and make it the keeper there.
+          </div>
+          {nominations.map((id) => {
+            const b = doc.bubbles.find((x) => x.id === id);
+            return (
+              b && (
+                <button key={id} className="keeper-option" onClick={() => setKeeper(id)}>
+                  {b.label}
+                </button>
+              )
+            );
+          })}
+        </div>
+      )}
       {/* While the run generates, the page is never blank: the pasted
           lyrics render as a quiet sheet below whatever has arrived —
           you're about to read about this song, so read the song. New

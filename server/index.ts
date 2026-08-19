@@ -7,7 +7,7 @@
 import express from 'express';
 import { nanoid } from 'nanoid';
 import type { BubbleMapDoc } from '../src/types';
-import { currentModel, propose } from './ai';
+import { currentModel, nominateKeeper, propose } from './ai';
 import type { Verb } from './prompts';
 import { deleteMap, listMaps, readMap, writeMap } from './storage';
 
@@ -124,6 +124,20 @@ async function streamVerb(verb: Verb, req: express.Request, res: express.Respons
   }
   res.end();
 }
+
+// D41: nominate keeper candidates — three ids out, no streaming needed.
+app.post('/api/ai/nominate', async (req, res) => {
+  try {
+    const { doc } = req.body as { doc?: BubbleMapDoc };
+    if (!doc) {
+      res.status(400).json({ error: 'doc is required' });
+      return;
+    }
+    res.json(await nominateKeeper(doc));
+  } catch (e) {
+    res.status(502).json({ error: e instanceof Error ? e.message : String(e) });
+  }
+});
 
 app.post('/api/ai/seed', (req, res) => streamVerb('seed', req, res));
 app.post('/api/ai/descend', (req, res) => streamVerb('descend', req, res));

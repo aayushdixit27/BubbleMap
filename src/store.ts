@@ -14,6 +14,7 @@ import {
   deleteMap as apiDeleteMap,
   fetchMap,
   fetchMaps,
+  nominateKeeper as apiNominate,
   saveMap,
   streamVerb,
   type MapMeta,
@@ -81,6 +82,7 @@ interface ActiveRun {
   metrics: string | null;
   rejections: { reason: string; item: unknown }[];
   discarded: string[]; // D40: foci whose output was produced then removed
+  nominations: string[]; // D41: keeper candidates, nominated at run end
   error: string | null;
   finished: boolean;
 }
@@ -143,6 +145,11 @@ interface MapState {
   // in the toolbar, expanding to reasons. Silent rejection produced a
   // broken map once (Money, descent v); never again invisible.
   rejections: { reason: string; item: unknown }[];
+  // D41: the model's keeper nominations for the open map, offered at run
+  // end. Session scope — reopening a finished, keeperless map offers no
+  // nominations (opening only reads, D26 #1); the human can still choose
+  // from any reading.
+  nominations: string[];
   // D40: REALs whose descend PRODUCED something that was then removed
   // (malformed, discarded server-side) — distinct from declined. Session
   // scope; renders "discarded — see rejections", never "no deeper
@@ -159,6 +166,8 @@ interface MapState {
   removeMap: (id: string) => Promise<void>;
   openProbeRun: () => void;
   closeMap: () => void;
+  // D41: choose the song's canonical raw thing. Re-choosable at any time.
+  setKeeper: (id: string) => void;
   // openNow=false is D37's "start the next song while reading this one":
   // the run generates against its own doc and the current map stays open.
   createAndSeed: (title: string, source: string, opts?: { openNow?: boolean }) => Promise<void>;
@@ -317,6 +326,7 @@ export const useMapStore = create<MapState>((set, get) => {
     killed: [],
     rejections: [],
     discarded: [],
+    nominations: [],
     ahead: null,
     progress: null,
     status: '',
@@ -357,6 +367,7 @@ export const useMapStore = create<MapState>((set, get) => {
           metrics: activeRun.metrics,
           rejections: activeRun.rejections,
           discarded: activeRun.discarded,
+          nominations: activeRun.nominations,
           error: activeRun.error,
           status: '',
         });
@@ -365,7 +376,7 @@ export const useMapStore = create<MapState>((set, get) => {
         return;
       }
       try {
-        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], discarded: [], nominations: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -388,13 +399,13 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], discarded: [], nominations: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
       // Navigating away from a still-running map is legal under D37: the
       // run keeps going against its own doc and shows up as `ahead`.
-      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], discarded: [], progress: null, status: '', metrics: null });
+      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], discarded: [], nominations: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -489,6 +500,7 @@ export const useMapStore = create<MapState>((set, get) => {
           metrics: null,
           rejections: [],
           discarded: [],
+          nominations: [],
           error: null,
           finished: false,
         };
@@ -496,7 +508,7 @@ export const useMapStore = create<MapState>((set, get) => {
         if (openNow) {
           set({
             doc, view: 'readings', readOnly: false, killed: [], rejections: [],
-            discarded: [], error: null, metrics: null, status: '', running: 1,
+            discarded: [], nominations: [], error: null, metrics: null, status: '', running: 1,
             ahead: null,
             progress: run.progress,
           });
@@ -731,6 +743,30 @@ export const useMapStore = create<MapState>((set, get) => {
         if (isOpen()) set({ running: 0 });
         if (stopNote) tick('stopped', stopNote);
         else tick('done');
+
+        // D41: the model nominates three existing RAWs as keeper
+        // candidates; the human picks one (or any reading by hand). With
+        // three or fewer RAWs, every one is a candidate — no call needed.
+        // Nomination is garnish: a failure never fails the run.
+        try {
+          if (!run.doc.keeperId) {
+            const rawIds = run.doc.bubbles
+              .filter((b) => b.tier === 'raw' && arrived(b))
+              .map((b) => b.id);
+            if (rawIds.length >= 2) {
+              const noms =
+                rawIds.length <= 3
+                  ? rawIds
+                  : (await apiNominate(run.doc)).nominations
+                      .filter((id) => rawIds.includes(id))
+                      .slice(0, 3);
+              run.nominations = noms;
+              if (isOpen()) set({ nominations: noms });
+            }
+          }
+        } catch (e) {
+          console.warn('[store] keeper nomination failed (ignored):', e);
+        }
       } catch (e) {
         // May fire before the run exists (map creation failed) — handle
         // both without touching `run` directly.
@@ -766,6 +802,19 @@ export const useMapStore = create<MapState>((set, get) => {
       }
     },
 
+    // D41: the human's pick — the song's canonical raw thing. Guarded to
+    // committed RAWs; writes through to a live run's doc; re-choosable.
+    setKeeper: (id) => {
+      const doc = get().doc;
+      if (!doc || get().readOnly) return;
+      if (!doc.bubbles.some((b) => b.id === id && b.tier === 'raw' && b.status === 'committed')) return;
+      const next: BubbleMapDoc = { ...doc, keeperId: id };
+      if (activeRun?.docId === next.id) activeRun.doc = next;
+      set({ doc: next });
+      scheduleSave();
+      void get().loadMaps();
+    },
+
     // D26 #2: the only gesture. Kills the whole path into rejected[],
     // recording it on the session undo stack first. A SAFE or REAL that
     // another surviving path still hangs off is spared — paths may share
@@ -788,7 +837,9 @@ export const useMapStore = create<MapState>((set, get) => {
         bubbles: doc.bubbles.filter((b) => toPark.has(b.id)),
         links: doc.links.filter((l) => toPark.has(l.source) || toPark.has(l.target)),
       };
-      const next = parkInRejected(doc, toPark);
+      let next = parkInRejected(doc, toPark);
+      // D41: killing the keeper's descent orphans keeperId — clear it.
+      if (next.keeperId && toPark.has(next.keeperId)) next = { ...next, keeperId: undefined };
       // Write through to the active run's doc (D37): when the open map is
       // also the running one, run.doc is the single truth.
       if (activeRun?.docId === next.id) activeRun.doc = next;

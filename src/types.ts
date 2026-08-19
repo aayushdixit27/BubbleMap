@@ -54,6 +54,10 @@ export interface BubbleMapDoc {
   bubbles: Bubble[];
   links: Link[];
   rejected: Bubble[];         // unpicked candidates: persisted, never rendered (D24).
+  keeperId?: string;          // D41: the song's canonical raw thing — a committed
+                              // RAW bubble's id, chosen by the human from the
+                              // model's nominations (or any reading). Optional,
+                              // backfills undefined, re-choosable at any time.
   createdAt: string;
   updatedAt: string;
 }

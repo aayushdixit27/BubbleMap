@@ -59,6 +59,15 @@ export const saveMap = (doc: BubbleMapDoc): Promise<{ ok: boolean; updatedAt: st
     keepalive: true,
   }).then(asJson<{ ok: boolean; updatedAt: string }>);
 
+// D41: three existing RAW ids nominated as keeper candidates. Tiny call,
+// no streaming.
+export const nominateKeeper = (doc: BubbleMapDoc): Promise<{ nominations: string[] }> =>
+  fetch('/api/ai/nominate', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ doc }),
+  }).then(asJson<{ nominations: string[] }>);
+
 export async function streamVerb(
   verb: 'seed' | 'descend' | 'interrogate',
   doc: BubbleMapDoc,

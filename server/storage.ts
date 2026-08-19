@@ -51,9 +51,11 @@ export function listMaps(): MapMeta[] {
       const doc = JSON.parse(readFileSync(join(MAPS_DIR, f), 'utf8')) as BubbleMapDoc;
       // Files hold committed bubbles only, so raws are the kept descents.
       const raws = doc.bubbles.filter((b) => b.tier === 'raw');
-      const latest = raws.length
-        ? raws.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
-        : null;
+      // D41: the keeper — the human's chosen raw thing — outranks recency.
+      const keeper = doc.keeperId ? raws.find((b) => b.id === doc.keeperId) : undefined;
+      const latest =
+        keeper ??
+        (raws.length ? raws.reduce((a, b) => (b.createdAt > a.createdAt ? b : a)) : null);
       metas.push({
         id: doc.id,
         title: doc.title,

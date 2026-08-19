@@ -168,6 +168,67 @@ export async function propose(
   };
 }
 
+// D41: the model NOMINATES three existing RAW bubbles as keeper candidates.
+// Not a fifth verb: no new bubbles, no prose — three ids out. The system
+// prompt is §8 verbatim with no suffix; the ask rides in the user message
+// as plumbing. Invalid or duplicate ids are dropped; the client treats an
+// empty result as "no nominations" and the human can still pick by hand.
+export async function nominateKeeper(doc: BubbleMapDoc): Promise<{ nominations: string[]; model: string }> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY is not set. Put it in .env (see .env.example).');
+  }
+  const raws = doc.bubbles.filter((b) => b.tier === 'raw' && b.kind === 'idea');
+  if (raws.length < 4) return { nominations: raws.map((b) => b.id), model: currentModel() };
+
+  const client = new Anthropic({ apiKey });
+  const model = currentModel();
+  const response = await client.messages.create({
+    model,
+    max_tokens: 300,
+    system: SYSTEM_PROMPT,
+    tools: [
+      {
+        name: 'nominate',
+        input_schema: {
+          type: 'object',
+          properties: {
+            nominations: { type: 'array', minItems: 3, maxItems: 3, items: { type: 'string' } },
+          },
+          required: ['nominations'],
+        },
+      },
+    ],
+    tool_choice: { type: 'tool', name: 'nominate' },
+    messages: [
+      {
+        role: 'user',
+        content:
+          `Song: ${doc.title}\n\n` +
+          `This map's RAW bubbles:\n` +
+          raws
+            .map((b) => `- id ${b.id}: ${b.label}${b.note ? ` — ${b.note}` : ''}`)
+            .join('\n') +
+          `\n\nNominate the three strongest candidates for this song's single ` +
+          `keeper — the one raw thing the song is about. Respond by calling the ` +
+          `nominate tool with exactly three of the ids above.`,
+      },
+    ],
+  });
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use' && block.name === 'nominate',
+  );
+  const rawIds = new Set(raws.map((b) => b.id));
+  const proposed = ((toolUse?.input as { nominations?: unknown })?.nominations ?? []) as unknown[];
+  const nominations = [...new Set(proposed.filter((id): id is string => typeof id === 'string' && rawIds.has(id)))];
+  for (const id of proposed) {
+    if (typeof id !== 'string' || !rawIds.has(id)) {
+      console.warn('[ai] nominate returned a non-RAW or unknown id (dropped):', JSON.stringify(id));
+    }
+  }
+  return { nominations: nominations.slice(0, 3), model };
+}
+
 // Per-verb context, per the §7 input column. Harness plumbing only — every
 // instruction about WHAT to propose lives in the §8 prompt and its suffixes.
 function buildUserMessage(verb: Verb, doc: BubbleMapDoc, focus?: Bubble): string {
