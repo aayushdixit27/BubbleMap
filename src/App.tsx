@@ -3,7 +3,11 @@ import { Readings } from './grid/Readings';
 import { ThreadGrid } from './grid/ThreadGrid';
 import { Signature } from './signature/Signature';
 import { Target } from './target/Target';
-import { useMapStore } from './store';
+import { useMapStore, type View } from './store';
+
+// D26 #4: the toolbar renders the views you are NOT in, so every label
+// names a destination by construction.
+const VIEWS: View[] = ['readings', 'grid', 'target'];
 
 // D26 #1: home base. The landing screen is the library — your songs, most
 // recent first. "Add a song" is one option on it, not the whole screen.
@@ -96,7 +100,7 @@ function Library() {
             onChange={(e) => setSource(e.target.value)}
           />
           <button className="text-action start-submit" type="submit" disabled={!title.trim() || !source.trim()}>
-            Create &amp; seed
+            Map this song
           </button>
         </form>
       ) : (
@@ -128,14 +132,11 @@ export default function App() {
   const progress = useMapStore((s) => s.progress);
   const [health, setHealth] = useState('server: …');
   // D26 #4: three views. Readings is the judgment surface (D25); grid
-  // compares; target is where this song's RAW landed. The toggle names the
-  // destination, never the current state — so the current view has no button.
-  type View = 'readings' | 'grid' | 'target';
-  const VIEWS: View[] = ['readings', 'grid', 'target'];
-  const [view, setView] = useState<View>('readings');
-
-  // Opening a song always lands on Readings, the default.
-  useEffect(() => setView('readings'), [doc?.id]);
+  // compares; target is where this song's RAW landed. The view lives in
+  // the store: only the toolbar click and map-open set it, and no doc
+  // mutation or streaming update can — see the store comment.
+  const view = useMapStore((s) => s.view);
+  const setView = useMapStore((s) => s.setView);
 
   useEffect(() => {
     void loadMaps();

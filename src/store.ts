@@ -31,8 +31,42 @@ const LINK_KINDS: LinkKind[] = ['refines', 'assumes', 'contradicts', 'evidence']
 const provisionalId = (runId: string, ref: string) => `p:${runId}:${ref}`;
 const isProvisional = (id: string) => id.startsWith('p:');
 
+// Session-stable React keys across the ghost → final id swap. When a run
+// finalizes, each accepted bubble's final id is aliased back to its
+// ghost-era id, so a reading keeps one key for its whole life and never
+// remounts (the "flicker"). Session memory only — on reload everything is
+// final and keys are just ids.
+const keyAlias = new Map<string, string>();
+export const stableKey = (id: string): string => keyAlias.get(id) ?? id;
+
+// Replace one run's items IN PLACE: the new set goes where the run's
+// first existing item sat, not at the end. Once a descent has appeared on
+// screen it must not move — re-sorting mid-stream makes finished content
+// appear to vanish.
+const replaceRun = <T extends { id: string }>(items: T[], runId: string, next: T[]): T[] => {
+  const prefix = `p:${runId}:`;
+  const out: T[] = [];
+  let inserted = false;
+  for (const item of items) {
+    if (item.id.startsWith(prefix)) {
+      if (!inserted) {
+        out.push(...next);
+        inserted = true;
+      }
+      continue;
+    }
+    out.push(item);
+  }
+  if (!inserted) out.push(...next);
+  return out;
+};
+
 // D26 #3: up to this many descents per song, generated one at a time.
 const DESCENT_TARGET = 10;
+
+// D26 #4's three views. UI state, not doc schema — deliberately not in
+// types.ts.
+export type View = 'readings' | 'grid' | 'target';
 
 // One descent path, by bubble id. safe/real may be absent when the model
 // skipped a tier; raw is the unit's anchor.
@@ -59,6 +93,14 @@ export interface Progress {
 interface MapState {
   maps: MapMeta[];
   doc: BubbleMapDoc | null;
+  // Which view is showing (D26 #4). EXPLICIT state, in the store so no
+  // component remount, HMR pass, or render churn can reset it. Written in
+  // exactly two situations: the human clicks the toolbar (setView), and a
+  // map opens (reset to the Readings default — a navigation event, not a
+  // doc mutation). Nothing that mutates doc may touch it: a live run must
+  // never be able to move the human off the kill gesture, which only
+  // Readings has.
+  view: View;
   // Probe-run docs are design-test data: no autosave, no AI verbs.
   readOnly: boolean;
   running: number;
@@ -69,6 +111,7 @@ interface MapState {
   // Killed descents this session, newest last — the undo stack (D26 #2).
   killed: KilledDescent[];
 
+  setView: (view: View) => void;
   loadMaps: () => Promise<void>;
   openMap: (id: string) => Promise<void>;
   removeMap: (id: string) => Promise<void>;
@@ -146,8 +189,8 @@ export const useMapStore = create<MapState>((set, get) => {
       });
     }
 
-    const keptBubbles = doc.bubbles.filter((b) => !b.id.startsWith(`p:${runId}:`));
-    const knownIds = new Set([...keptBubbles.map((b) => b.id), ...bubbles.map((b) => b.id)]);
+    const nextBubbles = replaceRun(doc.bubbles, runId, bubbles);
+    const knownIds = new Set(nextBubbles.map((b) => b.id));
     const links: Link[] = [];
     for (const [i, raw] of (snapshot.links ?? []).entries()) {
       if (!raw.source || !raw.target || !LINK_KINDS.includes(raw.kind as LinkKind)) continue;
@@ -168,8 +211,8 @@ export const useMapStore = create<MapState>((set, get) => {
     set({
       doc: {
         ...doc,
-        bubbles: [...keptBubbles, ...bubbles],
-        links: [...doc.links.filter((l) => !l.id.startsWith(`p:${runId}:`)), ...links],
+        bubbles: nextBubbles,
+        links: replaceRun(doc.links, runId, links),
       },
     });
   };
@@ -186,15 +229,20 @@ export const useMapStore = create<MapState>((set, get) => {
     scheduleSave();
   };
 
-  // Swap a run's provisional ghosts for the server-resolved proposal.
+  // Swap a run's provisional ghosts for the server-resolved proposal —
+  // in place (stable order), and with each final id aliased back to its
+  // ghost key so the rendered reading never remounts or moves.
   const finalizeRun = (runId: string, proposal: Proposal) => {
     const doc = get().doc;
     if (!doc) return;
+    for (const [ref, finalId] of Object.entries(proposal.refs)) {
+      keyAlias.set(finalId, provisionalId(runId, ref));
+    }
     set({
       doc: {
         ...doc,
-        bubbles: [...doc.bubbles.filter((b) => !b.id.startsWith(`p:${runId}:`)), ...proposal.bubbles],
-        links: [...doc.links.filter((l) => !l.id.startsWith(`p:${runId}:`)), ...proposal.links],
+        bubbles: replaceRun(doc.bubbles, runId, proposal.bubbles),
+        links: replaceRun(doc.links, runId, proposal.links),
       },
     });
   };
@@ -237,6 +285,7 @@ export const useMapStore = create<MapState>((set, get) => {
   return {
     maps: [],
     doc: null,
+    view: 'readings' as View,
     readOnly: false,
     running: 0,
     killed: [],
@@ -244,6 +293,8 @@ export const useMapStore = create<MapState>((set, get) => {
     status: '',
     error: null,
     metrics: null,
+
+    setView: (view) => set({ view }),
 
     loadMaps: async () => {
       try {
@@ -255,7 +306,7 @@ export const useMapStore = create<MapState>((set, get) => {
 
     openMap: async (id) => {
       try {
-        set({ doc: await fetchMap(id), readOnly: false, killed: [], progress: null, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -274,7 +325,7 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), readOnly: true, killed: [], progress: null, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
@@ -309,7 +360,7 @@ export const useMapStore = create<MapState>((set, get) => {
       try {
         const doc = await apiCreateMap(title, source);
         set({
-          doc, readOnly: false, killed: [], error: null, metrics: null,
+          doc, view: 'readings', readOnly: false, killed: [], error: null, metrics: null,
           status: '', running: 1,
           progress: { done: 0, target: DESCENT_TARGET, state: 'going' },
         });
@@ -362,8 +413,42 @@ export const useMapStore = create<MapState>((set, get) => {
           };
         };
 
-        const land = (runId: string, proposal: Proposal) => {
-          const remapped = remap(proposal);
+        // A descend's one bubble is one tier deeper than its focus BY
+        // CONSTRUCTION — the client knows the parent and does not trust
+        // the model to emit the link. Without this, a fumbled link (the
+        // server rejects e.g. a backwards refines) lands the bubble as an
+        // orphan in the file, and the loop re-descends the same focus
+        // because hasRawChild can't see the child. (Money, descent v.)
+        const ensureParentLink = (proposal: Proposal, focusId: string): Proposal => {
+          const child = proposal.bubbles[0];
+          const focus = get().doc?.bubbles.find((b) => b.id === focusId);
+          if (!child || !focus) return proposal;
+          if (!child.tier || !focus.tier || TIERS.indexOf(child.tier) <= TIERS.indexOf(focus.tier)) {
+            return proposal;
+          }
+          if (proposal.links.some((l) => l.kind === 'refines' && l.target === child.id)) {
+            return proposal;
+          }
+          return {
+            ...proposal,
+            links: [
+              ...proposal.links,
+              {
+                id: `repair:${child.id}`,
+                source: focusId,
+                target: child.id,
+                kind: 'refines' as const,
+                rationale: 'restored by the client: a descent’s focus is its parent by construction',
+                origin: 'ai' as const,
+                status: 'proposed' as const,
+              },
+            ],
+          };
+        };
+
+        const land = (runId: string, proposal: Proposal, focusId?: string) => {
+          let remapped = remap(proposal);
+          if (focusId) remapped = ensureParentLink(remapped, focusId);
           finalizeRun(runId, remapped);
           commitArrived(remapped);
           tick();
@@ -381,7 +466,7 @@ export const useMapStore = create<MapState>((set, get) => {
               noteRawGhost(s);
             });
             errors = 0;
-            const landed = land(runId, proposal);
+            const landed = land(runId, proposal, focusId);
             if (!landed.bubbles.length) exhausted.add(focusId);
             return landed.bubbles;
           } catch (e) {
@@ -397,7 +482,7 @@ export const useMapStore = create<MapState>((set, get) => {
           const focusId = seedProposal.refs[focusRef];
           try {
             const proposal = await promise;
-            land('descend:first', proposal);
+            land('descend:first', proposal, focusId);
           } catch (e) {
             if (focusId) exhausted.add(focusId);
             set({ error: e instanceof Error ? e.message : String(e) });

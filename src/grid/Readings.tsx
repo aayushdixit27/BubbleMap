@@ -17,7 +17,7 @@
 // (the probe run) has none; every post-D23 map fills it.
 
 import { useMemo } from 'react';
-import { useMapStore } from '../store';
+import { stableKey, useMapStore } from '../store';
 import type { Bubble } from '../types';
 import { CATEGORY_LABEL } from './ThreadGrid';
 import { buildGrid } from './threads';
@@ -107,7 +107,9 @@ export function Readings() {
         const raw = reading.raw;
         const killable = !readOnly && raw && !isProvisional(raw.id);
         return (
-          <div key={raw?.id ?? reading.real?.id ?? i} className="reading">
+          // stableKey survives the ghost → final id swap at finalize, so a
+          // reading that streamed in never remounts when it lands.
+          <div key={stableKey(raw?.id ?? reading.real?.id ?? String(i))} className="reading">
             <div className="reading-numeral">{NUMERAL[i] ?? String(i + 1)}</div>
             {reading.safe && <Step bubble={reading.safe} />}
             {reading.real && <Step bubble={reading.real} parent={reading.safe} />}
