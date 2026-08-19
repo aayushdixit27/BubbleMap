@@ -112,6 +112,17 @@ Rule 1** — re-read it in CLAUDE.md):
   `getBoundingClientRect` against `window.innerWidth/Height`; use
   screenshots for *feel*, and when the two disagree, trust the DOM and
   confirm with human eyes.
+- **descend's parent link is guaranteed client-side** (`ensureParentLink`
+  in `src/store.ts`): the focus is the parent by construction, so a
+  model-fumbled link can no longer orphan a RAW or make the loop
+  re-descend the same focus (Money descent v, 19 Aug — one wasted
+  descent). Underlying gap still open: the server console.warns link
+  rejections but the client ignores `proposal.rejections`; surfacing
+  them in the UI is unowned.
+- **Streamed content must neither move nor remount once visible**:
+  `replaceRun` swaps a run's ghosts in place, and readings keep their
+  ghost-era React key (`stableKey`). Don't reintroduce filter+append on
+  `doc.bubbles` — tail-appending re-sorted readings mid-run.
 - A synthetic map for view-testing is ~20 lines: import `placeInRegion`
   from `src/canvas/geometry.ts` under `tsx`, emit committed bubbles into
   `maps/<slug>-<id>.json` — the filename **must** end `-<id>.json` or
