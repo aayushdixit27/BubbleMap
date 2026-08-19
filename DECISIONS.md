@@ -301,6 +301,35 @@ A terminal state must distinguish **declined** (the model was asked and had noth
 from **discarded** (something was produced and removed). Never report exhaustion the
 system caused as exhaustion the song caused. *18 Aug.*
 
+**D41 — The keeper: one chosen RAW per song. Answers D25's tripwire.**
+
+At the end of a run the model **nominates three of the existing RAW bubbles**; the
+human picks one. That bubble becomes `doc.keeperId` — the song's canonical raw thing,
+and what the library row shows instead of "most recently committed."
+
+**The model nominates, it does not synthesise.** Writing three new takeaways would be
+a fifth verb, more latency, and more prose at the end of an already long read.
+Nominating from what exists costs nothing and adds a diagnostic: **if the human
+routinely picks one the model didn't nominate, that is a §8 finding.**
+
+**Why this matters more than it looks.**
+
+1. *It resolves the tripwire.* Two songs at zero kills, not because the readings were
+   all strong but because killing a whole descent feels wasteful and nothing forced a
+   preference. This restores PRODUCT §5's choose-one mechanic at a **better** level
+   than D25 traded it from: choosing between three complete descents is a more
+   meaningful judgment than choosing between three phrasings of one. D25's trade may
+   have been correct; this is its missing half, not its reversal. **Do not revert to
+   3-candidates on tripwire count three without trying this first.**
+2. *It is the corpus primitive.* §7 names the cross-song view as probably the real
+   product. Twenty songs × ten RAW bubbles is two hundred items and unusable. Twenty
+   songs × one keeper is the finding. This is what makes the corpus legible, and it
+   passes D38 for that reason.
+
+Data model: `keeperId?: string` on `BubbleMapDoc`. Optional, backfills undefined.
+Choosing is the natural end of a run, not a modal — and it must be re-choosable later
+from the map. Human-supplied idea, 19 Aug. *19 Aug.*
+
 ---
 
 ## Open — architect owes an answer
