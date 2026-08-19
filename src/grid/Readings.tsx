@@ -54,7 +54,15 @@ function Step({ bubble, parent, withNote, repeat }: { bubble: Bubble; parent?: B
         </div>
       )}
       <div className="entry-label">{bubble.label}</div>
-      {bubble.sourceLine && <div className="reading-line">{bubble.sourceLine}</div>}
+      {bubble.sourceLine && (
+        <div className="reading-line">
+          {bubble.sourceLine}
+          {/* D39: provenance unverified — a quiet fact, not a rejection. */}
+          {bubble.citationUnverified && (
+            <span className="citation-flag"> · citation unverified</span>
+          )}
+        </div>
+      )}
       {withNote && bubble.note && <div className="entry-note">{bubble.note}</div>}
     </div>
   );

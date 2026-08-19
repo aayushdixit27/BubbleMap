@@ -300,11 +300,16 @@ export function resolveProposal(
       rejectItem('bubble duplicate ref', rawBubble);
       continue;
     }
-    // D23 fabrication guard. AI bubbles are always kind 'idea', so the
-    // lyric-bubble exemption never applies here.
-    if (!sourceLineOccurs(rawBubble.sourceLine, doc.source)) {
-      rejectItem('bubble sourceLine not found in doc.source', rawBubble);
-      continue;
+    // D39 (amends D23): a failed citation match FLAGS, it does not reject.
+    // The reading is the product; the citation is provenance — a bad one
+    // is a fact to surface, not proof the reading is false. Silent
+    // rejection was the AI deciding for the human (Hard Rule 1). The flag
+    // rate is the diagnostic: if it stays high, that's a §8 problem and
+    // it belongs to the architect. Still warned here so the log keeps
+    // the sensor.
+    const citationUnverified = !sourceLineOccurs(rawBubble.sourceLine, doc.source);
+    if (citationUnverified) {
+      console.warn('[ai] citation unverified (kept, flagged):', JSON.stringify(rawBubble));
     }
     const id = nanoid();
     refToId.set(rawBubble.ref, id);
@@ -315,6 +320,7 @@ export function resolveProposal(
       category: rawBubble.category,
       label: rawBubble.label,
       sourceLine: rawBubble.sourceLine,
+      ...(citationUnverified ? { citationUnverified: true } : {}),
       ...(rawBubble.note ? { note: rawBubble.note } : {}),
       // Placeholder — Phase 1's placeInRegion assigns real positions.
       position: { x: 0, y: 0 },

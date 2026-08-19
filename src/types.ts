@@ -26,6 +26,9 @@ export interface Bubble {
   exhausted?: boolean;        // D35: asked to go deeper and declined. Set by the
                               // client when a descend returns nothing. Optional;
                               // pre-D35 files backfill undefined. No migration.
+  citationUnverified?: boolean; // D39: sourceLine didn't match doc.source. The
+                              // reading stays — provenance is unverified, and
+                              // renders with a quiet visible marker. Optional.
   position: { x: number; y: number };
   origin: Origin;
   status: Status;

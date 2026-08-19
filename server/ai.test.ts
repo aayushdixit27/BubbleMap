@@ -151,7 +151,7 @@ describe('resolveProposal — §5 invariants', () => {
   });
 });
 
-describe('resolveProposal — D23 sourceLine fabrication guard', () => {
+describe('resolveProposal — sourceLine guard (D23, amended by D39: flags, never rejects)', () => {
   it('accepts a sourceLine that occurs in doc.source, ignoring case, whitespace and punctuation', () => {
     const result = propose({
       bubbles: [
@@ -163,22 +163,24 @@ describe('resolveProposal — D23 sourceLine fabrication guard', () => {
     expect(result.bubbles).toHaveLength(2);
     expect(result.rejections).toHaveLength(0);
     expect(result.bubbles[0].sourceLine).toBe('How   did it end up like this');
+    expect(result.bubbles[0].citationUnverified).toBeUndefined();
+    expect(result.bubbles[1].citationUnverified).toBeUndefined();
   });
 
-  it('rejects a sourceLine that does not occur in doc.source, and drops its links', () => {
+  it('D39: a sourceLine that does not occur is KEPT and flagged, and its links resolve', () => {
     const result = propose({
       bubbles: [
         { ref: 'n1', tier: 'safe', category: 'love', label: 'grounded', sourceLine: LINE },
-        { ref: 'n2', tier: 'real', category: 'love', label: 'fabricated', sourceLine: 'explain the emails' },
+        { ref: 'n2', tier: 'real', category: 'love', label: 'uncited', sourceLine: 'explain the emails' },
       ],
       links: [{ source: 'n1', target: 'n2', kind: 'refines' }],
     });
-    expect(result.bubbles).toHaveLength(1);
-    expect(result.links).toHaveLength(0);
-    expect(result.rejections.map((r) => r.reason)).toEqual([
-      'bubble sourceLine not found in doc.source',
-      'link endpoint does not resolve to a known bubble',
-    ]);
+    expect(result.bubbles).toHaveLength(2);
+    expect(result.bubbles[0].citationUnverified).toBeUndefined();
+    expect(result.bubbles[1].citationUnverified).toBe(true);
+    expect(result.bubbles[1].label).toBe('uncited'); // content untouched
+    expect(result.links).toHaveLength(1); // endpoint exists, link survives
+    expect(result.rejections).toHaveLength(0); // a flag is not a rejection
   });
 
   it('rejects a missing or empty sourceLine as a missing required field', () => {
@@ -195,15 +197,16 @@ describe('resolveProposal — D23 sourceLine fabrication guard', () => {
     ]);
   });
 
-  it('rejects every bubble when the doc has no source — nothing can be verified', () => {
+  it('D39: with no doc.source nothing can verify — every bubble is kept, flagged', () => {
     const doc = mkDoc();
     delete doc.source;
     const result = propose(
       { bubbles: [{ ref: 'n1', tier: 'safe', category: 'love', label: 'a', sourceLine: LINE }] },
       doc,
     );
-    expect(result.bubbles).toHaveLength(0);
-    expect(result.rejections.map((r) => r.reason)).toEqual(['bubble sourceLine not found in doc.source']);
+    expect(result.bubbles).toHaveLength(1);
+    expect(result.bubbles[0].citationUnverified).toBe(true);
+    expect(result.rejections).toHaveLength(0);
   });
 });
 
