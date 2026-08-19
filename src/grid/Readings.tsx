@@ -29,8 +29,11 @@ const isProvisional = (id: string) => id.startsWith('p:');
 interface Reading {
   safe?: Bubble;
   real?: Bubble;
-  raw?: Bubble; // absent for a still-descending or exhausted thread
-  exhausted?: boolean; // D33: asked to go deeper, declined — terminal, visible
+  raw?: Bubble; // absent for a still-descending or terminal thread
+  // D33/D40: terminal states are visible and TRUE. 'declined' = asked,
+  // the song had nothing deeper (persisted). 'discarded' = something was
+  // produced and removed by the system (session; see rejections).
+  terminal?: 'declined' | 'discarded';
   safeRepeat?: boolean; // D32: ancestor already shown in an earlier reading
   realRepeat?: boolean;
 }
@@ -73,6 +76,7 @@ export function Readings() {
   const running = useMapStore((s) => s.running);
   const readOnly = useMapStore((s) => s.readOnly);
   const killDescent = useMapStore((s) => s.killDescent);
+  const discarded = useMapStore((s) => s.discarded);
 
   // One reading per RAW bubble, in arrival order (D26 #3 appends serially).
   // A thread-based derivation would hide every descent after the first
@@ -107,10 +111,14 @@ export function Readings() {
     const descended = new Set(result.map((r) => r.real?.id).filter(Boolean));
     for (const real of doc.bubbles.filter((b) => b.tier === 'real')) {
       if (descended.has(real.id)) continue;
-      const isExhausted = real.exhausted === true;
-      if (running === 0 && !isExhausted) continue;
+      const terminal: Reading['terminal'] = real.exhausted
+        ? 'declined'
+        : discarded.includes(real.id)
+          ? 'discarded'
+          : undefined;
+      if (running === 0 && !terminal) continue;
       const parent = grid.parentOf.get(real.id);
-      result.push({ safe: parent?.tier === 'safe' ? parent : undefined, real, exhausted: isExhausted });
+      result.push({ safe: parent?.tier === 'safe' ? parent : undefined, real, terminal });
     }
     // D32: mark ancestors already shown in an earlier reading, by id, in
     // render order — they render at full text in muted ink.
@@ -122,7 +130,7 @@ export function Readings() {
       if (r.real) seen.add(r.real.id);
     }
     return result;
-  }, [doc, running]);
+  }, [doc, running, discarded]);
 
   if (!doc) return null;
 
@@ -146,7 +154,11 @@ export function Readings() {
             ) : (
               <div className="reading-step t-raw">
                 <div className="reading-line">
-                  {reading.exhausted ? 'no deeper reading found' : 'descending…'}
+                  {reading.terminal === 'declined'
+                    ? 'no deeper reading found'
+                    : reading.terminal === 'discarded'
+                      ? 'its reading arrived malformed and was discarded — see rejections'
+                      : 'descending…'}
                 </div>
               </div>
             )}

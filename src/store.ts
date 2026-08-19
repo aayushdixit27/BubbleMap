@@ -80,6 +80,7 @@ interface ActiveRun {
   progress: Progress;
   metrics: string | null;
   rejections: { reason: string; item: unknown }[];
+  discarded: string[]; // D40: foci whose output was produced then removed
   error: string | null;
   finished: boolean;
 }
@@ -142,6 +143,11 @@ interface MapState {
   // in the toolbar, expanding to reasons. Silent rejection produced a
   // broken map once (Money, descent v); never again invisible.
   rejections: { reason: string; item: unknown }[];
+  // D40: REALs whose descend PRODUCED something that was then removed
+  // (malformed, discarded server-side) — distinct from declined. Session
+  // scope; renders "discarded — see rejections", never "no deeper
+  // reading found". Never report system-caused exhaustion as song-caused.
+  discarded: string[];
   // D37: the run whose map is NOT open, if any — drives the quiet
   // "next song · N of 10" toolbar indicator. null when no run, or when
   // the running map is the open one (its progress shows normally).
@@ -310,6 +316,7 @@ export const useMapStore = create<MapState>((set, get) => {
     running: 0,
     killed: [],
     rejections: [],
+    discarded: [],
     ahead: null,
     progress: null,
     status: '',
@@ -349,6 +356,7 @@ export const useMapStore = create<MapState>((set, get) => {
           progress: activeRun.progress,
           metrics: activeRun.metrics,
           rejections: activeRun.rejections,
+          discarded: activeRun.discarded,
           error: activeRun.error,
           status: '',
         });
@@ -357,7 +365,7 @@ export const useMapStore = create<MapState>((set, get) => {
         return;
       }
       try {
-        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -380,13 +388,13 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], progress: null, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
       // Navigating away from a still-running map is legal under D37: the
       // run keeps going against its own doc and shows up as `ahead`.
-      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], progress: null, status: '', metrics: null });
+      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], discarded: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -472,6 +480,7 @@ export const useMapStore = create<MapState>((set, get) => {
           progress: { done: 0, target: DESCENT_TARGET, state: 'going' },
           metrics: null,
           rejections: [],
+          discarded: [],
           error: null,
           finished: false,
         };
@@ -479,7 +488,7 @@ export const useMapStore = create<MapState>((set, get) => {
         if (openNow) {
           set({
             doc, view: 'readings', readOnly: false, killed: [], rejections: [],
-            error: null, metrics: null, status: '', running: 1,
+            discarded: [], error: null, metrics: null, status: '', running: 1,
             ahead: null,
             progress: run.progress,
           });
@@ -606,6 +615,14 @@ export const useMapStore = create<MapState>((set, get) => {
           });
           if (isOpen()) scheduleSave();
         };
+        // D40: DISCARDED, not declined — the model produced something and
+        // the system removed it. Don't re-ask this session, but never set
+        // the persisted "declined" flag or claim the song had nothing.
+        const discard = (id: string) => {
+          exhausted.add(id);
+          run.discarded = [...run.discarded, id];
+          if (isOpen()) set({ discarded: run.discarded });
+        };
         let errors = 0;
 
         // Returns the landed bubbles, or null when the call errored — an
@@ -618,7 +635,14 @@ export const useMapStore = create<MapState>((set, get) => {
             });
             errors = 0;
             const landed = land(runId, proposal, focusId);
-            if (!landed.bubbles.length) exhaust(focusId);
+            if (!landed.bubbles.length) {
+              // D40: an empty landing is DECLINED only if the model truly
+              // proposed nothing. If bubbles were produced and removed
+              // server-side, that is discarded — system-caused.
+              const produced = proposal.rejections?.some((r) => String(r.reason).startsWith('bubble'));
+              if (produced) discard(focusId);
+              else exhaust(focusId);
+            }
             return landed.bubbles;
           } catch (e) {
             // An API error is not a decline — no persisted flag, no terminal
@@ -675,7 +699,13 @@ export const useMapStore = create<MapState>((set, get) => {
             .filter((b) => b.tier === 'safe' && arrived(b) && !exhausted.has(b.id))
             .sort((a, b) => childCount(a.id) - childCount(b.id));
           if (!safes.length) {
-            stopNote = `stopped at ${rawCount()} — the song ran out of threads`;
+            // D40: never report system-caused exhaustion as song-caused.
+            stopNote =
+              run.discarded.length > 0
+                ? `stopped at ${rawCount()} — ${run.discarded.length} ${
+                    run.discarded.length === 1 ? 'proposal was' : 'proposals were'
+                  } discarded as malformed (see rejections)`
+                : `stopped at ${rawCount()} — every thread has gone as deep as it goes`;
             break;
           }
           spawnCounter += 1;
