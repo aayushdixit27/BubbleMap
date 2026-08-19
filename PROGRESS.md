@@ -1,6 +1,8 @@
 # PROGRESS
 
-> **Last updated: 18 Aug 2026, Phase 2 closed (gate passed); D26 build starting.**
+> **Last updated: 18 Aug 2026, end of session. Phase 2 closed (gate passed).
+> D26 chunks 1–3 built and verified; chunk 4 (three views) is next. Nothing
+> is half-built.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -30,12 +32,71 @@ validation live. Target being tested: lyrics → RAW on screen < 1 minute.
 (18 Aug) produced genuinely raw output — the flinch test cleared —
 correctly categorised and lyric-grounded, with RAW on screen in 53s.
 
-**Now building D26** (supersedes D25's judgment model; **amends Hard
-Rule 1** — re-read it in CLAUDE.md): library home base, opt-out judging
-(descents land committed, kill is the gesture, undoable), up to 10
-continuous serial descents with always-visible progress, three views
-(Readings / Grid / Target). Building in four committed chunks, in that
-order.
+**D26 build status** (supersedes D25's judgment model; **amends Hard
+Rule 1** — re-read it in CLAUDE.md):
+
+- **Chunk 1 ✓ home base** (`5192203` + `0b80de8`). Library landing:
+  songs most recent first, each row = title / sharpest RAW line (most
+  recently committed RAW label, 15px serif) / date+time+descent-count
+  meta. Hover-revealed delete with inline confirm. "Add a song" reveals
+  the form. Opening only reads.
+- **Chunk 2 ✓ opt-out judging** (`a7fd7a9`). Arrivals commit on
+  finalize; the only control is "kill this descent" → whole path to
+  `rejected[]` (shared ancestors spared); session undo stack +
+  "undo kill" in the toolbar. Verified: kill→undo restores the file
+  identically.
+- **Chunk 3 ✓ continuous serial descents** (`54d3972`). Up to 10 per
+  song (`DESCENT_TARGET` in `src/store.ts`), one at a time, appended+
+  committed as each completes. First descend overlaps the seed tail
+  (provisional focus id, links remapped via new `Proposal.refs`). When
+  REALs run out, a new REAL is spawned from the least-used SAFE. Honest
+  early stop; progress line "N of 10 · still going" → "done". Verified
+  live: 10/10 distinct readings, no provisional-id leakage.
+- **Chunk 4 — NEXT: three views.** Readings (default) / Grid / Target.
+  Toggle names the destination. Target = Jun Yuh circle: this song's
+  RAW bubbles as dots by category on the existing `canvas/geometry.ts`
+  (18 tests, untouched), D22 dots-and-hairlines. `Signature.tsx` already
+  does a tiny version of this — start there.
+
+**Known facts not written anywhere else:**
+
+- **Centring fix** (`src/styles.css`): the centred columns are flex
+  children with auto margins, which disables stretch and shrink-wraps
+  the box to its content — the column drifted with content width. Fix =
+  explicit `width: 100%` under each `max-width` (`.start`, `.reading`,
+  `.readings-empty`). Any new centred view needs the same pair.
+- **Descend's input now includes all existing bubbles** (labels only,
+  D17 #2) — the D8 argument applied to descend: it cannot avoid
+  duplicating threads it cannot see. Implementer change in
+  `server/ai.ts buildUserMessage`; it produced 10 distinct RAWs in the
+  wire test. **Architect should ratify → DECISIONS entry.**
+- **~20s first-RAW target is blocked on seed emission order.** Seed
+  streams 3 SAFEs before the first REAL, so the overlapped descend can
+  start only ~70% through a ~30s seed. Measured: first RAW committed
+  47s; the metric now reports first *visible* (streamed) RAW. Fix needs
+  seed to emit REALs earlier or a smaller seed — prompt/contract
+  change, architect's call.
+- **Readings derive one reading per RAW bubble** via its own ancestor
+  chain (`parentOf` walk), NOT per thread — one SAFE now parents
+  several descents, and a thread-based derivation hides all but the
+  first.
+- **Do not edit `src/` or `server/` while a generation runs.** Vite HMR
+  reloads the client (killing the in-flight loop mid-run); tsx watch
+  restarts the server under its API calls.
+- **`maps/` is gitignored — no VCS safety net.** Copy a map to the
+  scratchpad before any risky operation on it (that's how kill/undo was
+  tested against the real Beautiful map).
+- **No native dialogs** (`window.confirm` etc.) — they hang browser
+  automation and read as chrome; use inline two-step confirms (see the
+  library delete).
+- Killed paths park in `rejected[]` with their committed status;
+  `readMap` backfills `rejected: []` for pre-D24 files;
+  `BUBBLEMAP_MAPS_DIR` env redirects storage for tests.
+- The probe run (`src/loadProbeRun.ts`) is read-only design-test data,
+  pre-D23 (no sourceLines) — lyric-line slots render empty there only.
+- Autosave is immediate/serialized/coalescing with `keepalive` PUTs —
+  the 800ms debounce starved under rapid clicks and lost whole maps.
+  Do not reintroduce a debounce.
 
 Superseded today: D24's per-bubble flow (→ D25), ARCHITECTURE §7's verb
 table (amended in place, note at §7 top).
@@ -153,18 +214,13 @@ mutates the map.
 
 ## Next
 
-The D26 build, four chunks, committed and stopped between each:
-
-1. **Home base** — the landing screen is the library (songs, most recent
-   first: title, date made, descent count); "Add a song" is one option on
-   it; opening a song only reads.
-2. **Opt-out judging** — descents land committed; the only gesture is
-   "kill this descent" → rejected[], undoable for the session.
-3. **Continuous descents** — up to 10 per song, serial, appended as each
-   completes; first RAW ~20s; always-visible progress (`4 of 10 · still
-   going` → `done`); stop early honestly if the song runs out of threads.
-4. **Three views** — Readings (default), Grid, Target (Jun Yuh circle:
-   RAW dots by category on geometry.ts, D22 dots-and-hairlines).
+**D26 chunk 4 — three views.** Readings (default), Grid, Target. The
+toggle names where it takes you, not where you are. Target is the Jun
+Yuh circle: this song's RAW bubbles plotted by category using
+`canvas/geometry.ts`, dots and hairlines only, D22 treatment. Chunks
+1–3 are done and committed (see status above). After chunk 4: run a
+real song end-to-end under the full D26 flow, then the architect's
+next call.
 
 ---
 
