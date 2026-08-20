@@ -19,6 +19,22 @@ implementation of the wrong thing is still the wrong thing.
 The pain is **the stall at REAL**, not the absence of a diagram. Everything in
 this product exists to break that stall or it doesn't ship.
 
+**The raw layer is recovered, not invented.** *(User, 19 Aug — the sharpest framing
+of this product so far.)* The singer had to live in the raw to write the song at all.
+It is already in there, under the safe reading, put there deliberately by someone who
+paid for it. So the work is **excavation, not interpretation** — and that is why the
+good outputs land as *findings* rather than opinions, and why a weak one feels like a
+guess rather than a wrong answer.
+
+Two consequences worth holding onto:
+
+- **There is a right answer, roughly.** Not a single one, but a range the song
+  supports and a wide field it doesn't. That is what makes the citation guard matter
+  and what makes the flinch test meaningful rather than a taste poll.
+- **It should feel like digging.** The user's word was *joy* — a game, a hustle. A
+  tool that hands you a report has failed even if the report is correct. The act of
+  going down a level yourself is part of the product, not overhead before the payoff.
+
 **Who this is for:** one person — a creator who wants to make things that land,
 using hit songs as the training corpus. Not a general-purpose mind-mapping tool.
 Not for teams. If a feature only makes sense for a second user, it's out.
