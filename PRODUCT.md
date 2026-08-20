@@ -249,6 +249,31 @@ Where this goes if it works, in order of conviction:
    cluster in IDENTITY across songs I love, that's a finding about me, not about
    the songs. *This is probably the real product; v1 is the instrument that
    collects the data for it.*
+
+   **First five-song reading, 19 Aug — and a corrected architect error.** Across
+   Beautiful, Money, Be Her, Go Your Own Way and Been By Now, the architect read the
+   *plurality* quadrant of each song and claimed the raw layer always collapses into
+   IDENTITY — possibly a §8 artifact, since "it must implicate the narrator" is
+   definitionally identity-adjacent.
+
+   **Wrong.** The Target view for one song showed 4 identity / 3 love / 2 fitness /
+   1 earnings. Real scatter. The architect diagnosed from a text dump when the view
+   built to answer that exact question was one click away — the third time
+   *render before deciding* has caught the same mistake.
+
+   The user's correction stands: **a flat distribution was never the right null
+   hypothesis.** Songwriting is disproportionately about who the singer is. That's
+   the craft, not a prompt bias.
+
+   **What would actually be a warning sign** is not IDENTITY being the plurality.
+   It's IDENTITY being the *only* thing, or the identity readings across songs
+   converging on the **same insight**. Neither is happening — five songs produced
+   five distinct mechanisms, so the model is reading each song rather than
+   pattern-matching.
+
+   **So the real corpus question is sharper than "does it spread."** It's whether
+   twenty keeper lines share a *shape* — and if they do, whether that's a fact about
+   hit songs or a fact about which songs this listener chooses.
 2. **`subject: 'self'`.** Same target, pointed at my own LIFE quadrants. The
    data model already supports it; it's one prompt variant.
 3. **Descent-shape comparison.** Do hits share a path through the rings?

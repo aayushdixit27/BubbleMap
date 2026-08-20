@@ -1,18 +1,12 @@
 # PROGRESS
 
-> **Last updated: 20 Aug 2026. Phase 2 closed. D26 complete; D30–D42
-> ruled and built: the keeper (nominate → human picks, persisted
-> nominatedIds + keeperId), sourceLine guard flags not rejects, truthful
-> run-end messages, one-ahead buffer, lyric sheet while generating.
-> Latest batch (implementer latitude): the compose surface is its own
-> mode with a draft that survives navigation (localStorage), TARGET is
-> the landing view (supersedes D26 #4's Readings default; a generating
-> map lands on Readings), and the keeper is visible before the moment of
-> choosing (standing frame, "this is the keeper" leads the hover row,
-> keeper ring on the Target dot). PRODUCT §1 gained the excavation
-> reframe — read it. Tripwire: two songs all-keeps; count three rides on
-> the next run, which is also the keeper's first outing.
-> Next: map songs.**
+> **Last updated: 20 Aug 2026, pre-clear. Phase 2 closed; everything
+> through D42 is built, plus the compose surface, Target-as-landing, and
+> the keeper frame. Five maps exist; the corpus view waits for ~10.
+> D38's standing bias is live: build ONLY what makes the next songs
+> cheaper to get through. The next song answers three questions at once
+> — see "The three live questions" below. Next: map songs, not
+> features.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -24,76 +18,104 @@ spec. Fable updates it at every phase boundary, before committing.
 
 ## Where we are
 
-**Phase 2 — the loop, rebuilt around D25: the unit of judgment is the
-DESCENT, not the bubble.** Flow: paste title + lyrics → seed (3 SAFE +
-3 REAL, split schema- and server-enforced) → the moment seed returns,
-descend fires on all three REALs in parallel, each returning exactly one
-RAW (D25 changed this from 3-candidates-keep-1) → three complete descents
-present in the READINGS view (SAFE → REAL → RAW vertically, D22 type
-crescendo, sourceLine as a serif citation under each entry) → keep/kill
-per descent: keep commits the whole path, kill parks it in rejected[]
-(shared ancestors spared while another path uses them). Per-bubble
-keep/kill, the descend button, and Shift+A/X are gone. The grid remains
-as a presentation-only toggle. Autosave is immediate (a debounce-starvation
-bug lost whole maps on 18 Aug — fixed, round-trip tested). D23 sourceLine
-validation live. Target being tested: lyrics → RAW on screen < 1 minute.
+**Phase 2 closed (gate passed on "Beautiful", 18 Aug — flinch test
+cleared, lyric-grounded).** Since then the loop has been hardened
+through live dogfooding, D26–D42 all ruled and built. The current flow:
 
-**Phase 2 gate: PASSED.** The dogfood run on Carole King's "Beautiful"
-(18 Aug) produced genuinely raw output — the flinch test cleared —
-correctly categorised and lyric-grounded, with RAW on screen in 53s.
+**Compose** (own mode, not a library row): title + one enormous lyrics
+paste target; drafts survive navigation via localStorage; "Map this
+song" starts the run. → **Seed** (3 SAFE + 3 REAL, schema+server
+enforced) with the first descend overlapping the seed tail →
+**up to 10 serial descents** (`DESCENT_TARGET`, src/store.ts), each
+exactly one RAW, landing committed as they arrive (amended Hard Rule 1
+— opt-out judging; the only gestures are "kill this descent" and, at
+run end, choosing **the keeper**). While generating, the pasted lyrics
+render as a quiet sheet (never a blank screen) and the first-RAW metric
+ticks live. At run end the model **nominates three RAWs** (D41/D42,
+`NOMINATE_SUFFIX` in prompts.ts, persisted as `doc.nominatedIds`); the
+human picks one → `doc.keeperId`, the song's canonical raw thing,
+re-choosable forever, shown in the library row and ringed on the
+Target. **D37 one-ahead**: "next song" starts N+1 while reading N; a
+third is structurally impossible.
 
-**D26 build status** (supersedes D25's judgment model; **amends Hard
-Rule 1** — re-read it in CLAUDE.md):
+**Views**: Target (RAW disc, D30) is the LANDING view — it answers
+"what is this song about" at a glance; click a dot for its SAFE→REAL→
+RAW provenance panel. A still-generating map lands on Readings (the dig
+is what there is to watch). Readings: one reading per RAW via its
+ancestor chain (D29), tier named in the marginalia ("safe · Love"),
+repeated ancestors full-text in muted ink (D32), terminal slots that
+never vanish ("no deeper reading found" = declined, persisted D35;
+"discarded — see rejections" = system-caused, D40), keeper frame on
+top. Grid: presentation-only toggle. Rejections surface as a quiet
+toolbar count (D34); the sourceLine guard FLAGS (`citationUnverified`)
+instead of rejecting (D39).
 
-- **Chunk 1 ✓ home base** (`5192203` + `0b80de8`). Library landing:
-  songs most recent first, each row = title / sharpest RAW line (most
-  recently committed RAW label, 15px serif) / date+time+descent-count
-  meta. Hover-revealed delete with inline confirm. "Add a song" reveals
-  the form. Opening only reads.
-- **Chunk 2 ✓ opt-out judging** (`a7fd7a9`). Arrivals commit on
-  finalize; the only control is "kill this descent" → whole path to
-  `rejected[]` (shared ancestors spared); session undo stack +
-  "undo kill" in the toolbar. Verified: kill→undo restores the file
-  identically.
-- **Chunk 3 ✓ continuous serial descents** (`54d3972`). Up to 10 per
-  song (`DESCENT_TARGET` in `src/store.ts`), one at a time, appended+
-  committed as each completes. First descend overlaps the seed tail
-  (provisional focus id, links remapped via new `Proposal.refs`). When
-  REALs run out, a new REAL is spawned from the least-used SAFE. Honest
-  early stop; progress line "N of 10 · still going" → "done". Verified
-  live: 10/10 distinct readings, no provisional-id leakage.
-- **Chunk 4 ✓ three views** (`81d099e`). Readings (default) / Grid /
-  Target; the toolbar shows only the two views you're *not* in, so every
-  label names a destination by construction. Target = the RAW disc
-  (**D30**, which cropped the spec's three-ring frame after a two-render
-  comparison): committed RAW dots by category on `canvas/geometry.ts`
-  positions (18 tests, untouched), one hairline circle + axes, corner
-  labels in category ink, D22 treatment. The committed-only filter is
-  load-bearing — pre-commit bubbles sit at (0,0) until `placeInRegion`
-  runs, so a streaming descent would otherwise render a phantom centre
-  dot. Verified on a synthetic 10-RAW map (5 identity / 3 fitness /
-  1 love / 1 earnings, positioned by the real `placeInRegion`): reads
-  Identity-heavy at a glance from position alone, all five clustered
-  identity dots separated, no overlap. Synthetic map deleted after.
+## The three live questions — the next song answers all of them
 
-**Known facts not written anywhere else:**
+1. **Tripwire count three (D25's live clause).** Two songs at ZERO
+   kills. If the third is also all-keeps, D25's own terms say the
+   descent-choice trade was wrong — **but D41 ships first per its own
+   entry**: the keeper restores choose-one at a better level, so do NOT
+   revert to 3-candidates without seeing whether forced keeper
+   preference was the missing choice. The library rows show kills at a
+   glance ("N kept · M killed").
+2. **The keeper's first real outing.** Does the end-of-run nomination
+   block feel like a natural close, does the standing frame read, does
+   choosing feel like the most important act (it is)?
+3. **The first on-list/off-list data point.** `keeperId` vs
+   `nominatedIds` is now persisted; a human picking off-list is the §8
+   diagnostic D41 was built to collect (belongs to the architect if it
+   recurs).
+
+## Corpus status
+
+**Five maps**: Beautiful, Money, Be Her, Go your own way, Been By Now.
+The corpus view is worth building at **~10**; it then costs about a
+day. **D38 standing bias until then: build only what makes the next
+songs cheaper to get through** — say so out loud if anything else is
+proposed. PRODUCT §7 carries the architect's five-song corpus reading
+(19 Aug), including a corrected architect error about IDENTITY
+plurality — **do not re-derive it, read it**. PRODUCT §1 carries the
+excavation reframe (raw is recovered, not invented; it should feel
+like digging) — design register for everything.
+
+**Known facts not written anywhere else (operational traps first):**
+
+- **Dev servers run DETACHED** (started 19 Aug with `nohup … & disown`
+  at the user's request, after session-owned background tasks died with
+  their sessions twice). **Never host the servers as a session
+  background task** — they die when the session does. The human owns
+  them; check `curl 127.0.0.1:8787/api/health`; stop via
+  `lsof -ti tcp:8787 | xargs kill`.
+- **Compose drafts** live in localStorage keys `bubblemap.compose.*`
+  and `bubblemap.next.*`; cleared only by successful submit. Input
+  protection, not judgment — no D10 conflict.
+- **View landing rules**: finished map → `target`; still-generating map
+  → `readings`; probe run → `readings`; otherwise the view is
+  human-only state in the store — nothing that mutates doc may touch
+  it (a run must never move the human off the kill gesture).
+- **The nominate call** reuses §8 + `NOMINATE_SUFFIX` (architect copy,
+  verbatim — as product-copy as the §8 prompt itself). Skipped when a
+  map has ≤3 RAWs (all become candidates locally). Failure never fails
+  a run. Killing the keeper's descent clears `keeperId`.
+- **Pre-D39/D42 maps carry scars**: "Be Her" lost 6 bubbles to the old
+  rejecting guard (not recoverable); maps run before D42 have no
+  `nominatedIds`, so they reopen without a nomination block — the hover
+  gesture ("this is the keeper") is their path. Money contains one
+  hand-authored `repair:` link (descent v, 19 Aug).
 
 - **Centring fix** (`src/styles.css`): the centred columns are flex
   children with auto margins, which disables stretch and shrink-wraps
   the box to its content — the column drifted with content width. Fix =
   explicit `width: 100%` under each `max-width` (`.start`, `.reading`,
   `.readings-empty`). Any new centred view needs the same pair.
-- **Descend's input now includes all existing bubbles** (labels only,
-  D17 #2) — the D8 argument applied to descend: it cannot avoid
-  duplicating threads it cannot see. Implementer change in
-  `server/ai.ts buildUserMessage`; it produced 10 distinct RAWs in the
-  wire test. **Architect should ratify → DECISIONS entry.**
-- **~20s first-RAW target is blocked on seed emission order.** Seed
-  streams 3 SAFEs before the first REAL, so the overlapped descend can
-  start only ~70% through a ~30s seed. Measured: first RAW committed
-  47s; the metric now reports first *visible* (streamed) RAW. Fix needs
-  seed to emit REALs earlier or a smaller seed — prompt/contract
-  change, architect's call.
+- **Descend's input includes all existing bubbles** (labels only,
+  D17 #2) — ratified as **D27**. Dedup is load-bearing once one SAFE
+  parents several REALs.
+- **Latency standard is D28** (blocked time, not first-RAW time — the
+  20s target was killed as underived): readable content within ~10s,
+  page never silent, first RAW under 60s. Currently met; the first-RAW
+  metric ticks live and freezes at the true number.
 - **Readings derive one reading per RAW bubble** via its own ancestor
   chain (`parentOf` walk), NOT per thread — one SAFE now parents
   several descents, and a thread-based derivation hides all but the
@@ -273,12 +295,14 @@ mutates the map.
 
 ## Next
 
-**Run a real song end-to-end under the full D26 flow.** D26 is complete
-(all four chunks committed — see status above). The dogfood run answers
-Q3's kill-rate question with real numbers and is the first time the
-Target view meets real data at ten descents. Q5 (three-tier inward
-paths in the Target) is logged and deliberately deferred — do not start
-it before the dogfood run. After that: the architect's next call.
+**Map songs, not features (D38).** The next run answers the three live
+questions above. Deferred by ruling, do not start: **Q5** (three-tier
+paths on the Target — the provenance panel was the cheap answer; the
+full version waits), **Q6** ("explain this" on a highlighted RAW line —
+approved in principle, sequenced after the keeper's first outing; it
+makes songs deeper, not cheaper). The corpus view builds itself at ~10
+maps. If a ruling arrives that isn't in DECISIONS yet, record it there
+before building.
 
 ---
 
