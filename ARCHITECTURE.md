@@ -530,6 +530,12 @@ domain of life. If it is not, move it.
 
 ## 9. Rendering
 
+> **Superseded entirely — see DECISIONS D22.** The editorial treatment replaced
+> everything below: paper `#f6f3ec` and ink, tier as typography (SAFE grey sans →
+> RAW large serif), category as small-caps marginalia in muted inks, hairline
+> rules, nothing a card, no dark mode. The tokens and rules in this section are
+> the pre-D22 design, kept as the record. Current truth is `src/styles.css`.
+
 ### 9.1 Color
 
 Category is **hue**. Tier is **intensity**. The center of the target is the most
@@ -639,6 +645,15 @@ POST   /api/ai/relink         → { doc }            → { bubbles: [], links }
 ---
 
 ## 12. Build order
+
+> **Superseded in part — see DECISIONS D43.** Phases 0–2 below are the record of
+> what happened and stand. **Phases 3–5 are superseded**: they were written
+> before the tool existed, and six songs of use invalidated most of them —
+> Phase 3's authoring features have never been wanted; Phase 4 is cut (`relink`,
+> D15), shipped (cross-category), or unmissed (`interrogate` UI); Phase 5
+> survives as a posture, not a phase. Phases are retired as a planning device —
+> the queue is use-discovered now. Kept, not deleted: this is the record of what
+> was planned versus what use actually asked for.
 
 **Read PRODUCT.md §4 before this section.** The ordering below is driven by the
 pre-mortem, not by engineering convenience. The riskiest assumption — *can the

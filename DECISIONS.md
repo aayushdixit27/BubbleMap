@@ -362,22 +362,44 @@ keep picking off-list* only answers across sessions. Persisting also lets a
 keeperless map show its block on reopen **without firing an AI call**, which keeps
 D26 #1 intact (opening only reads). Optional, backfills undefined. *19 Aug.*
 
+**D43 — ARCHITECTURE §12's Phases 3–5 are superseded. The plan is spent.**
+They were written before the tool existed and six songs of use invalidated most of
+them:
+
+- **Phase 3 (authoring)** — inline editing, hand-drawn links, an Inspector. In six
+  songs the user has never wanted to edit a bubble or draw a link; the Inspector
+  became the Target provenance panel. **Dead unless use asks for it.**
+- **Phase 4 (depth)** — `interrogate`, `relink`, cross-category. `relink` cut by D15;
+  cross-category shipped in Phase 1; `interrogate` has no UI and has never been
+  missed. **Largely done or dead.**
+- **Phase 5 (cut list)** — still valid as a posture, not as a phase.
+
+**What actually remains, in order:** Q6 (explain-this), the corpus view, and four
+more songs. Phases are retired as a planning device — the queue is now
+use-discovered, per PRODUCT §3's amendment. *20 Aug.*
+
+**D44 — Q6 is unblocked by its own terms; build it next.** Q6 was sequenced "after
+the current fix batch and one more song." The batch shipped and two songs have run
+since (Been By Now, Mr. Brightside). Condition met.
+
+It is also the only queued item that improves the thing the user actually does. The
+corpus view needs ~4 more songs before it can exist; Q5's cheap answer already
+shipped as the provenance panel. *20 Aug.*
+
+*D44 addendum — the rest of the ruling as relayed, recorded by the implementer.*
+The shape is the user's, from the "Be Her" run: highlight text in a RAW reading →
+"explain this" appears → an AI answer in a hovering box → dismissed by clicking
+away. It **is a fifth verb**, so its §8 suffix is product copy: the implementer
+drafts the ask, the architect ratifies it before it ships — same path as the
+nominate suffix (D42). What's selectable, how the box behaves, and whether the
+answer persists are the implementer's under D36. One design constraint from
+PRODUCT §1: it should feel like **digging, not being handed a report** — whatever
+"explain this" returns must leave the reader somewhere they can push further, not
+close the question. *20 Aug.*
+
 ---
 
 ## Open — architect owes an answer
-
-**Q6 — "Explain this" on a highlighted RAW line.** User-discovered in the "Be Her"
-run: *"I read something from the raw section and say ooh that's good, but it just
-sort of ends there."* Proposed shape — highlight text, a hovering "explain this"
-appears, an AI answer appears in a second hover box, dismissed by clicking away.
-
-**Approved in principle.** It serves PRODUCT §2's outcome directly and it's a real
-gap in the core experience, not a whiteboard feature.
-
-**Sequenced after the current fix batch and one more song**, because it's a fifth AI
-verb and D38's standing bias says build only what makes the next eight songs cheaper.
-This makes each song deeper, not cheaper. If the "it just ends there" feeling persists
-after the guard fix, that reorders it.
 
 **Q5 — Should the Target eventually plot all three tiers as paths?**
 Each descent drawn as a line from the outer ring inward, so cross-category descents
