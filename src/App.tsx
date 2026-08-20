@@ -9,20 +9,99 @@ import { useMapStore, type View } from './store';
 // names a destination by construction.
 const VIEWS: View[] = ['readings', 'grid', 'target'];
 
+// A draft that survives navigation. Losing a pasted page of lyrics is the
+// worst small failure available, so every keystroke lands in localStorage
+// and only a successful submit clears it. Drafts are input protection,
+// not judgment — D10 (judgment lives in files) is about a different thing.
+function useDraft(key: string): [string, (v: string) => void, () => void] {
+  const [value, setValue] = useState(() => localStorage.getItem(key) ?? '');
+  const update = (v: string) => {
+    setValue(v);
+    if (v) localStorage.setItem(key, v);
+    else localStorage.removeItem(key);
+  };
+  const clear = () => {
+    setValue('');
+    localStorage.removeItem(key);
+  };
+  return [value, update, clear];
+}
+
+// The COMPOSE SURFACE — its own mode, not the library's fifth row. You
+// arrive with lyrics on the clipboard; the lyrics field is the hero
+// because it is the ground the model digs in (PRODUCT §1: the raw layer
+// is recovered, not invented). "← library" is not a cancel: the draft
+// stays.
+function Compose({ onBack }: { onBack: () => void }) {
+  const createAndSeed = useMapStore((s) => s.createAndSeed);
+  const [title, setTitle, clearTitle] = useDraft('bubblemap.compose.title');
+  const [source, setSource, clearSource] = useDraft('bubblemap.compose.source');
+
+  return (
+    <div className="compose">
+      <div className="compose-bar">
+        <button className="text-action" onClick={onBack}>
+          ← library <span className="compose-kept">· your draft keeps</span>
+        </button>
+      </div>
+      <form
+        className="compose-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!title.trim() || !source.trim()) return;
+          void createAndSeed(title, source);
+          clearTitle();
+          clearSource();
+        }}
+      >
+        <label className="field-label" htmlFor="compose-title">Song — Artist</label>
+        <input
+          id="compose-title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Mr. Brightside — The Killers"
+          autoFocus={!title}
+        />
+        <label className="field-label compose-lyrics-label" htmlFor="compose-source">
+          The lyrics
+        </label>
+        <div className="compose-explain">
+          The ground the dig happens in. Paste everything you have — lyrics, your
+          notes, what you already suspect. The model works only from what lands here.
+        </div>
+        <textarea
+          id="compose-source"
+          className="compose-lyrics"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+          placeholder="Paste them here."
+          autoFocus={Boolean(title) && !source}
+        />
+        <button
+          className="text-action start-submit"
+          type="submit"
+          disabled={!title.trim() || !source.trim()}
+        >
+          Map this song
+        </button>
+      </form>
+    </div>
+  );
+}
+
 // D26 #1: home base. The landing screen is the library — your songs, most
 // recent first. "Add a song" is one option on it, not the whole screen.
 // Opening a song only reads what's there; nothing re-runs.
-function Library() {
+function Library({ onCompose }: { onCompose: () => void }) {
   const maps = useMapStore((s) => s.maps);
-  const createAndSeed = useMapStore((s) => s.createAndSeed);
   const openMap = useMapStore((s) => s.openMap);
   const removeMap = useMapStore((s) => s.removeMap);
   const openProbeRun = useMapStore((s) => s.openProbeRun);
   const error = useMapStore((s) => s.error);
-  const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [title, setTitle] = useState('');
-  const [source, setSource] = useState('');
+  const hasDraft = Boolean(
+    localStorage.getItem('bubblemap.compose.title') || localStorage.getItem('bubblemap.compose.source'),
+  );
 
   // Date AND time — two takes on the same song made minutes apart must
   // read as different rows.
@@ -79,40 +158,9 @@ function Library() {
         {error && <div className="status status-error">{error}</div>}
       </div>
 
-      {adding ? (
-        <form
-          className="start-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (title.trim() && source.trim()) void createAndSeed(title, source);
-          }}
-        >
-          <label className="field-label" htmlFor="map-title">Song — Artist</label>
-          <input
-            id="map-title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Mr. Brightside — The Killers"
-            autoFocus
-          />
-          <label className="field-label" htmlFor="map-source">
-            Lyrics / notes / your analysis — the ground truth the model works from
-          </label>
-          <textarea
-            id="map-source"
-            rows={10}
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-          />
-          <button className="text-action start-submit" type="submit" disabled={!title.trim() || !source.trim()}>
-            Map this song
-          </button>
-        </form>
-      ) : (
-        <button className="text-action add-song" onClick={() => setAdding(true)}>
-          Add a song
-        </button>
-      )}
+      <button className="text-action add-song" onClick={onCompose}>
+        {hasDraft ? 'Add a song — draft kept' : 'Add a song'}
+      </button>
 
       <div className="start-maps">
         <div className="field-label">Design-test data</div>
@@ -144,10 +192,13 @@ export default function App() {
   // reasons — not a toast, nothing modal.
   const [showRejections, setShowRejections] = useState(false);
   // D37: start the next song while reading this one. One slot — the form
-  // only offers itself when no run exists anywhere.
+  // only offers itself when no run exists anywhere. Drafts survive
+  // navigation, same as the compose surface.
   const [nextOpen, setNextOpen] = useState(false);
-  const [nextTitle, setNextTitle] = useState('');
-  const [nextSource, setNextSource] = useState('');
+  const [nextTitle, setNextTitle, clearNextTitle] = useDraft('bubblemap.next.title');
+  const [nextSource, setNextSource, clearNextSource] = useDraft('bubblemap.next.source');
+  // The compose surface is its own mode, not a library row.
+  const [composing, setComposing] = useState(false);
   const [health, setHealth] = useState('server: …');
   // D26 #4: three views. Readings is the judgment surface (D25); grid
   // compares; target is where this song's RAW landed. The view lives in
@@ -234,8 +285,8 @@ export default function App() {
             e.preventDefault();
             if (!nextTitle.trim() || !nextSource.trim()) return;
             void createAndSeed(nextTitle, nextSource, { openNow: false });
-            setNextTitle('');
-            setNextSource('');
+            clearNextTitle();
+            clearNextSource();
             setNextOpen(false);
           }}
         >
@@ -246,14 +297,16 @@ export default function App() {
             onChange={(e) => setNextTitle(e.target.value)}
             autoFocus
           />
-          <label className="field-label" htmlFor="next-source">
-            Lyrics / notes / your analysis — the ground truth the model works from
-          </label>
+          <label className="field-label" htmlFor="next-source">The lyrics</label>
+          <div className="compose-explain">
+            The ground the dig happens in — lyrics, notes, what you already suspect.
+          </div>
           <textarea
             id="next-source"
             rows={8}
             value={nextSource}
             onChange={(e) => setNextSource(e.target.value)}
+            placeholder="Paste them here."
           />
           <button
             className="text-action start-submit"
@@ -282,8 +335,10 @@ export default function App() {
 
       {doc ? (
         view === 'readings' ? <Readings /> : view === 'grid' ? <ThreadGrid /> : <Target doc={doc} />
+      ) : composing ? (
+        <Compose onBack={() => setComposing(false)} />
       ) : (
-        <Library />
+        <Library onCompose={() => setComposing(true)} />
       )}
     </div>
   );
