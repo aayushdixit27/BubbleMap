@@ -90,3 +90,23 @@ reading were deleted.
 
 Do not nominate one per category for balance. If the three strongest all sit in
 the same quadrant, nominate all three.`;
+
+// D44 (Q6): the fifth verb — explain a highlighted fragment of a RAW
+// reading. Product copy, same standing as the suffixes above.
+// ── DRAFT, implementer-authored, awaiting the architect's ratification
+// (D44 requires it before this ships). Replace verbatim with whatever the
+// architect returns; do not edit in place. ──
+export const EXPLAIN_SUFFIX = `The reader has highlighted a fragment of one RAW reading and asked you to go
+deeper on exactly those words.
+
+Explain what the highlighted words are doing: what they claim, what the claim
+costs the narrator, and which lines of the song carry it. Quote the lyric that
+does. Stay inside this reading's descent — deepen it, do not start a new one.
+
+Do not restate the reading. The reader is looking at it. Give the layer under
+the highlight: what it assumes, and what follows if it is true.
+
+End on the question the highlight leaves open, not on a conclusion. This is a
+dig, not a verdict — leave the reader somewhere they can keep pushing.
+
+Write plain prose. No markdown, no asterisks, no lists.`;

@@ -7,7 +7,7 @@
 import express from 'express';
 import { nanoid } from 'nanoid';
 import type { BubbleMapDoc } from '../src/types';
-import { currentModel, nominateKeeper, propose } from './ai';
+import { currentModel, explainHighlight, nominateKeeper, propose, type ExplainTurn } from './ai';
 import type { Verb } from './prompts';
 import { deleteMap, listMaps, readMap, writeMap } from './storage';
 
@@ -137,6 +137,52 @@ app.post('/api/ai/nominate', async (req, res) => {
   } catch (e) {
     res.status(502).json({ error: e instanceof Error ? e.message : String(e) });
   }
+});
+
+// D44 (Q6): explain a highlighted fragment of a RAW reading. Prose only,
+// streamed as NDJSON {type:'delta'} lines then {type:'result'} — nothing
+// in this route can touch a map.
+app.post('/api/ai/explain', async (req, res) => {
+  const { doc, rawId, highlight, trail } = req.body as {
+    doc?: BubbleMapDoc;
+    rawId?: string;
+    highlight?: string;
+    trail?: ExplainTurn[];
+  };
+  if (!doc || !rawId || !highlight?.trim()) {
+    res.status(400).json({ error: 'doc, rawId and highlight are required' });
+    return;
+  }
+  res.setHeader('Content-Type', 'application/x-ndjson');
+  res.setHeader('Cache-Control', 'no-cache');
+  // Guarded: on timeout the underlying stream may still emit deltas after
+  // this response has ended — drop them instead of writing after end.
+  const writeLine = (obj: unknown) => {
+    if (!res.writableEnded) res.write(JSON.stringify(obj) + '\n');
+  };
+
+  const started = Date.now();
+  try {
+    const result = await Promise.race([
+      explainHighlight(doc, rawId, highlight, trail ?? [], (delta) =>
+        writeLine({ type: 'delta', text: delta }),
+      ),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`explain exceeded ${AI_TIMEOUT_MS / 1000}s`)), AI_TIMEOUT_MS),
+      ),
+    ]);
+    writeLine({ type: 'result' });
+    console.log(
+      `[ai] explain raw=${rawId} depth=${(trail ?? []).length} ` +
+        `${result.usage.input_tokens}in/${result.usage.output_tokens}out ` +
+        `${((Date.now() - started) / 1000).toFixed(1)}s`,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[ai] explain failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${message}`);
+    writeLine({ type: 'error', error: message });
+  }
+  res.end();
 });
 
 app.post('/api/ai/seed', (req, res) => streamVerb('seed', req, res));

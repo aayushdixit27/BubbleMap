@@ -1,12 +1,13 @@
 # PROGRESS
 
-> **Last updated: 20 Aug 2026, pre-clear. Phase 2 closed; everything
-> through D42 is built, plus the compose surface, Target-as-landing, and
-> the keeper frame. Five maps exist; the corpus view waits for ~10.
-> D38's standing bias is live: build ONLY what makes the next songs
-> cheaper to get through. The next song answers three questions at once
-> — see "The three live questions" below. Next: map songs, not
-> features.**
+> **Last updated: 20 Aug 2026, midday. Everything through D44 is built.
+> D43 retired Phases 3–5 (§12 carries the supersession note); the queue
+> is use-discovered now. Q6 ("explain this") is BUILT and verified live —
+> its §8 suffix is an implementer DRAFT awaiting the architect's
+> ratification (D44 requires it; see prompts.ts EXPLAIN_SUFFIX). Six maps
+> exist (Mr. Brightside ran 20 Aug, keeper not yet chosen); the corpus
+> view waits for ~10. The three live questions below still await the
+> human's read.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -67,9 +68,41 @@ instead of rejecting (D39).
    diagnostic D41 was built to collect (belongs to the architect if it
    recurs).
 
+## Q6 — "explain this" (D44), built 20 Aug
+
+Select words in a landed RAW step (Readings only) → an "explain this"
+affordance appears at the selection → the answer streams into a hovering
+box → clicking away or Escape dismisses it. Selecting inside the box's
+own answer digs deeper: the prior turn stays visible in muted ink (D32's
+register) and rides along as context (`trail`). Where things live:
+`EXPLAIN_SUFFIX` in `server/prompts.ts` (**DRAFT — architect must ratify
+before it counts as shipped**), `explainHighlight` in `server/ai.ts`,
+`POST /api/ai/explain` (NDJSON delta stream), `streamExplain` in
+`src/api.ts`, `ExplainLayer` in `src/grid/Explain.tsx`.
+
+Implementer decisions under D36, reported: answers are **ephemeral** —
+persisting them would put AI prose on the doc (a data-model change, an
+escalation area) and turn the dig into a report that accretes. Scope is
+RAW steps only, v1 (the gap was "the raw section just ends there"); the
+Target provenance panel has no explain yet. Nothing in the path can touch
+the doc — read aid only, Hard Rule 1 untouched.
+
+Traps found live (specifier-inspects-the-artifact, again — neither was in
+any report): **Opus 5 runs adaptive thinking by default and thinking
+counts against max_tokens** — a 400 cap starved the call to zero text
+(`stop_reason: max_tokens`); the cap is 3000 and must hold thinking AND
+prose. And the offer button needed `z-index` above the box, or a
+selection inside the box could never offer. First text lands ~10–20s
+after the click (thinking time); the box shows "digging…" so it is never
+silent — D17's letter (~15s) is borderline, noted, and the answer quality
+at default effort is worth it. The model also emitted markdown asterisks
+into prose; the draft suffix now ends with a plain-prose clause.
+
 ## Corpus status
 
-**Five maps**: Beautiful, Money, Be Her, Go your own way, Been By Now.
+**Six maps**: Beautiful, Money, Be Her, Go your own way, Been By Now,
+Mr. Brightside (20 Aug — with lyrics, closing the loop on the Phase 0
+title-only comparison; keeper not yet chosen).
 The corpus view is worth building at **~10**; it then costs about a
 day. **D38 standing bias until then: build only what makes the next
 songs cheaper to get through** — say so out loud if anything else is
@@ -295,14 +328,13 @@ mutates the map.
 
 ## Next
 
-**Map songs, not features (D38).** The next run answers the three live
-questions above. Deferred by ruling, do not start: **Q5** (three-tier
-paths on the Target — the provenance panel was the cheap answer; the
-full version waits), **Q6** ("explain this" on a highlighted RAW line —
-approved in principle, sequenced after the keeper's first outing; it
-makes songs deeper, not cheaper). The corpus view builds itself at ~10
-maps. If a ruling arrives that isn't in DECISIONS yet, record it there
-before building.
+**Phases are retired (D43); the queue is use-discovered.** In order per
+D43: get the EXPLAIN_SUFFIX draft ratified (the only open implementer
+item), then songs — the corpus view exists at ~10 maps and there are
+six. **Q5** stays deferred (three-tier paths on the Target; the
+provenance panel was the cheap answer). The three live questions above
+still await the human's read of the Mr. Brightside run. If a ruling
+arrives that isn't in DECISIONS yet, record it there before building.
 
 ---
 

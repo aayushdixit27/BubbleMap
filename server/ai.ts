@@ -5,7 +5,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { nanoid } from 'nanoid';
 import type { Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../src/types';
-import { NOMINATE_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
+import { EXPLAIN_SUFFIX, NOMINATE_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
 // mutation verb. Bubble counts are capped in the schema, not the prompt
@@ -226,6 +226,94 @@ export async function nominateKeeper(doc: BubbleMapDoc): Promise<{ nominations: 
     }
   }
   return { nominations: nominations.slice(0, 3), model };
+}
+
+// D44 (Q6): the fifth verb — explain a highlighted fragment of a RAW
+// reading, streamed as prose. No tool and no proposal: nothing in the
+// response can become map content, so there is nothing to commit and Hard
+// Rule 1 is untouched. The trail carries this dig's earlier turns so a
+// selection made inside an answer digs deeper rather than starting over.
+// The criterion (what an explanation IS) lives in EXPLAIN_SUFFIX, §8-grade
+// product copy; the user messages carry only plumbing.
+export interface ExplainTurn {
+  highlight: string;
+  answer: string;
+}
+
+export async function explainHighlight(
+  doc: BubbleMapDoc,
+  rawId: string,
+  highlight: string,
+  trail: ExplainTurn[],
+  onText?: (delta: string) => void,
+): Promise<{ text: string; model: string; usage: { input_tokens: number; output_tokens: number } }> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY is not set. Put it in .env (see .env.example).');
+  }
+  const raw = doc.bubbles.find((b) => b.id === rawId);
+  if (!raw || raw.tier !== 'raw') {
+    throw new Error(`explain requires the id of a RAW bubble on the map (got: ${rawId}).`);
+  }
+
+  // The reading under the highlight IS the focus, so the whole chain rides
+  // along with notes (D17 #2 trims non-focus context; there is none here —
+  // the rest of the map is irrelevant to explaining one reading).
+  const reading = [...ancestorChain(doc, raw), raw].map((b) => describeBubble(b, true)).join('\n');
+  const source = doc.source
+    ? `\n\nSource material (lyrics / notes / analysis):\n${doc.source}`
+    : '';
+
+  const messages: Anthropic.MessageParam[] = [
+    {
+      role: 'user',
+      content:
+        `Song: ${doc.title}\n\n` +
+        `The reading, surface to raw:\n${reading}\n\n` +
+        `The reader highlighted: "${trail.length ? trail[0].highlight : highlight}"${source}`,
+    },
+  ];
+  for (const [i, turn] of trail.entries()) {
+    messages.push({ role: 'assistant', content: turn.answer });
+    messages.push({
+      role: 'user',
+      content: `Now the reader has highlighted, inside your last answer: "${
+        i + 1 < trail.length ? trail[i + 1].highlight : highlight
+      }"`,
+    });
+  }
+
+  const client = new Anthropic({ apiKey });
+  const model = currentModel();
+  const stream = client.messages.stream({
+    model,
+    // Opus 5 runs adaptive thinking by default, and thinking tokens count
+    // against max_tokens — a 400 cap starved the call to zero text
+    // (stop_reason max_tokens, found live 20 Aug). The cap must hold the
+    // thinking AND the prose; the prose's register lives in the suffix
+    // (product copy), not in this number.
+    max_tokens: 3000,
+    system: `${SYSTEM_PROMPT}\n\n${EXPLAIN_SUFFIX}`,
+    messages,
+  });
+  if (onText) stream.on('text', (delta) => onText(delta));
+  const response = await stream.finalMessage();
+  const text = response.content
+    .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+    .map((block) => block.text)
+    .join('\n')
+    .trim();
+  if (!text) {
+    throw new Error(`explain returned no text (stop_reason: ${response.stop_reason}).`);
+  }
+  return {
+    text,
+    model,
+    usage: {
+      input_tokens: response.usage.input_tokens,
+      output_tokens: response.usage.output_tokens,
+    },
+  };
 }
 
 // Per-verb context, per the §7 input column. Harness plumbing only — every

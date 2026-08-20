@@ -19,6 +19,7 @@
 import { useMemo } from 'react';
 import { stableKey, useMapStore } from '../store';
 import type { Bubble } from '../types';
+import { ExplainLayer } from './Explain';
 import { CATEGORY_LABEL } from './ThreadGrid';
 import { buildGrid } from './threads';
 
@@ -40,13 +41,16 @@ interface Reading {
 
 // D32: a repeated ancestor renders its FULL text in muted ink — skippable
 // at no cost, never truncated to a fragment.
-function Step({ bubble, parent, withNote, repeat }: { bubble: Bubble; parent?: Bubble; withNote?: boolean; repeat?: boolean }) {
+// D44: explainId marks a landed RAW step as selectable ground for
+// "explain this" — the ExplainLayer finds it by the data attribute.
+function Step({ bubble, parent, withNote, repeat, explainId }: { bubble: Bubble; parent?: Bubble; withNote?: boolean; repeat?: boolean; explainId?: string }) {
   const category = bubble.category;
   const cross = Boolean(parent?.category && category && parent.category !== category);
   const pending = isProvisional(bubble.id);
   return (
     <div
       className={`reading-step t-${bubble.tier ?? 'safe'}${bubble.status === 'proposed' ? ' ghost' : ''}${repeat ? ' repeat' : ''}`}
+      data-explain-raw={explainId}
     >
       {category && (
         <div className="marginalia" style={{ color: repeat ? 'var(--ink-dim)' : `var(--ink-${category})` }}>
@@ -178,7 +182,12 @@ export function Readings() {
             {reading.safe && <Step bubble={reading.safe} repeat={reading.safeRepeat} />}
             {reading.real && <Step bubble={reading.real} parent={reading.safe} repeat={reading.realRepeat} />}
             {raw ? (
-              <Step bubble={raw} parent={reading.real} withNote />
+              <Step
+                bubble={raw}
+                parent={reading.real}
+                withNote
+                explainId={!readOnly && !isProvisional(raw.id) ? raw.id : undefined}
+              />
             ) : (
               <div className="reading-step t-raw">
                 <div className="marginalia tier-label">raw</div>
@@ -248,6 +257,8 @@ export function Readings() {
           <div className="lyric-text">{doc.source}</div>
         </div>
       )}
+      {/* D44 (Q6): select words in a RAW step → "explain this". */}
+      <ExplainLayer />
     </div>
   );
 }

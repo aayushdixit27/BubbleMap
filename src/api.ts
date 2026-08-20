@@ -68,6 +68,62 @@ export const nominateKeeper = (doc: BubbleMapDoc): Promise<{ nominations: string
     body: JSON.stringify({ doc }),
   }).then(asJson<{ nominations: string[] }>);
 
+// D44 (Q6): explain a highlighted fragment of a RAW reading. Prose only —
+// nothing in the response can become map content. Streams deltas so the
+// box is never silent (D17 #1); resolves to the full answer text. The
+// trail carries this dig's earlier turns for select-inside-the-answer.
+export interface ExplainTurn {
+  highlight: string;
+  answer: string;
+}
+
+export async function streamExplain(
+  doc: BubbleMapDoc,
+  rawId: string,
+  highlight: string,
+  trail: ExplainTurn[],
+  onDelta: (delta: string) => void,
+): Promise<string> {
+  const res = await fetch('/api/ai/explain', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ doc, rawId, highlight, trail }),
+  });
+  if (!res.ok || !res.body) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error ?? `${res.status} ${res.statusText}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let text = '';
+  let finished = false;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let newline: number;
+    while ((newline = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, newline).trim();
+      buffer = buffer.slice(newline + 1);
+      if (!line) continue;
+      const msg = JSON.parse(line) as
+        | { type: 'delta'; text: string }
+        | { type: 'result' }
+        | { type: 'error'; error: string };
+      if (msg.type === 'delta') {
+        text += msg.text;
+        onDelta(msg.text);
+      } else if (msg.type === 'result') finished = true;
+      else throw new Error(msg.error);
+    }
+  }
+  if (!finished) throw new Error('explain stream ended without a result');
+  return text;
+}
+
 export async function streamVerb(
   verb: 'seed' | 'descend' | 'interrogate',
   doc: BubbleMapDoc,

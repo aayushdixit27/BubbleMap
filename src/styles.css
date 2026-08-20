@@ -541,4 +541,54 @@ html, body, #root {
   color: var(--ink-dim);
   padding: 16px 0;
 }
+
+/* D44 (Q6) — "explain this": the dig affordance and its hovering box.
+   Editorial register (D22): paper ground, hairline separation, serif
+   prose. The box floats over text so it needs an opaque ground, but it is
+   not a card — no radius, no shadow, no glow; the hairline is the edge. */
+.explain-offer {
+  position: fixed;
+  /* Above the box — a selection made inside the box must offer on top. */
+  z-index: 31;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  padding: 3px 9px;
+}
+.explain-box {
+  position: fixed;
+  z-index: 30;
+  width: 420px;
+  max-width: calc(100vw - 24px);
+  overflow-y: auto;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  padding: 16px 18px;
+}
+.explain-turn + .explain-turn {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+.explain-box .marginalia { color: var(--ink-mid); }
+/* Earlier turns of the dig read at D32's repeat register: full text,
+   muted ink — the hole you dug through, skippable at no cost. */
+.explain-past .marginalia { color: var(--ink-dim); }
+.explain-answer,
+.explain-answer-past {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-top: 6px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word; /* wraps, never clips (rule 7) */
+}
+.explain-answer-past { color: var(--ink-dim); }
+.explain-hint {
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--ink-dim);
+}
+.explain-error { margin-top: 6px; font-size: 12px; }
 .add-song { margin-top: 24px; font-size: 14px; }
