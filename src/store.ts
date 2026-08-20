@@ -351,7 +351,11 @@ export const useMapStore = create<MapState>((set, get) => {
         activeRun.doc = doc;
         set({
           doc,
-          view: 'readings',
+          // Landing view (supersedes D26 #4's Readings default): Target
+          // answers "what is this song about" in one glance, and its
+          // provenance panel reaches the readings. A still-generating map
+          // lands on Readings — the dig is what there is to watch.
+          view: activeRun.finished ? 'target' : 'readings',
           readOnly: false,
           killed: [],
           ahead: null,
@@ -368,7 +372,9 @@ export const useMapStore = create<MapState>((set, get) => {
         return;
       }
       try {
-        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
+        // Target is the landing view for a finished map (supersedes
+        // D26 #4's Readings default).
+        set({ doc: await fetchMap(id), view: 'target', readOnly: false, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }

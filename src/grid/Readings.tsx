@@ -138,10 +138,30 @@ export function Readings() {
 
   if (!doc) return null;
 
+  const keeperBubble = doc.keeperId
+    ? doc.bubbles.find((b) => b.id === doc.keeperId)
+    : undefined;
+
   return (
     <div className="readings">
       {readings.length === 0 && running === 0 && (
         <div className="readings-empty">No complete descents yet — nothing reaches RAW.</div>
+      )}
+      {/* The keeper is visible BEFORE the moment of choosing: a standing
+          frame above the dig. Unchosen, it names what the dig ends with;
+          chosen, it holds the song's answer. */}
+      {(keeperBubble || readings.some((r) => r.raw)) && (
+        <div className="reading keeper-frame">
+          <div className="marginalia">the keeper</div>
+          {keeperBubble ? (
+            <div className="keeper-frame-label">{keeperBubble.label}</div>
+          ) : (
+            <div className="keeper-prose">
+              Not chosen yet. The dig ends when one reading is kept above the rest —
+              the one raw thing this song is really about.
+            </div>
+          )}
+        </div>
       )}
       {readings.map((reading, i) => {
         const raw = reading.raw;
@@ -173,6 +193,14 @@ export function Readings() {
             )}
             {killable && (
               <div className="entry-actions reading-actions">
+                {/* Choosing the keeper is the most important act in the
+                    product — it leads, in ink, and never shares register
+                    with the kill. */}
+                {doc.keeperId !== raw!.id && (
+                  <button className="text-action keeper-action" onClick={() => setKeeper(raw!.id)}>
+                    this is the keeper
+                  </button>
+                )}
                 <button
                   className="text-action"
                   onClick={() =>
@@ -181,11 +209,6 @@ export function Readings() {
                 >
                   kill this descent
                 </button>
-                {doc.keeperId !== raw!.id && (
-                  <button className="text-action" onClick={() => setKeeper(raw!.id)}>
-                    make this the keeper
-                  </button>
-                )}
               </div>
             )}
           </div>

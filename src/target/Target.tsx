@@ -133,6 +133,18 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
                 strokeWidth={HAIRLINE}
               />
             )}
+            {b.id === doc.keeperId && (
+              // The keeper wears a permanent close ring — the song's one
+              // raw thing, readable on the default view at a glance.
+              <circle
+                cx={b.position.x}
+                cy={b.position.y}
+                r={DOT + 6}
+                fill="none"
+                stroke="var(--ink)"
+                strokeWidth={HAIRLINE}
+              />
+            )}
             <circle cx={b.position.x} cy={b.position.y} r={DOT} fill={`var(--ink-${b.category})`} />
           </g>
         ))}

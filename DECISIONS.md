@@ -152,7 +152,11 @@ where every descent is kept, the choice is missing and 3-candidates returns.** *
    in ~20s. Requires an always-visible progress state (`4 of 10 · still going` →
    `done`). Silence is what made the blank seeding screen read as broken.
 4. **Three views, clearly labelled.** *Readings* (default), *Grid* (compare),
-   *Target* (the Jun Yuh circle — where this song's RAW landed, by category). The
+   *Target* (the Jun Yuh circle — where this song's RAW landed, by category).
+   *(Default later superseded, 20 Aug: TARGET is the landing view — it answers
+   "what is this song about" at a glance and its provenance panel reaches the
+   readings. A still-generating map lands on Readings; the dig is what there is
+   to watch.)* The
    toggle names the destination, not the current state. The target was an ornament at
    three descents; at ten it plots the song's shape. *18 Aug.*
 

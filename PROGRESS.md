@@ -1,12 +1,17 @@
 # PROGRESS
 
-> **Last updated: 19 Aug 2026. Phase 2 closed. D26 complete; D30–D40
-> ruled and built. Latest batch: the sourceLine guard FLAGS instead of
-> rejecting (D39, `citationUnverified`), run-end messages are true —
-> declined vs discarded (D40), the generating screen shows the lyrics,
-> and the first-RAW metric is live. D38 standing bias holds: until ~10
-> judged maps, build only what makes the next songs cheaper. Q6
-> ("explain this") approved but sequenced after one more song.
+> **Last updated: 20 Aug 2026. Phase 2 closed. D26 complete; D30–D42
+> ruled and built: the keeper (nominate → human picks, persisted
+> nominatedIds + keeperId), sourceLine guard flags not rejects, truthful
+> run-end messages, one-ahead buffer, lyric sheet while generating.
+> Latest batch (implementer latitude): the compose surface is its own
+> mode with a draft that survives navigation (localStorage), TARGET is
+> the landing view (supersedes D26 #4's Readings default; a generating
+> map lands on Readings), and the keeper is visible before the moment of
+> choosing (standing frame, "this is the keeper" leads the hover row,
+> keeper ring on the Target dot). PRODUCT §1 gained the excavation
+> reframe — read it. Tripwire: two songs all-keeps; count three rides on
+> the next run, which is also the keeper's first outing.
 > Next: map songs.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
