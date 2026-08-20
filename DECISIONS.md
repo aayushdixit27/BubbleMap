@@ -330,6 +330,34 @@ Data model: `keeperId?: string` on `BubbleMapDoc`. Optional, backfills undefined
 Choosing is the natural end of a run, not a modal — and it must be re-choosable later
 from the map. Human-supplied idea, 19 Aug. *19 Aug.*
 
+**D42 — Nomination criteria are product copy; nominations persist.** Two boundary
+calls raised by the implementer under D36, both ruled by the architect.
+
+**1. The nomination ask moves into §8 as a per-verb suffix, verbatim.** It defines
+what a keeper *is*, which makes it a criterion, and criteria are what §8 holds. In a
+user message it drifts and nobody treats it as product copy. Ships as:
+
+```
+Nominate three of the RAW readings as candidates for this song's keeper — the
+single raw thing the song is really about.
+
+Choose for weight, not for variety. The keeper is the reading a person would
+repeat to someone else, and the one that would still be true if every other
+reading were deleted.
+
+Do not nominate one per category for balance. If the three strongest all sit in
+the same quadrant, nominate all three.
+```
+
+The final clause is load-bearing: without it the model will spread nominations
+across LIFE for tidiness, and balance is the opposite of what a keeper is.
+
+**2. `nominatedIds?: string[]` persists on `BubbleMapDoc`.** Session scope destroys
+the diagnostic that justified nominating rather than synthesising — *does the human
+keep picking off-list* only answers across sessions. Persisting also lets a
+keeperless map show its block on reopen **without firing an AI call**, which keeps
+D26 #1 intact (opening only reads). Optional, backfills undefined. *19 Aug.*
+
 ---
 
 ## Open — architect owes an answer

@@ -80,7 +80,6 @@ export function Readings() {
   const readOnly = useMapStore((s) => s.readOnly);
   const killDescent = useMapStore((s) => s.killDescent);
   const discarded = useMapStore((s) => s.discarded);
-  const nominations = useMapStore((s) => s.nominations);
   const setKeeper = useMapStore((s) => s.setKeeper);
 
   // One reading per RAW bubble, in arrival order (D26 #3 appends serially).
@@ -192,18 +191,19 @@ export function Readings() {
           </div>
         );
       })}
-      {/* D41: the natural end of a run — the model's nominations, the
+      {/* D41/D42: the natural end of a run — the model's nominations, the
           human's pick. Not a modal; it sits below the readings like one
           more entry, and disappears once a keeper exists (the mark on the
-          chosen reading carries it from there). */}
-      {running === 0 && !doc.keeperId && nominations.length > 0 && (
+          chosen reading carries it from there). Nominations persist on
+          the doc, so a keeperless map reopens with its block, no AI call. */}
+      {running === 0 && !doc.keeperId && (doc.nominatedIds?.length ?? 0) > 0 && (
         <div className="reading keeper-block">
           <div className="marginalia">the keeper</div>
           <div className="keeper-prose">
             Nominated below — pick the one raw thing this song is about, or hover any
             reading above and make it the keeper there.
           </div>
-          {nominations.map((id) => {
+          {doc.nominatedIds!.map((id) => {
             const b = doc.bubbles.find((x) => x.id === id);
             return (
               b && (

@@ -82,7 +82,6 @@ interface ActiveRun {
   metrics: string | null;
   rejections: { reason: string; item: unknown }[];
   discarded: string[]; // D40: foci whose output was produced then removed
-  nominations: string[]; // D41: keeper candidates, nominated at run end
   error: string | null;
   finished: boolean;
 }
@@ -145,11 +144,6 @@ interface MapState {
   // in the toolbar, expanding to reasons. Silent rejection produced a
   // broken map once (Money, descent v); never again invisible.
   rejections: { reason: string; item: unknown }[];
-  // D41: the model's keeper nominations for the open map, offered at run
-  // end. Session scope — reopening a finished, keeperless map offers no
-  // nominations (opening only reads, D26 #1); the human can still choose
-  // from any reading.
-  nominations: string[];
   // D40: REALs whose descend PRODUCED something that was then removed
   // (malformed, discarded server-side) — distinct from declined. Session
   // scope; renders "discarded — see rejections", never "no deeper
@@ -326,7 +320,6 @@ export const useMapStore = create<MapState>((set, get) => {
     killed: [],
     rejections: [],
     discarded: [],
-    nominations: [],
     ahead: null,
     progress: null,
     status: '',
@@ -367,7 +360,6 @@ export const useMapStore = create<MapState>((set, get) => {
           metrics: activeRun.metrics,
           rejections: activeRun.rejections,
           discarded: activeRun.discarded,
-          nominations: activeRun.nominations,
           error: activeRun.error,
           status: '',
         });
@@ -376,7 +368,7 @@ export const useMapStore = create<MapState>((set, get) => {
         return;
       }
       try {
-        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], discarded: [], nominations: [], progress: null, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), view: 'readings', readOnly: false, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -399,13 +391,13 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], discarded: [], nominations: [], progress: null, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
       // Navigating away from a still-running map is legal under D37: the
       // run keeps going against its own doc and shows up as `ahead`.
-      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], discarded: [], nominations: [], progress: null, status: '', metrics: null });
+      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], discarded: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -500,7 +492,6 @@ export const useMapStore = create<MapState>((set, get) => {
           metrics: null,
           rejections: [],
           discarded: [],
-          nominations: [],
           error: null,
           finished: false,
         };
@@ -508,7 +499,7 @@ export const useMapStore = create<MapState>((set, get) => {
         if (openNow) {
           set({
             doc, view: 'readings', readOnly: false, killed: [], rejections: [],
-            discarded: [], nominations: [], error: null, metrics: null, status: '', running: 1,
+            discarded: [], error: null, metrics: null, status: '', running: 1,
             ahead: null,
             progress: run.progress,
           });
@@ -744,10 +735,13 @@ export const useMapStore = create<MapState>((set, get) => {
         if (stopNote) tick('stopped', stopNote);
         else tick('done');
 
-        // D41: the model nominates three existing RAWs as keeper
+        // D41/D42: the model nominates three existing RAWs as keeper
         // candidates; the human picks one (or any reading by hand). With
         // three or fewer RAWs, every one is a candidate — no call needed.
-        // Nomination is garnish: a failure never fails the run.
+        // Nominations PERSIST on the doc: the pick-off-list diagnostic
+        // only answers across sessions, and a keeperless map reopens with
+        // its block and no AI call. Nomination is garnish: a failure
+        // never fails the run.
         try {
           if (!run.doc.keeperId) {
             const rawIds = run.doc.bubbles
@@ -760,8 +754,8 @@ export const useMapStore = create<MapState>((set, get) => {
                   : (await apiNominate(run.doc)).nominations
                       .filter((id) => rawIds.includes(id))
                       .slice(0, 3);
-              run.nominations = noms;
-              if (isOpen()) set({ nominations: noms });
+              publishDoc({ ...run.doc, nominatedIds: noms });
+              if (isOpen()) scheduleSave();
             }
           }
         } catch (e) {

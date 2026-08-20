@@ -58,6 +58,10 @@ export interface BubbleMapDoc {
                               // RAW bubble's id, chosen by the human from the
                               // model's nominations (or any reading). Optional,
                               // backfills undefined, re-choosable at any time.
+  nominatedIds?: string[];    // D42: the model's keeper nominations, persisted.
+                              // Feeds the pick-off-list diagnostic across
+                              // sessions, and lets a keeperless map reopen with
+                              // its block and no AI call (D26 #1). Optional.
   createdAt: string;
   updatedAt: string;
 }

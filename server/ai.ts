@@ -5,7 +5,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { nanoid } from 'nanoid';
 import type { Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../src/types';
-import { SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
+import { NOMINATE_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
 // mutation verb. Bubble counts are capped in the schema, not the prompt
@@ -168,11 +168,12 @@ export async function propose(
   };
 }
 
-// D41: the model NOMINATES three existing RAW bubbles as keeper candidates.
-// Not a fifth verb: no new bubbles, no prose — three ids out. The system
-// prompt is §8 verbatim with no suffix; the ask rides in the user message
-// as plumbing. Invalid or duplicate ids are dropped; the client treats an
-// empty result as "no nominations" and the human can still pick by hand.
+// D41/D42: the model NOMINATES three existing RAW bubbles as keeper
+// candidates. Not a fifth verb: no new bubbles, no prose — three ids out.
+// The criterion (what a keeper IS) lives in NOMINATE_SUFFIX, §8-grade
+// product copy; the user message carries only plumbing. Invalid or
+// duplicate ids are dropped; the client treats an empty result as "no
+// nominations" and the human can still pick by hand.
 export async function nominateKeeper(doc: BubbleMapDoc): Promise<{ nominations: string[]; model: string }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -186,7 +187,7 @@ export async function nominateKeeper(doc: BubbleMapDoc): Promise<{ nominations: 
   const response = await client.messages.create({
     model,
     max_tokens: 300,
-    system: SYSTEM_PROMPT,
+    system: `${SYSTEM_PROMPT}\n\n${NOMINATE_SUFFIX}`,
     tools: [
       {
         name: 'nominate',
@@ -209,9 +210,7 @@ export async function nominateKeeper(doc: BubbleMapDoc): Promise<{ nominations: 
           raws
             .map((b) => `- id ${b.id}: ${b.label}${b.note ? ` — ${b.note}` : ''}`)
             .join('\n') +
-          `\n\nNominate the three strongest candidates for this song's single ` +
-          `keeper — the one raw thing the song is about. Respond by calling the ` +
-          `nominate tool with exactly three of the ids above.`,
+          `\n\nRespond by calling the nominate tool with exactly three of the ids above.`,
       },
     ],
   });
