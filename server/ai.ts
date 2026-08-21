@@ -4,8 +4,8 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { nanoid } from 'nanoid';
-import type { Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../src/types';
-import { EXPLAIN_SUFFIX, NOMINATE_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
+import type { Arc, Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../src/types';
+import { ARC_SUFFIX, EXPLAIN_SUFFIX, NOMINATE_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
 // mutation verb. Bubble counts are capped in the schema, not the prompt
@@ -308,6 +308,100 @@ export async function explainHighlight(
   }
   return {
     text,
+    model,
+    usage: {
+      input_tokens: response.usage.input_tokens,
+      output_tokens: response.usage.output_tokens,
+    },
+  };
+}
+
+// D46: descent and return — one chosen descent rewritten as a narrative
+// arc of five beats, RAW → REAL → SAFE → REAL → RAW. The beat count and
+// order are structural, so the count lives in the schema (D16) and the
+// tiers are assigned by position here, never trusted to the model. The
+// ask itself (what an arc IS) lives in ARC_SUFFIX, product copy.
+export const ARC_TIERS: Tier[] = ['raw', 'real', 'safe', 'real', 'raw'];
+
+export async function writeArc(
+  doc: BubbleMapDoc,
+  rawId: string,
+  onInputJson?: (snapshot: unknown) => void,
+): Promise<{ arc: Arc; model: string; usage: { input_tokens: number; output_tokens: number } }> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY is not set. Put it in .env (see .env.example).');
+  }
+  const raw = doc.bubbles.find((b) => b.id === rawId);
+  if (!raw || raw.tier !== 'raw') {
+    throw new Error(`arc requires the id of a RAW bubble on the map (got: ${rawId}).`);
+  }
+
+  // The whole descent rides along with notes — it is the material being
+  // rewritten, so nothing about it is trimmed (D17 #2 trims non-focus
+  // context; the rest of the map is irrelevant here and stays out).
+  const reading = [...ancestorChain(doc, raw), raw].map((b) => describeBubble(b, true)).join('\n');
+  const source = doc.source
+    ? `\n\nSource material (lyrics / notes / analysis):\n${doc.source}`
+    : '';
+
+  const client = new Anthropic({ apiKey });
+  const model = currentModel();
+  const stream = client.messages.stream({
+    model,
+    // Adaptive thinking plus five beats of prose (the explain lesson:
+    // thinking counts against max_tokens — never starve the cap).
+    max_tokens: 8000,
+    system: `${SYSTEM_PROMPT}\n\n${ARC_SUFFIX}`,
+    tools: [
+      {
+        name: 'arc',
+        input_schema: {
+          type: 'object',
+          properties: {
+            // Exactly five, schema-enforced (D16). Order is RAW, REAL,
+            // SAFE, REAL, RAW — assigned by position server-side.
+            passages: { type: 'array', minItems: 5, maxItems: 5, items: { type: 'string' } },
+          },
+          required: ['passages'],
+        },
+      },
+    ],
+    tool_choice: { type: 'tool', name: 'arc' },
+    messages: [
+      {
+        role: 'user',
+        content:
+          `Song: ${doc.title}\n\n` +
+          `The reading, surface to raw:\n${reading}\n\n` +
+          `Respond by calling the arc tool with the five passages in order: ` +
+          `RAW, REAL, SAFE, REAL, RAW.${source}`,
+      },
+    ],
+  });
+  if (onInputJson) {
+    stream.on('inputJson', (_partial, snapshot) => onInputJson(snapshot));
+  }
+  const response = await stream.finalMessage();
+
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use' && block.name === 'arc',
+  );
+  const passages = ((toolUse?.input as { passages?: unknown })?.passages ?? []) as unknown[];
+  const texts = passages.filter((p): p is string => typeof p === 'string' && p.trim().length > 0);
+  if (texts.length !== 5) {
+    throw new Error(
+      `arc returned ${texts.length} usable passages, not 5 (stop_reason: ${response.stop_reason}).`,
+    );
+  }
+
+  return {
+    arc: {
+      id: nanoid(),
+      rawId,
+      beats: texts.map((text, i) => ({ tier: ARC_TIERS[i], text: text.trim() })),
+      createdAt: new Date().toISOString(),
+    },
     model,
     usage: {
       input_tokens: response.usage.input_tokens,

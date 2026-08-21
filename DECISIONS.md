@@ -3,6 +3,12 @@
 **Append-only. Newest at the bottom. Never edit a past entry — supersede it.**
 When an entry is fully replaced, move it to `DECISIONS-superseded.md` with a pointer.
 
+**The architect assigns the number when issuing the ruling.** This file has two
+writers — the architect editing directly and the implementer recording relayed
+rulings — and on 20 Aug both computed "next number" from stale views and produced
+two D45s. There is now one numbering authority: if a ruling arrives without a
+number, ask for one rather than picking the next free integer.
+
 This is the architect's answer log. Its job is to stop a fresh session from
 re-deciding something already settled, or guessing at something that looks open but
 isn't.
@@ -414,6 +420,37 @@ blocked time, and a reader waiting for an answer they asked for is categorically
 different from a page that hasn't loaded; "digging…" means never silent. **Do not
 lower the effort setting** — depth is the entire product here, and trading it for
 eight seconds on an opt-in action is a bad exchange. *20 Aug.*
+
+**D46 — Descent and Return: a fifth verb and a fourth view.** User-discovered,
+20 Aug. Take one chosen descent and have the model write it as a narrative arc —
+RAW → REAL → SAFE → REAL → RAW — on the theory that this is the shape the best
+songs, sets and sermons actually move in, because nobody can hold raw for eight
+minutes.
+
+**Opt-in only.** A button on the Target provenance panel; never automatic, never
+batched. One AI call per arc, on request.
+
+**Display: a dive profile as index, prose as body.**
+- Y axis SAFE → REAL → RAW with **RAW at the bottom**, consistent with the target's
+  bullseye. The arc becomes a dive: down, up for air, down again.
+- The curve is an **index**, not a container. Prose reads linearly beneath it;
+  wrapping text around a curve looks clever and reads badly.
+- **The D22 type crescendo carries the arc.** RAW beats at 20px serif near-black,
+  REAL at 16px, SAFE at 14px — and SAFE is set in **sans, not serif**. Serif carries
+  the payload; the safe beat is the breath, not the payload. The reader feels the
+  relief because the typeface relaxes. Roman numerals tie dot to passage.
+- Prior art: Vonnegut's story shapes — an arc plotted on Beginning→End against a
+  fortune axis. Ours needs no invention because SAFE→RAW is already vertical.
+
+**Arcs persist.** `arcs?: Arc[]` on `BubbleMapDoc`, each referencing the RAW bubble
+it was built from; a song may hold several. Same argument as D35: it costs an AI
+call, it is the most expensive artifact the tool produces, and losing it on reload
+would be the worst small failure available.
+
+**Honest note on D38.** This fails D38's letter — it makes each song deeper, not the
+next songs cheaper. Approved anyway under PRODUCT §3's amendment: a need discovered
+in real use outranks a rule written before the thing existed. It is also the first
+feature that makes the product *argue a thesis* rather than analyse a song. *20 Aug.*
 
 ---
 

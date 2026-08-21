@@ -45,6 +45,23 @@ export interface Link {
   status: Status;
 }
 
+// D46 — Descent and Return: one chosen descent rewritten as a narrative
+// arc of five beats, RAW → REAL → SAFE → REAL → RAW. The beat boundaries
+// exist for the display (the dive-profile index, the type crescendo, the
+// roman numerals); the prose itself is one continuous piece — the
+// transitions are the whole claim.
+export interface ArcBeat {
+  tier: Tier;                 // fixed by position: raw, real, safe, real, raw
+  text: string;               // this beat's passage
+}
+
+export interface Arc {
+  id: string;                 // nanoid
+  rawId: string;              // the RAW bubble the arc was built from
+  beats: ArcBeat[];           // exactly five
+  createdAt: string;          // ISO
+}
+
 export interface BubbleMapDoc {
   version: 2;
   id: string;
@@ -62,6 +79,11 @@ export interface BubbleMapDoc {
                               // Feeds the pick-off-list diagnostic across
                               // sessions, and lets a keeperless map reopen with
                               // its block and no AI call (D26 #1). Optional.
+  arcs?: Arc[];               // D46: descent-and-return arcs, persisted — each
+                              // costs an AI call and is the most expensive
+                              // artifact the tool makes; losing one on reload
+                              // would be the worst small failure available.
+                              // Optional, backfills undefined, no migration.
   createdAt: string;
   updatedAt: string;
 }

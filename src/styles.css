@@ -591,4 +591,59 @@ html, body, #root {
   color: var(--ink-dim);
 }
 .explain-error { margin-top: 6px; font-size: 12px; }
+
+/* D46 — descent and return. The dive profile is an index at the top,
+   never a container: hairline curve, ink dots, RAW at the bottom like
+   the bullseye. Prose runs linearly beneath. The type crescendo carries
+   the arc — and the SAFE beat drops to SANS: serif carries the payload,
+   the safe beat is the breath, the reader feels the relief because the
+   typeface relaxes. */
+.arc-profile {
+  width: 100%;
+  max-width: 440px;
+  display: block;
+  margin: 14px 0 10px;
+}
+.arc-axis {
+  font-family: var(--sans);
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  fill: var(--ink-dim);
+}
+.arc-numeral {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  fill: var(--ink-dim);
+}
+.arc-beat { margin-top: 16px; }
+.arc-beat-numeral {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-dim);
+  display: block;
+  margin-bottom: 3px;
+}
+.arc-beat-text { overflow-wrap: break-word; } /* wraps, never clips (rule 7) */
+.arc-beat.t-raw .arc-beat-text {
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.arc-beat.t-real .arc-beat-text {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-mid);
+}
+.arc-beat.t-safe .arc-beat-text {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-mid);
+}
+.target-arc-action { margin-top: 20px; }
 .add-song { margin-top: 24px; font-size: 14px; }

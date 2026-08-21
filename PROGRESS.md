@@ -1,12 +1,13 @@
 # PROGRESS
 
-> **Last updated: 20 Aug 2026, midday. Everything through D45 is built.
-> D43 retired Phases 3–5 (§12 carries the supersession note); the queue
-> is use-discovered now. Q6 ("explain this") is BUILT, verified live, and
-> its suffix is RATIFIED (D45 — honest-no clause added; latency accepted,
-> do not tune effort). Six maps exist (Mr. Brightside ran 20 Aug, keeper
-> not yet chosen); the corpus view waits for ~10. The three live
-> questions below still await the human's read. Next: map songs.**
+> **Last updated: 20 Aug 2026, evening. Everything through D46 is built.
+> Q6 ("explain this") shipped ratified (D45). D46 (Descent and Return) is
+> BUILT and verified live — its ARC_SUFFIX is an implementer DRAFT
+> awaiting ratification (see prompts.ts). SEVEN maps exist ("stupid song"
+> ran 20 Aug evening); the corpus view waits for ~10. The three live
+> questions below still await the human's read. NOTE: the architect's
+> Descent-and-Return entry arrived numbered D45, colliding with the
+> ratification entry — renumbered to D46 in the file.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -97,11 +98,39 @@ silent — ruled acceptable by D45 (blocked-time lens, D28): **do not lower
 the effort setting to chase it**. The model also emitted markdown
 asterisks into prose; the suffix ends with a plain-prose clause.
 
+## D46 — Descent and Return, built 20 Aug (suffix DRAFT, unratified)
+
+One chosen descent rewritten as a five-beat arc, RAW → REAL → SAFE →
+REAL → RAW. Opt-in: the "descent and return" button on the Target
+provenance panel; one call per arc; disabled while a run owns the doc.
+The fourth view renders a **dive profile as index** (RAW at the bottom,
+hairline curve, ink dots, roman numerals) with prose linear beneath; the
+crescendo carries the beats — RAW 20px serif, REAL 16px serif, **SAFE
+14px SANS** (the typeface relaxes; that's the breath). The arc view
+joins the toolbar only when a song has an arc or one is streaming.
+
+Where things live: `ARC_SUFFIX` in `server/prompts.ts` (**DRAFT —
+architect must ratify before this counts as shipped**), `writeArc` +
+`ARC_TIERS` in `server/ai.ts` (5 passages schema-enforced per D16, tiers
+assigned by position, never trusted to the model), `POST /api/ai/arc`
+(NDJSON snapshots), `streamArc` in `src/api.ts`, `buildArc`/`killArc` in
+`src/store.ts`, `src/arc/ArcView.tsx`.
+
+Implementer decisions under D36, reported: `Arc = { id, rawId, beats:
+{tier, text}[5], createdAt }` — the beat boundaries exist for the
+display; the ruling specified only "arcs referencing the RAW". Arcs
+persist via normal autosave (verified on disk); if the human navigates
+away mid-write, the finished arc lands on disk directly — never dropped.
+Killing an arc is one gesture, undoable via the same session stack as
+descents (the `killed` array is now a union). The test arc ran ~691
+words with no cap — flagged for the architect alongside the draft.
+
 ## Corpus status
 
-**Six maps**: Beautiful, Money, Be Her, Go your own way, Been By Now,
-Mr. Brightside (20 Aug — with lyrics, closing the loop on the Phase 0
-title-only comparison; keeper not yet chosen).
+**Seven maps**: Beautiful, Money, Be Her, Go your own way, Been By Now,
+Mr. Brightside (20 Aug midday — with lyrics, closing the loop on the
+Phase 0 title-only comparison; keeper not yet chosen), stupid song
+(Olivia Rodrigo, 20 Aug evening).
 The corpus view is worth building at **~10**; it then costs about a
 day. **D38 standing bias until then: build only what makes the next
 songs cheaper to get through** — say so out loud if anything else is
@@ -327,13 +356,13 @@ mutates the map.
 
 ## Next
 
-**Phases are retired (D43); the queue is use-discovered.** Q6 is done
-and ratified (D45) — nothing is open on the implementer. Next per D43:
-songs — the corpus view exists at ~10 maps and there are six. **Q5**
+**Phases are retired (D43); the queue is use-discovered.** Open on the
+implementer: get the ARC_SUFFIX draft ratified (D46 requires it). Then
+songs — the corpus view exists at ~10 maps and there are seven. **Q5**
 stays deferred (three-tier paths on the Target; the provenance panel was
 the cheap answer). The three live questions above still await the
-human's read of the Mr. Brightside run. If a ruling arrives that isn't
-in DECISIONS yet, record it there before building.
+human's read. If a ruling arrives that isn't in DECISIONS yet, record it
+there before building.
 
 ---
 

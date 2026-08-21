@@ -118,3 +118,28 @@ End on the question the highlight leaves open, not on a conclusion. This is a
 dig, not a verdict — leave the reader somewhere they can keep pushing.
 
 Two hundred words at most. Plain prose: no markdown, no asterisks, no lists.`;
+
+// D46: descent and return — one chosen descent rewritten as a narrative
+// arc. Product copy, same standing as the suffixes above.
+// ── DRAFT, implementer-authored, awaiting the architect's ratification
+// (D46 requires it before this ships). Replace verbatim with whatever the
+// architect returns; do not edit in place. ──
+export const ARC_SUFFIX = `Write this reading as a descent and return: five beats in one unbroken piece —
+RAW, then REAL, then SAFE, then REAL, then RAW. This is the shape a song
+actually moves in. Nobody can hold raw for eight minutes; you surface for air,
+and then you dive again.
+
+The five beats are movements of one piece of writing, not five paragraphs
+stapled together. Every transition is the point: each beat must be the
+consequence of the one before it and the reason for the one after.
+
+The SAFE beat is genuine relief, not the real beat said more weakly. It is the
+breath that makes the second dive possible — true on its own, and easy to say
+out loud.
+
+The two RAW beats are not the same beat twice. The first is the raw thing; the
+second is what it costs to return to it after trying to come up for air. Go
+back down deeper, not louder.
+
+Stay inside the song and the narrator's point of view. Ground each beat in the
+song's own lines. Plain prose: no markdown, no asterisks, no lists.`;

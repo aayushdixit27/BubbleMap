@@ -1,7 +1,7 @@
 // Client → server calls. AI verbs stream NDJSON; onSnapshot fires with the
 // model's accumulating tool input so bubbles render as they arrive (D17 #1).
 
-import type { Bubble, BubbleMapDoc, Link, LinkKind } from './types';
+import type { Arc, Bubble, BubbleMapDoc, Link, LinkKind } from './types';
 
 export interface MapMeta {
   id: string;
@@ -67,6 +67,53 @@ export const nominateKeeper = (doc: BubbleMapDoc): Promise<{ nominations: string
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ doc }),
   }).then(asJson<{ nominations: string[] }>);
+
+// D46: descent and return. One call per arc, opt-in. Streams the model's
+// accumulating passages so the arc view is never silent; resolves to the
+// finished, server-built Arc (ids and beat tiers assigned there).
+export async function streamArc(
+  doc: BubbleMapDoc,
+  rawId: string,
+  onPassages: (passages: string[]) => void,
+): Promise<Arc> {
+  const res = await fetch('/api/ai/arc', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ doc, rawId }),
+  });
+  if (!res.ok || !res.body) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error ?? `${res.status} ${res.statusText}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let arc: Arc | null = null;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let newline: number;
+    while ((newline = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, newline).trim();
+      buffer = buffer.slice(newline + 1);
+      if (!line) continue;
+      const msg = JSON.parse(line) as
+        | { type: 'snapshot'; snapshot: { passages?: unknown } }
+        | { type: 'result'; arc: Arc }
+        | { type: 'error'; error: string };
+      if (msg.type === 'snapshot') {
+        const raw = Array.isArray(msg.snapshot?.passages) ? msg.snapshot.passages : [];
+        onPassages(raw.filter((p): p is string => typeof p === 'string'));
+      } else if (msg.type === 'result') arc = msg.arc;
+      else throw new Error(msg.error);
+    }
+  }
+  if (!arc) throw new Error('arc stream ended without a result');
+  return arc;
+}
 
 // D44 (Q6): explain a highlighted fragment of a RAW reading. Prose only —
 // nothing in the response can become map content. Streams deltas so the

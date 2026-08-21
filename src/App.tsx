@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ArcView } from './arc/ArcView';
 import { Readings } from './grid/Readings';
 import { ThreadGrid } from './grid/ThreadGrid';
 import { Signature } from './signature/Signature';
@@ -6,7 +7,9 @@ import { Target } from './target/Target';
 import { useMapStore, type View } from './store';
 
 // D26 #4: the toolbar renders the views you are NOT in, so every label
-// names a destination by construction.
+// names a destination by construction. The arc view (D46) joins only
+// once the song has an arc (or one is being written) — a destination
+// that leads nowhere is noise.
 const VIEWS: View[] = ['readings', 'grid', 'target'];
 
 // A draft that survives navigation. Losing a pasted page of lyrics is the
@@ -206,6 +209,9 @@ export default function App() {
   // mutation or streaming update can — see the store comment.
   const view = useMapStore((s) => s.view);
   const setView = useMapStore((s) => s.setView);
+  const arcDraft = useMapStore((s) => s.arcDraft);
+  const views: View[] =
+    (doc?.arcs?.length ?? 0) > 0 || arcDraft ? [...VIEWS, 'arc'] : VIEWS;
 
   useEffect(() => {
     void loadMaps();
@@ -230,7 +236,7 @@ export default function App() {
       {doc && (
         <div className="toolbar">
           <button className="text-action" onClick={closeMap}>← maps</button>
-          {VIEWS.filter((v) => v !== view).map((v) => (
+          {views.filter((v) => v !== view).map((v) => (
             <button key={v} className="text-action" onClick={() => setView(v)}>
               {v}
             </button>
@@ -334,7 +340,15 @@ export default function App() {
       )}
 
       {doc ? (
-        view === 'readings' ? <Readings /> : view === 'grid' ? <ThreadGrid /> : <Target doc={doc} />
+        view === 'readings' ? (
+          <Readings />
+        ) : view === 'grid' ? (
+          <ThreadGrid />
+        ) : view === 'arc' ? (
+          <ArcView />
+        ) : (
+          <Target doc={doc} />
+        )
       ) : composing ? (
         <Compose onBack={() => setComposing(false)} />
       ) : (

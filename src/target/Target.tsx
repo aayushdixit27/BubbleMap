@@ -21,6 +21,7 @@
 import { useState } from 'react';
 import { QUADRANTS, RINGS } from '../canvas/geometry';
 import { CATEGORY_LABEL } from '../grid/ThreadGrid';
+import { useMapStore } from '../store';
 import type { Bubble, BubbleMapDoc, Category } from '../types';
 
 // viewBox is 960 units across a 450–620px panel, so 1px visual ≈ 1.8 units.
@@ -84,6 +85,12 @@ function ProvenanceStep({ bubble, parent }: { bubble: Bubble; parent?: Bubble })
 
 export function Target({ doc }: { doc: BubbleMapDoc }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // D46: the opt-in trigger for descent and return lives here, on the
+  // provenance panel — one click, one call, never automatic.
+  const buildArc = useMapStore((s) => s.buildArc);
+  const readOnly = useMapStore((s) => s.readOnly);
+  const running = useMapStore((s) => s.running);
+  const arcDraft = useMapStore((s) => s.arcDraft);
 
   const raws = doc.bubbles.filter(
     (b) => b.kind === 'idea' && b.tier === 'raw' && b.category && b.status === 'committed',
@@ -154,6 +161,19 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
           {chain.map((b, i) => (
             <ProvenanceStep key={b.id} bubble={b} parent={i > 0 ? chain[i - 1] : undefined} />
           ))}
+          {/* D46: write this descent as a five-beat arc — RAW, up for
+              air, back down. Hidden while a run owns the doc. */}
+          {!readOnly && running === 0 && selected && (
+            <div className="target-arc-action">
+              <button
+                className="text-action"
+                disabled={arcDraft !== null}
+                onClick={() => void buildArc(selected.id)}
+              >
+                {arcDraft ? 'writing an arc…' : 'descent and return'}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

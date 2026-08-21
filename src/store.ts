@@ -16,6 +16,7 @@ import {
   fetchMaps,
   nominateKeeper as apiNominate,
   saveMap,
+  streamArc,
   streamVerb,
   type MapMeta,
   type Proposal,
@@ -23,7 +24,7 @@ import {
 } from './api';
 import { placeInRegion } from './canvas/geometry';
 import { loadProbeRun } from './loadProbeRun';
-import type { Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from './types';
+import type { Arc, Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from './types';
 
 const TIERS: Tier[] = ['safe', 'real', 'raw'];
 const CATEGORIES: Category[] = ['love', 'identity', 'fitness', 'earnings'];
@@ -94,9 +95,9 @@ export interface AheadRun {
   progress: Progress;
 }
 
-// D26 #4's three views. UI state, not doc schema — deliberately not in
-// types.ts.
-export type View = 'readings' | 'grid' | 'target';
+// D26 #4's three views plus D46's arc view. UI state, not doc schema —
+// deliberately not in types.ts.
+export type View = 'readings' | 'grid' | 'target' | 'arc';
 
 // One descent path, by bubble id. safe/real may be absent when the model
 // skipped a tier; raw is the unit's anchor.
@@ -106,10 +107,20 @@ export interface DescentPath {
   raw: string;
 }
 
-// A killed descent, held in session memory so the kill is undoable (D26 #2).
-interface KilledDescent {
-  bubbles: Bubble[];
-  links: Link[];
+// A kill held in session memory so it is undoable (D26 #2). Descents park
+// their bubbles in rejected[]; a killed arc (D46) is simply removed from
+// doc.arcs — the record here is what restores it.
+type Killed =
+  | { kind: 'descent'; bubbles: Bubble[]; links: Link[] }
+  | { kind: 'arc'; arc: Arc };
+
+// D46: the arc being written right now — passages accumulate as the model
+// streams, so the arc view is never silent. Session state; the finished
+// Arc lands on doc.arcs and persists.
+export interface ArcDraft {
+  docId: string;
+  rawId: string;
+  passages: string[];
 }
 
 // D26 #3's always-visible progress state. Never a silent blank screen.
@@ -138,8 +149,10 @@ interface MapState {
   error: string | null;
   metrics: string | null;
   progress: Progress | null;
-  // Killed descents this session, newest last — the undo stack (D26 #2).
-  killed: KilledDescent[];
+  // Kills this session, newest last — the undo stack (D26 #2, D46).
+  killed: Killed[];
+  // D46: the arc currently streaming in, if any.
+  arcDraft: ArcDraft | null;
   // Server-rejected proposal items for the open map, D34: a quiet count
   // in the toolbar, expanding to reasons. Silent rejection produced a
   // broken map once (Money, descent v); never again invisible.
@@ -162,6 +175,10 @@ interface MapState {
   closeMap: () => void;
   // D41: choose the song's canonical raw thing. Re-choosable at any time.
   setKeeper: (id: string) => void;
+  // D46: write one descent as a five-beat arc. Opt-in, one call, never
+  // automatic. Switches to the arc view and streams.
+  buildArc: (rawId: string) => Promise<void>;
+  killArc: (id: string) => void;
   // openNow=false is D37's "start the next song while reading this one":
   // the run generates against its own doc and the current map stays open.
   createAndSeed: (title: string, source: string, opts?: { openNow?: boolean }) => Promise<void>;
@@ -318,6 +335,7 @@ export const useMapStore = create<MapState>((set, get) => {
     readOnly: false,
     running: 0,
     killed: [],
+    arcDraft: null,
     rejections: [],
     discarded: [],
     ahead: null,
@@ -358,6 +376,7 @@ export const useMapStore = create<MapState>((set, get) => {
           view: activeRun.finished ? 'target' : 'readings',
           readOnly: false,
           killed: [],
+          arcDraft: null,
           ahead: null,
           running: activeRun.finished ? 0 : 1,
           progress: activeRun.progress,
@@ -374,7 +393,7 @@ export const useMapStore = create<MapState>((set, get) => {
       try {
         // Target is the landing view for a finished map (supersedes
         // D26 #4's Readings default).
-        set({ doc: await fetchMap(id), view: 'target', readOnly: false, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
+        set({ doc: await fetchMap(id), view: 'target', readOnly: false, killed: [], arcDraft: null, rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
@@ -397,13 +416,13 @@ export const useMapStore = create<MapState>((set, get) => {
     // The Phase 0 chain output as design-test data — never saved, never
     // descended into, no tokens spent.
     openProbeRun: () => {
-      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
+      set({ doc: loadProbeRun(), view: 'readings', readOnly: true, killed: [], arcDraft: null, rejections: [], discarded: [], progress: null, error: null, metrics: null, status: '' });
     },
 
     closeMap: () => {
       // Navigating away from a still-running map is legal under D37: the
       // run keeps going against its own doc and shows up as `ahead`.
-      set({ doc: null, readOnly: false, running: 0, killed: [], rejections: [], discarded: [], progress: null, status: '', metrics: null });
+      set({ doc: null, readOnly: false, running: 0, killed: [], arcDraft: null, rejections: [], discarded: [], progress: null, status: '', metrics: null });
       void get().loadMaps();
     },
 
@@ -833,7 +852,8 @@ export const useMapStore = create<MapState>((set, get) => {
         );
       if (real && !hasOtherChild(real)) toPark.add(real);
       if (safe && !hasOtherChild(safe)) toPark.add(safe);
-      const record: KilledDescent = {
+      const record: Killed = {
+        kind: 'descent',
         bubbles: doc.bubbles.filter((b) => toPark.has(b.id)),
         links: doc.links.filter((l) => toPark.has(l.source) || toPark.has(l.target)),
       };
@@ -848,22 +868,84 @@ export const useMapStore = create<MapState>((set, get) => {
     },
 
     // D26 #2: kills are undoable for the session. Restores the most
-    // recent kill — bubbles out of rejected[], links back in place.
+    // recent kill — a descent's bubbles out of rejected[] and links back
+    // in place, or a killed arc back onto doc.arcs (D46).
     undoKill: () => {
       const doc = get().doc;
       const killed = get().killed;
       if (!doc || !killed.length) return;
       const last = killed[killed.length - 1];
-      const bubbleIds = new Set(last.bubbles.map((b) => b.id));
-      const linkIds = new Set(last.links.map((l) => l.id));
-      const next: BubbleMapDoc = {
-        ...doc,
-        bubbles: [...doc.bubbles, ...last.bubbles],
-        links: [...doc.links.filter((l) => !linkIds.has(l.id)), ...last.links],
-        rejected: (doc.rejected ?? []).filter((b) => !bubbleIds.has(b.id)),
-      };
+      let next: BubbleMapDoc;
+      if (last.kind === 'arc') {
+        next = { ...doc, arcs: [...(doc.arcs ?? []), last.arc] };
+      } else {
+        const bubbleIds = new Set(last.bubbles.map((b) => b.id));
+        const linkIds = new Set(last.links.map((l) => l.id));
+        next = {
+          ...doc,
+          bubbles: [...doc.bubbles, ...last.bubbles],
+          links: [...doc.links.filter((l) => !linkIds.has(l.id)), ...last.links],
+          rejected: (doc.rejected ?? []).filter((b) => !bubbleIds.has(b.id)),
+        };
+      }
       if (activeRun?.docId === next.id) activeRun.doc = next;
       set({ doc: next, killed: killed.slice(0, -1) });
+      scheduleSave();
+    },
+
+    // D46: write one chosen descent as a five-beat arc. Opt-in — this is
+    // the human's click on the Target panel, never automatic. Streams
+    // passages into the arc view; the finished Arc commits to doc.arcs
+    // and autosaves (it is the most expensive artifact the tool makes).
+    buildArc: async (rawId) => {
+      const doc = get().doc;
+      if (!doc || get().readOnly || get().arcDraft) return;
+      // One owner per mutable resource: while a run is generating into
+      // this doc, the run owns it — no concurrent arc writes.
+      if (get().running > 0) {
+        set({ error: 'the song is still generating — build the arc when it finishes' });
+        return;
+      }
+      if (!doc.bubbles.some((b) => b.id === rawId && b.tier === 'raw' && b.status === 'committed')) {
+        return;
+      }
+      const docId = doc.id;
+      set({ view: 'arc', arcDraft: { docId, rawId, passages: [] }, error: null });
+      try {
+        const arc = await streamArc(doc, rawId, (passages) => {
+          const draft = get().arcDraft;
+          if (draft?.docId === docId && draft.rawId === rawId) {
+            set({ arcDraft: { docId, rawId, passages } });
+          }
+        });
+        const open = get().doc;
+        if (open?.id === docId) {
+          const next: BubbleMapDoc = { ...open, arcs: [...(open.arcs ?? []), arc] };
+          if (activeRun?.docId === next.id) activeRun.doc = next;
+          set({ doc: next, arcDraft: null });
+          scheduleSave();
+        } else {
+          // The human navigated away mid-write. The arc cost a real call —
+          // never drop it (D46): land it on disk directly.
+          const fresh = await fetchMap(docId);
+          await saveMap({ ...fresh, arcs: [...(fresh.arcs ?? []), arc] });
+          if (get().arcDraft?.docId === docId) set({ arcDraft: null });
+        }
+      } catch (e) {
+        set({ error: `arc failed: ${e instanceof Error ? e.message : String(e)}` });
+        if (get().arcDraft?.docId === docId) set({ arcDraft: null });
+      }
+    },
+
+    // D46: killing an arc is one gesture, undoable for the session.
+    killArc: (id) => {
+      const doc = get().doc;
+      if (!doc || get().readOnly) return;
+      const arc = (doc.arcs ?? []).find((a) => a.id === id);
+      if (!arc) return;
+      const next: BubbleMapDoc = { ...doc, arcs: (doc.arcs ?? []).filter((a) => a.id !== id) };
+      if (activeRun?.docId === next.id) activeRun.doc = next;
+      set({ doc: next, killed: [...get().killed, { kind: 'arc', arc }] });
       scheduleSave();
     },
   };

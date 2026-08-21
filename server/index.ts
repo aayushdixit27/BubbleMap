@@ -7,7 +7,7 @@
 import express from 'express';
 import { nanoid } from 'nanoid';
 import type { BubbleMapDoc } from '../src/types';
-import { currentModel, explainHighlight, nominateKeeper, propose, type ExplainTurn } from './ai';
+import { currentModel, explainHighlight, nominateKeeper, propose, writeArc, type ExplainTurn } from './ai';
 import type { Verb } from './prompts';
 import { deleteMap, listMaps, readMap, writeMap } from './storage';
 
@@ -137,6 +137,44 @@ app.post('/api/ai/nominate', async (req, res) => {
   } catch (e) {
     res.status(502).json({ error: e instanceof Error ? e.message : String(e) });
   }
+});
+
+// D46: descent and return — one chosen descent rewritten as a five-beat
+// arc. Streams the accumulating tool input as {type:'snapshot'} lines
+// (passages render as they arrive), then one {type:'result'} carrying the
+// finished Arc. Opt-in, one call per arc, never automatic.
+app.post('/api/ai/arc', async (req, res) => {
+  const { doc, rawId } = req.body as { doc?: BubbleMapDoc; rawId?: string };
+  if (!doc || !rawId) {
+    res.status(400).json({ error: 'doc and rawId are required' });
+    return;
+  }
+  res.setHeader('Content-Type', 'application/x-ndjson');
+  res.setHeader('Cache-Control', 'no-cache');
+  const writeLine = (obj: unknown) => {
+    if (!res.writableEnded) res.write(JSON.stringify(obj) + '\n');
+  };
+
+  const started = Date.now();
+  try {
+    const result = await Promise.race([
+      writeArc(doc, rawId, (snapshot) => writeLine({ type: 'snapshot', snapshot })),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`arc exceeded ${AI_TIMEOUT_MS / 1000}s`)), AI_TIMEOUT_MS),
+      ),
+    ]);
+    writeLine({ type: 'result', arc: result.arc });
+    console.log(
+      `[ai] arc raw=${rawId} ` +
+        `${result.usage.input_tokens}in/${result.usage.output_tokens}out ` +
+        `${((Date.now() - started) / 1000).toFixed(1)}s`,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[ai] arc failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${message}`);
+    writeLine({ type: 'error', error: message });
+  }
+  res.end();
 });
 
 // D44 (Q6): explain a highlighted fragment of a RAW reading. Prose only,
