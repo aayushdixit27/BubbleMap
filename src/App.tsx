@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArcView } from './arc/ArcView';
+import { Corpus } from './corpus/Corpus';
 import { Readings } from './grid/Readings';
 import { ThreadGrid } from './grid/ThreadGrid';
 import { Signature } from './signature/Signature';
@@ -95,7 +96,7 @@ function Compose({ onBack }: { onBack: () => void }) {
 // D26 #1: home base. The landing screen is the library — your songs, most
 // recent first. "Add a song" is one option on it, not the whole screen.
 // Opening a song only reads what's there; nothing re-runs.
-function Library({ onCompose }: { onCompose: () => void }) {
+function Library({ onCompose, onCorpus }: { onCompose: () => void; onCorpus: () => void }) {
   const maps = useMapStore((s) => s.maps);
   const openMap = useMapStore((s) => s.openMap);
   const removeMap = useMapStore((s) => s.removeMap);
@@ -165,6 +166,14 @@ function Library({ onCompose }: { onCompose: () => void }) {
         {hasDraft ? 'Add a song — draft kept' : 'Add a song'}
       </button>
 
+      {/* D47: the view ACROSS maps, reached from here — not from inside
+          a song. Two songs is the minimum for "next to each other". */}
+      {maps.length > 1 && (
+        <button className="text-action add-song corpus-link" onClick={onCorpus}>
+          The corpus — every keeper on one wall
+        </button>
+      )}
+
       <div className="start-maps">
         <div className="field-label">Design-test data</div>
         <button className="text-action map-link" onClick={openProbeRun}>
@@ -202,6 +211,10 @@ export default function App() {
   const [nextSource, setNextSource, clearNextSource] = useDraft('bubblemap.next.source');
   // The compose surface is its own mode, not a library row.
   const [composing, setComposing] = useState(false);
+  // D47: the corpus is its own mode too — doc-less, reached from the
+  // library. Opening a song from the wall renders the song (doc wins);
+  // closing it falls back here until "← library".
+  const [corpusOpen, setCorpusOpen] = useState(false);
   const [health, setHealth] = useState('server: …');
   // D26 #4: three views. Readings is the judgment surface (D25); grid
   // compares; target is where this song's RAW landed. The view lives in
@@ -349,10 +362,12 @@ export default function App() {
         ) : (
           <Target doc={doc} />
         )
+      ) : corpusOpen ? (
+        <Corpus onBack={() => setCorpusOpen(false)} />
       ) : composing ? (
         <Compose onBack={() => setComposing(false)} />
       ) : (
-        <Library onCompose={() => setComposing(true)} />
+        <Library onCompose={() => setComposing(true)} onCorpus={() => setCorpusOpen(true)} />
       )}
     </div>
   );

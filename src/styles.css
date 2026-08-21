@@ -646,4 +646,50 @@ html, body, #root {
   color: var(--ink-mid);
 }
 .target-arc-action { margin-top: 20px; }
+
+/* D47 — the corpus: keeper wall + stacked target. Editorial register —
+   the wall is rows and hairlines like the library; the disc reuses the
+   target's visual language at corpus density. */
+.corpus { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; }
+.corpus-body {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px 24px 64px;
+}
+.corpus-head { margin: 36px 0 4px; color: var(--ink-mid); }
+.keeper-wall { display: flex; flex-direction: column; }
+.keeper-wall-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  padding: 18px 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.keeper-wall-row:hover .keeper-wall-line {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--hairline);
+}
+/* The RAW serif at reading size — the wall is a reading surface. */
+.keeper-wall-line {
+  font-family: var(--serif);
+  font-size: 21px;
+  line-height: 1.4;
+  color: var(--ink);
+  overflow-wrap: break-word; /* wraps, never clips (rule 7) */
+}
+.corpus-disc {
+  width: 100%;
+  max-width: 560px;
+  display: block;
+  margin: 8px auto 0;
+}
 .add-song { margin-top: 24px; font-size: 14px; }

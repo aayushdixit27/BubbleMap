@@ -1,14 +1,14 @@
 # PROGRESS
 
-> **Last updated: 21 Aug 2026. Everything through D46 is built and
-> SHIPPED — ARC_SUFFIX ratified (do-not-invent-comfort clause, unequal
-> beat lengths, standalone readability); its 500-word cap was deleted by
-> amendment 2 (never derived, killed by evidence, same class as D28).
-> Nothing is open on the implementer. SEVEN maps exist; arcs are being
-> made in real use (the Ariana arc is the strongest prose the tool has
-> produced, per the architect). The corpus view waits for ~10. The three
-> live questions below still await the human's read. Numbering rule in
-> DECISIONS' header: the architect assigns the number; if a ruling
+> **Last updated: 21 Aug 2026. Everything through D47 is built. THE
+> CORPUS VIEW EXISTS — commissioned at n=8 after the architect's manual
+> keeper reading found a real shape (PRODUCT §7: six of eight keepers
+> are the narrator AUTHORING another person's experience — that is the
+> thesis the corpus now tests). EIGHT maps exist. ARC_SUFFIX shipped
+> ratified, cap deleted (amendment 2). Nothing is open on the
+> implementer. ARCHITECTURE §5/§6/§7/§9/§10/§11 were cross-referenced to
+> current truth on 21 Aug (mechanical, per the architect's commission).
+> Numbering rule: the architect assigns decision numbers; if a ruling
 > arrives without one, ask.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
@@ -129,12 +129,36 @@ deleted by D46 amendment 2 (21 Aug — never derived, killed by two runs
 of evidence, same class as D28's dead 20s target); the unequal-length
 clause does the real shaping work.
 
+## D47 — the corpus view, built 21 Aug
+
+Reached from the library ("The corpus — every keeper on one wall",
+shown at 2+ maps; `src/corpus/Corpus.tsx`, mode state in App like
+Compose). Two pages, one scroll, deliberately dumb per the ruling:
+the **keeper wall** (every song's keeper line, RAW serif 21px, title as
+marginalia, recency order; a keeperless song falls back to its latest
+RAW marked "keeper not chosen" — same rule as the library row; rows
+open their song) and the **stacked target** (every song's committed RAW
+dots on one disc, keeper dots ringed). Read-only — fetches all maps per
+open, writes nothing. No AI call, by ruling; revisit at twenty.
+
+**Trap found live**: stored positions are computed per-map by the same
+deterministic placement, so across songs the i-th RAW lands on the SAME
+spot — 62 corpus dots collapsed to 16 visible. The disc re-places every
+dot with the existing `placeInRegion` against the accumulated corpus
+(display only, nothing written back). If a future view stacks maps, it
+must do the same.
+
+First look at n=8: the corpus raw mass sits in the upper half — LOVE
+and IDENTITY dense, FITNESS/EARNINGS sparse. The wall reads exactly
+like PRODUCT §7's plain-text reading, which is the point.
+
 ## Corpus status
 
-**Seven maps**: Beautiful, Money, Be Her, Go your own way, Been By Now,
+**Eight maps**: Beautiful, Money, Be Her, Go your own way, Been By Now,
 Mr. Brightside (20 Aug midday — with lyrics, closing the loop on the
-Phase 0 title-only comparison; keeper not yet chosen), stupid song
-(Olivia Rodrigo, 20 Aug evening).
+Phase 0 title-only comparison), stupid song (Olivia Rodrigo, 20 Aug
+evening), hate that i made you love me (Ariana Grande, 21 Aug).
+PRODUCT §7 carries the n=8 keeper reading — do not re-derive it.
 The corpus view is worth building at **~10**; it then costs about a
 day. **D38 standing bias until then: build only what makes the next
 songs cheaper to get through** — say so out loud if anything else is
