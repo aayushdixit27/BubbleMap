@@ -452,6 +452,20 @@ next songs cheaper. Approved anyway under PRODUCT §3's amendment: a need discov
 in real use outranks a rule written before the thing existed. It is also the first
 feature that makes the product *argue a thesis* rather than analyse a song. *20 Aug.*
 
+*D46 amendment — ARC_SUFFIX ratified with three additions; ships verbatim.*
+The draft's structure held. The architect's additions: **the do-not-invent-comfort
+clause** — the form itself is a fabrication vector this verb uniquely creates,
+because the structure DEMANDS a safe beat whether or not the song has one; the
+clause is explain's honest-no shaped to preserve the form rather than break it
+(*"find the moment it comes closest and say plainly that it does not hold"*).
+**Unequal beat lengths** — the safe beat is the shortest (a breath, not a
+chapter), the final raw beat has the most room; an arc where every movement is
+the same size isn't an arc. **Standalone readability** — the view shows only the
+arc, so it must be understood whole by someone who never saw the reading. Cap is
+**500 words TOTAL, not per-beat** — per-beat caps would fight the unequal-length
+instruction and flatten the shape. *"Go back down deeper, not louder"* kept
+untouched. *20 Aug.*
+
 ---
 
 ## Open — architect owes an answer

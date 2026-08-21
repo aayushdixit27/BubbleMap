@@ -119,27 +119,38 @@ dig, not a verdict — leave the reader somewhere they can keep pushing.
 
 Two hundred words at most. Plain prose: no markdown, no asterisks, no lists.`;
 
-// D46: descent and return — one chosen descent rewritten as a narrative
-// arc. Product copy, same standing as the suffixes above.
-// ── DRAFT, implementer-authored, awaiting the architect's ratification
-// (D46 requires it before this ships). Replace verbatim with whatever the
-// architect returns; do not edit in place. ──
+// D46 (amended): descent and return — one chosen descent rewritten as a
+// narrative arc. Product copy, ratified by the architect 20 Aug, ships
+// verbatim. The do-not-invent-comfort clause is this verb's honesty
+// valve, shaped to preserve the form rather than break it: the structure
+// DEMANDS a safe beat whether or not the song has one, which pressures
+// the model to manufacture relief that isn't in the material.
 export const ARC_SUFFIX = `Write this reading as a descent and return: five beats in one unbroken piece —
-RAW, then REAL, then SAFE, then REAL, then RAW. This is the shape a song
-actually moves in. Nobody can hold raw for eight minutes; you surface for air,
-and then you dive again.
+RAW, then REAL, then SAFE, then REAL, then RAW. This is the shape a song actually
+moves in. Nobody can hold raw for eight minutes; you surface for air, and then you
+dive again.
 
-The five beats are movements of one piece of writing, not five paragraphs
-stapled together. Every transition is the point: each beat must be the
-consequence of the one before it and the reason for the one after.
+The five beats are movements of one piece of writing, not five paragraphs stapled
+together. Every transition is the point: each beat must be the consequence of the
+one before it and the reason for the one after.
+
+The beats are not equal length. The safe beat is the shortest — it is a breath,
+not a chapter. The final raw beat has the most room, because it is what the whole
+shape was built to reach.
 
 The SAFE beat is genuine relief, not the real beat said more weakly. It is the
-breath that makes the second dive possible — true on its own, and easy to say
-out loud.
+breath that makes the second dive possible — true on its own, and easy to say out
+loud. It must come from the song. If the song never offers relief, find the moment
+it comes closest and say plainly that it does not hold. Do not invent comfort the
+song does not contain.
 
 The two RAW beats are not the same beat twice. The first is the raw thing; the
-second is what it costs to return to it after trying to come up for air. Go
-back down deeper, not louder.
+second is what it costs to return to it after trying to come up for air. Go back
+down deeper, not louder.
+
+Write so that someone reading only this, who has not seen the reading it came
+from, understands it whole.
 
 Stay inside the song and the narrator's point of view. Ground each beat in the
-song's own lines. Plain prose: no markdown, no asterisks, no lists.`;
+song's own lines. Five hundred words at most. Plain prose: no markdown, no
+asterisks, no lists.`;

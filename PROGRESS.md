@@ -1,13 +1,13 @@
 # PROGRESS
 
-> **Last updated: 20 Aug 2026, evening. Everything through D46 is built.
-> Q6 ("explain this") shipped ratified (D45). D46 (Descent and Return) is
-> BUILT and verified live — its ARC_SUFFIX is an implementer DRAFT
-> awaiting ratification (see prompts.ts). SEVEN maps exist ("stupid song"
-> ran 20 Aug evening); the corpus view waits for ~10. The three live
-> questions below still await the human's read. NOTE: the architect's
-> Descent-and-Return entry arrived numbered D45, colliding with the
-> ratification entry — renumbered to D46 in the file.**
+> **Last updated: 20 Aug 2026, evening. Everything through D46 is built
+> and SHIPPED — the ARC_SUFFIX is ratified (D46 amendment: do-not-invent-
+> comfort clause, unequal beat lengths, standalone readability, 500-word
+> total cap). Nothing is open on the implementer. SEVEN maps exist
+> ("stupid song" ran 20 Aug evening); the corpus view waits for ~10. The
+> three live questions below still await the human's read. Numbering
+> rule now in DECISIONS' header: the architect assigns the number; if a
+> ruling arrives without one, ask.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -98,7 +98,7 @@ silent — ruled acceptable by D45 (blocked-time lens, D28): **do not lower
 the effort setting to chase it**. The model also emitted markdown
 asterisks into prose; the suffix ends with a plain-prose clause.
 
-## D46 — Descent and Return, built 20 Aug (suffix DRAFT, unratified)
+## D46 — Descent and Return, built 20 Aug (suffix ratified, shipped)
 
 One chosen descent rewritten as a five-beat arc, RAW → REAL → SAFE →
 REAL → RAW. Opt-in: the "descent and return" button on the Target
@@ -109,8 +109,8 @@ crescendo carries the beats — RAW 20px serif, REAL 16px serif, **SAFE
 14px SANS** (the typeface relaxes; that's the breath). The arc view
 joins the toolbar only when a song has an arc or one is streaming.
 
-Where things live: `ARC_SUFFIX` in `server/prompts.ts` (**DRAFT —
-architect must ratify before this counts as shipped**), `writeArc` +
+Where things live: `ARC_SUFFIX` in `server/prompts.ts` (ratified — the
+do-not-invent-comfort clause is this verb's honesty valve), `writeArc` +
 `ARC_TIERS` in `server/ai.ts` (5 passages schema-enforced per D16, tiers
 assigned by position, never trusted to the model), `POST /api/ai/arc`
 (NDJSON snapshots), `streamArc` in `src/api.ts`, `buildArc`/`killArc` in
@@ -123,7 +123,8 @@ persist via normal autosave (verified on disk); if the human navigates
 away mid-write, the finished arc lands on disk directly — never dropped.
 Killing an arc is one gesture, undoable via the same session stack as
 descents (the `killed` array is now a union). The test arc ran ~691
-words with no cap — flagged for the architect alongside the draft.
+words; the ratified suffix caps at 500 total (per-beat caps were
+rejected — they'd fight the unequal-length instruction).
 
 ## Corpus status
 
@@ -356,9 +357,9 @@ mutates the map.
 
 ## Next
 
-**Phases are retired (D43); the queue is use-discovered.** Open on the
-implementer: get the ARC_SUFFIX draft ratified (D46 requires it). Then
-songs — the corpus view exists at ~10 maps and there are seven. **Q5**
+**Phases are retired (D43); the queue is use-discovered.** Nothing is
+open on the implementer. Next: songs — the corpus view exists at ~10
+maps and there are seven. **Q5**
 stays deferred (three-tier paths on the Target; the provenance panel was
 the cheap answer). The three live questions above still await the
 human's read. If a ruling arrives that isn't in DECISIONS yet, record it
