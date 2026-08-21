@@ -152,5 +152,4 @@ Write so that someone reading only this, who has not seen the reading it came
 from, understands it whole.
 
 Stay inside the song and the narrator's point of view. Ground each beat in the
-song's own lines. Five hundred words at most. Plain prose: no markdown, no
-asterisks, no lists.`;
+song's own lines. Plain prose: no markdown, no asterisks, no lists.`;

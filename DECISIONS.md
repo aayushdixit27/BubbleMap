@@ -466,6 +466,15 @@ arc, so it must be understood whole by someone who never saw the reading. Cap is
 instruction and flatten the shape. *"Go back down deeper, not louder"* kept
 untouched. *20 Aug.*
 
+*D46 amendment 2 — the 500-word cap is DELETED.* An architect number that was
+never derived, killed by two runs of evidence — same class as D28's 20-second
+target. The test arc ran 691 words and the Ariana arc ~645, and both are the
+strongest prose the tool has produced: the cap never bound anything that needed
+binding, and the only thing it could ever truncate is the final raw beat — the
+beat the whole form exists to reach. The unequal-length clause is doing the real
+shaping work (the Ariana safe beat is a real breath at ~70 words); the number
+added nothing. Everything else in the suffix stays exactly as ratified. *21 Aug.*
+
 ---
 
 ## Open — architect owes an answer

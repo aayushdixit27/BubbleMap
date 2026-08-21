@@ -1,13 +1,15 @@
 # PROGRESS
 
-> **Last updated: 20 Aug 2026, evening. Everything through D46 is built
-> and SHIPPED — the ARC_SUFFIX is ratified (D46 amendment: do-not-invent-
-> comfort clause, unequal beat lengths, standalone readability, 500-word
-> total cap). Nothing is open on the implementer. SEVEN maps exist
-> ("stupid song" ran 20 Aug evening); the corpus view waits for ~10. The
-> three live questions below still await the human's read. Numbering
-> rule now in DECISIONS' header: the architect assigns the number; if a
-> ruling arrives without one, ask.**
+> **Last updated: 21 Aug 2026. Everything through D46 is built and
+> SHIPPED — ARC_SUFFIX ratified (do-not-invent-comfort clause, unequal
+> beat lengths, standalone readability); its 500-word cap was deleted by
+> amendment 2 (never derived, killed by evidence, same class as D28).
+> Nothing is open on the implementer. SEVEN maps exist; arcs are being
+> made in real use (the Ariana arc is the strongest prose the tool has
+> produced, per the architect). The corpus view waits for ~10. The three
+> live questions below still await the human's read. Numbering rule in
+> DECISIONS' header: the architect assigns the number; if a ruling
+> arrives without one, ask.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -122,9 +124,10 @@ display; the ruling specified only "arcs referencing the RAW". Arcs
 persist via normal autosave (verified on disk); if the human navigates
 away mid-write, the finished arc lands on disk directly — never dropped.
 Killing an arc is one gesture, undoable via the same session stack as
-descents (the `killed` array is now a union). The test arc ran ~691
-words; the ratified suffix caps at 500 total (per-beat caps were
-rejected — they'd fight the unequal-length instruction).
+descents (the `killed` array is now a union). No word cap: the 500 was
+deleted by D46 amendment 2 (21 Aug — never derived, killed by two runs
+of evidence, same class as D28's dead 20s target); the unequal-length
+clause does the real shaping work.
 
 ## Corpus status
 
