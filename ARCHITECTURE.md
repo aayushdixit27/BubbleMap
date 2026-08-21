@@ -149,7 +149,12 @@ export interface Bubble {
   tier: Tier | null;          // null only when kind === 'lyric'
   category: Category | null;  // null only when kind === 'lyric'
   label: string;              // ≤ 12 words. Renders in the bubble.
-  note?: string;              // longer expansion, shown in Inspector.
+  sourceLine: string;         // D23: verbatim lyric fragment it derives from.
+                              // Checked against doc.source server-side.
+  note?: string;              // longer expansion. The payload (D14).
+  exhausted?: boolean;        // D35: asked to descend and declined. Persisted.
+  citationUnverified?: boolean; // D39: sourceLine didn't match doc.source —
+                              // kept, flagged, rendered with a quiet marker.
   position: { x: number; y: number };
   origin: Origin;
   status: Status;
@@ -161,9 +166,23 @@ export interface Link {
   source: string;             // Bubble.id
   target: string;             // Bubble.id
   kind: LinkKind;
-  rationale?: string;         // one-sentence "why". Shown in Inspector.
+  rationale?: string;         // one-sentence "why".
   origin: Origin;
   status: Status;
+}
+
+// D46: one chosen descent rewritten as a five-beat narrative arc,
+// RAW → REAL → SAFE → REAL → RAW. Beat tiers fixed by position.
+export interface ArcBeat {
+  tier: Tier;
+  text: string;
+}
+
+export interface Arc {
+  id: string;
+  rawId: string;              // the RAW bubble the arc was built from
+  beats: ArcBeat[];           // exactly five
+  createdAt: string;
 }
 
 export interface BubbleMapDoc {
@@ -174,6 +193,12 @@ export interface BubbleMapDoc {
   source?: string;            // free text: lyrics, notes, your analysis
   bubbles: Bubble[];
   links: Link[];
+  rejected: Bubble[];         // D24: killed/unpicked bubbles, persisted as their
+                              // own record, never rendered on the map
+  keeperId?: string;          // D41: the song's canonical raw thing (a committed
+                              // RAW's id), human-chosen, re-choosable
+  nominatedIds?: string[];    // D42: the model's keeper nominations, persisted
+  arcs?: Arc[];               // D46: descent-and-return arcs, persisted
   createdAt: string;
   updatedAt: string;
 }
@@ -186,7 +211,9 @@ export interface BubbleMapDoc {
 - `kind: 'idea'` ⟹ `tier` and `category` are both non-null. `kind: 'lyric'` ⟹ both null.
 - A `refines` link must go strictly **deeper**: `safe→real`, `real→raw`, or `safe→raw`. Reject upward. `refines` **may** change category — that's §1.3, not a violation.
 - Only `evidence` links may target a `lyric` bubble, and a lyric bubble is never a link source.
-- `proposed` items never persist. Saving strips them.
+- `proposed` items never persist on the live map. Saving strips them — except
+  inside `rejected[]`, where unpicked candidates keep their `proposed` status
+  deliberately (D24: the strip is about the live map, not the rejection record).
 
 `version: 2` is the first shipped version. There is no v1 on disk; if a loader
 ever sees `version: 1`, fail loudly rather than guessing a migration.
@@ -194,6 +221,18 @@ ever sees `version: 1`, fail loudly rather than guessing a migration.
 ---
 
 ## 6. Geometry — the target
+
+> **Still live, serving different views (noted 21 Aug per D47's doc pass).** The
+> math in `geometry.ts` (RINGS, QUADRANTS, the three functions, 18 tests) is
+> intact and load-bearing: `placeInRegion` positions every bubble at commit
+> (`src/store.ts`), and the polar constants draw the Signature, the per-song
+> Target (D30: the RAW disc alone — the REAL/SAFE rings are no longer rendered),
+> and the corpus disc (D47, which re-places dots at corpus scope with the same
+> function). What is dead with React Flow (D21): §6.1's center/top-left
+> conversion, §6.3's TargetBackground node, §6.4's pan/zoom/quadrant focus, and
+> drag-to-reassign (`regionForPoint`/`assignRegion` survive only in the tests).
+> `LYRIC_MARGIN` and the QUADRANTS `hue` field are unused — category ink now
+> comes from the D22 palette in `src/styles.css`.
 
 The canvas is jun_yuh's drawing: four quadrants, three concentric rings. **RAW is
 the bullseye.** Descent means moving inward.
@@ -342,6 +381,21 @@ where a 15px label renders at ~10px — too small to read. So:
 >   **descent** — keep/kill an entire SAFE → REAL → RAW path, one decision
 >   per descent. `descend` and `interrogate` as user-triggered verbs are gone
 >   from the flow; `interrogate` remains server-side, unwired.
+>
+> **Current verb roster (21 Aug — supersedes the four-verb table below):**
+>
+> | Verb | Trigger | Input | Returns |
+> |---|---|---|---|
+> | `seed` | run start | `doc.source` | exactly 3 SAFE + 3 REAL (schema + server split check), `refines` links, streamed |
+> | `descend` | the run loop, serial (D26 #3) | focus + ancestor chain + all bubbles (labels, D27) + source | exactly ONE bubble one tier deeper; parent link guaranteed client-side (`ensureParentLink`) |
+> | `interrogate` | none — server-side, unwired since D25 | focus + all bubbles + source | max 3 `assumes` bubbles + `contradicts` links |
+> | `explain` (D44/D45) | highlight in a RAW reading → "explain this" | descent chain + highlight + dig trail + source | streamed PROSE, ephemeral — never map content. Suffix carries the honest-no clause |
+> | `arc` (D46) | "descent and return" on the Target panel | descent chain + source | exactly 5 passages (schema), tiers assigned by position server-side; persists as `doc.arcs` |
+>
+> Plus one call that is **not a verb** (D41): `nominate` — picks three existing
+> RAW ids as keeper candidates at run end; no new content, persisted as
+> `doc.nominatedIds`. Prompt criteria for nominate/explain/arc live in
+> `server/prompts.ts` as §8-grade suffixes, architect-ratified, verbatim.
 
 Four verbs. Every one returns **proposals only**.
 
@@ -373,13 +427,14 @@ Use **tool use with a strict `input_schema`**, not free-text JSON parsing. One t
         items: {
           type: 'object',
           properties: {
-            ref:      { type: 'string' },                    // "n1", "n2" — temp id
-            tier:     { enum: ['safe', 'real', 'raw'] },
-            category: { enum: ['love','identity','fitness','earnings'] },
-            label:    { type: 'string' },
-            note:     { type: 'string' },
+            ref:        { type: 'string' },                    // "n1", "n2" — temp id
+            tier:       { enum: ['safe', 'real', 'raw'] },
+            category:   { enum: ['love','identity','fitness','earnings'] },
+            label:      { type: 'string' },
+            sourceLine: { type: 'string' },                    // D23, required
+            note:       { type: 'string' },
           },
-          required: ['ref', 'tier', 'category', 'label'],
+          required: ['ref', 'tier', 'category', 'label', 'sourceLine'],
         },
       },
       links: {
@@ -535,6 +590,10 @@ domain of life. If it is not, move it.
 > RAW large serif), category as small-caps marginalia in muted inks, hairline
 > rules, nothing a card, no dark mode. The tokens and rules in this section are
 > the pre-D22 design, kept as the record. Current truth is `src/styles.css`.
+> What survives in use: the four category identities, as D22's muted inks
+> (`--ink-love` etc.) — colouring marginalia, target dots, and quadrant labels
+> across every view. The hue/intensity system, dark tokens, and §9.2–9.3's
+> React Flow node/edge rendering are all dead (D21/D22).
 
 ### 9.1 Color
 
@@ -600,6 +659,16 @@ Handles on all four sides — descent is radial, so edges come from any directio
 
 ## 10. Proposal review UX
 
+> **Superseded — see DECISIONS D25, D26 (amended Hard Rule 1).** The accept
+> flow below never shipped: descents land **committed** as they arrive, read
+> as they land; the only gestures are "kill this descent" (one click, parks
+> the path in `rejected[]`, session-undoable) and choosing the keeper (D41).
+> Ghost rendering survives — still-streaming bubbles render dashed/dim until
+> they land. `Shift+A`, the ✓/✗ chips, and the Inspector were never built and
+> have never been wanted. Autosave is **immediate, serialized, coalescing**
+> — the 800ms debounce below starved under rapid clicks and lost a whole map;
+> do not reintroduce it. Kept as the record of the pre-D25 design.
+
 Ghosts:
 - Proposed bubbles: dashed 2px border, `opacity: 0.55`, `--sat` halved.
 - Proposed edges: dashed with animated dash-offset.
@@ -622,19 +691,24 @@ never clobber.
 All under `/api`, proxied by Vite so the browser sees same-origin.
 
 ```
-GET    /api/health            → { ok: true, model: string }   ← Phase 1 deliverable
+GET    /api/health            → { ok: true, model: string }
 
-GET    /api/maps              → [{ id, title, updatedAt }]
-POST   /api/maps              → { title, subject } → BubbleMapDoc
+GET    /api/maps              → MapMeta[]  (id, title, dates, descents, killed, rawLine)
+POST   /api/maps              → { title, subject, source } → BubbleMapDoc
 GET    /api/maps/:id          → BubbleMapDoc
 PUT    /api/maps/:id          → BubbleMapDoc (strips proposed) → { ok, updatedAt }
 DELETE /api/maps/:id          → { ok }
 
-POST   /api/ai/seed           → { doc }            → { bubbles, links }
-POST   /api/ai/descend        → { doc, focusId }   → { bubbles, links }
-POST   /api/ai/interrogate    → { doc, focusId }   → { bubbles, links }
-POST   /api/ai/relink         → { doc }            → { bubbles: [], links }
+# Verb routes stream NDJSON: {type:'snapshot'} lines as tool input
+# accumulates (D17 #1), then one {type:'result'} — or {type:'error'}.
+POST   /api/ai/seed           → { doc }            → proposal (bubbles, links, refs, rejections)
+POST   /api/ai/descend        → { doc, focusId }   → proposal
+POST   /api/ai/interrogate    → { doc, focusId }   → proposal   # unwired client-side
+POST   /api/ai/nominate       → { doc }            → { nominations: string[3] }  # JSON, no stream (D41)
+POST   /api/ai/explain        → { doc, rawId, highlight, trail } → NDJSON {type:'delta'} text stream (D44)
+POST   /api/ai/arc            → { doc, rawId }     → NDJSON snapshots, then {type:'result', arc} (D46)
 ```
+`relink` is cut (D15) — no route.
 
 - Atomic writes: write `maps/.tmp-<id>.json`, then rename.
 - Filenames `maps/<slug>-<id>.json`; `id` is the nanoid, slug derived from title.
