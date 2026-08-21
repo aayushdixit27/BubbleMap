@@ -141,6 +141,9 @@ Normalise whitespace and case; don't require punctuation to match. *18 Aug.*
 
 *Live tripwire:* this traded candidate-choice for descent-choice. **If three songs pass
 where every descent is kept, the choice is missing and 3-candidates returns.** *18 Aug.*
+*(Tripwire CLOSED by D48 — not by reverting to 3-candidates. The missing choice was
+never a labelling gesture; it moved to where it produces something: building an arc.
+Do not reopen.)*
 
 **D26 — Home base, opt-out, continuous descents, three views. Amends Hard Rule 1.**
 
@@ -498,6 +501,34 @@ Reached from the library, not from inside a song — it is the view *across* map
 **Deliberately not built:** an AI call that reads all keepers and names the shape.
 That is a sixth verb, and a human reading eight lines worked fine. Revisit at twenty
 if the wall stops being legible. *20 Aug.*
+
+**D48 — The keeper is cut. The arc is the choosing act. Closes D25's tripwire.**
+
+**Evidence:** five consecutive songs at zero kills and no keeper ever chosen — but
+an arc was built the day arcs existed, unprompted. The keeper asked the human to
+*declare* a preference; the arc asks them to *act* on one, at the cost of a call and
+the production of an artifact.
+
+**The principle, which is the real finding:** *judgment happens when it produces
+something, not when it labels something.* That is why D25's tripwire never resolved
+in either direction — neither killing nor keepering made anything, so neither
+gesture was performed. Do not reintroduce a labelling gesture to capture preference.
+
+**Cut:** `keeperId`, `nominatedIds`, the nominate AI call and its §8 suffix, the
+end-of-run nomination block, the "this is the keeper" hover action, and the keeper
+ring on the target.
+
+**Replaced by:** the RAW reading an arc was built from becomes the song's line — the
+library subtitle and its row on the corpus wall. Multiple arcs: most recent wins.
+
+**A song with no arc contributes no line to the corpus.** This is deliberate. The
+corpus becomes made of songs the human dug into rather than songs they ran, which
+is a better filter than a click was ever going to be. The library row falls back to
+the most recent RAW for identification only, never presented as a chosen line.
+
+**D25's tripwire is closed** — not by reverting to 3-candidates, but by the choosing
+act moving to where it produces something. First entry in Phase 5's cut list, and
+evidence for that phase's posture: expect to cut most. *20 Aug.*
 
 ---
 

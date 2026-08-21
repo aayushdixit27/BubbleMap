@@ -1,24 +1,25 @@
-// D47 — THE CORPUS VIEW: the view ACROSS maps, reached from the library.
-// Two pages, no algorithm, deliberately dumb — what produced the n=8
-// finding (PRODUCT §7) was putting the keeper lines next to each other,
+// D47/D48 — THE CORPUS VIEW: the view ACROSS maps, reached from the
+// library. Two pages, no algorithm, deliberately dumb — what produced
+// the n=8 finding (PRODUCT §7) was putting the lines next to each other,
 // and that is all v1 does.
 //
-//   1. The keeper wall — every song's keeper line, one per row, RAW
-//      serif at reading size, title as quiet marginalia. No grouping,
-//      no clustering, recency order only (same as the library).
+//   1. The wall — every dug-into song's LINE (D48: the RAW its most
+//      recent arc was built from; the arc is the choosing act), one per
+//      row, RAW serif at reading size, title as quiet marginalia. A song
+//      with NO arc contributes NO line — deliberate: the corpus is made
+//      of songs the human dug into, not songs they ran.
 //   2. The stacked target — every song's committed RAW dots on one
-//      disc, existing geometry, stored positions. Answers whether raw
-//      layers cluster by category across songs.
+//      disc. Answers whether raw layers cluster by category across
+//      songs. A song's line-dot wears the hairline ring.
 //
 // Deliberately NOT here (D47): an AI call that names the shape. A human
 // reading eight lines worked fine; revisit at twenty.
 //
-// Implementer decisions (D36, reported): a song with no chosen keeper
-// falls back to its most recent RAW — the same rule the library row
-// uses — marked "keeper not chosen" so the wall never silently equates
-// the two. Keeper dots wear the Target's existing hairline ring. Rows
-// open their song. Data is fetched read-only per open; nothing here can
-// write.
+// Implementer decisions (D36, reported): rows open their song; data is
+// fetched read-only per open; nothing here can write. Dots are re-placed
+// with the existing placeInRegion at corpus scope — stored positions are
+// per-map deterministic and collide EXACTLY across songs (62 dots drew
+// as 16 before this; display only, nothing written back).
 
 import { useEffect, useMemo, useState } from 'react';
 import { fetchMap, fetchMaps } from '../api';
@@ -40,6 +41,20 @@ const committedRaws = (d: BubbleMapDoc): Bubble[] =>
   d.bubbles.filter(
     (b) => b.kind === 'idea' && b.tier === 'raw' && b.category && b.status === 'committed',
   );
+
+// D48: the song's line is the RAW its most recent arc was built from.
+// The arc's raw may since have been killed into rejected[]; its label
+// still names the line (the dot, though, exists only while committed).
+const lineOf = (d: BubbleMapDoc): Bubble | undefined => {
+  const arcs = d.arcs ?? [];
+  for (let i = arcs.length - 1; i >= 0; i--) {
+    const b =
+      d.bubbles.find((x) => x.id === arcs[i].rawId) ??
+      (d.rejected ?? []).find((x) => x.id === arcs[i].rawId);
+    if (b) return b;
+  }
+  return undefined;
+};
 
 export function Corpus({ onBack }: { onBack: () => void }) {
   const openMap = useMapStore((s) => s.openMap);
@@ -63,32 +78,20 @@ export function Corpus({ onBack }: { onBack: () => void }) {
   }, []);
 
   const rows = (docs ?? []).flatMap((d) => {
-    const raws = committedRaws(d);
-    const keeper = d.keeperId ? raws.find((b) => b.id === d.keeperId) : undefined;
-    const latest = raws.length
-      ? raws.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
-      : undefined;
-    const line = keeper ?? latest;
-    return line ? [{ id: d.id, title: d.title, line: line.label, chosen: Boolean(keeper) }] : [];
+    const line = lineOf(d);
+    return line ? [{ id: d.id, title: d.title, line: line.label }] : [];
   });
 
-  // Stored positions are computed per map by the same deterministic
-  // placement, so across songs the i-th RAW lands on the SAME spot —
-  // 62 corpus dots collapsed to 16 visible ones (found live, 21 Aug).
-  // Exact stacking makes eight readings look like one, which un-answers
-  // the disc's whole question. Fix: re-place every dot with the EXISTING
-  // placeInRegion, fed the accumulated corpus instead of one map — the
-  // same geometry the per-song target uses, at corpus scope. Display
-  // only; nothing writes back to any map.
   const dots = useMemo(() => {
     const placed: Bubble[] = [];
-    return (docs ?? []).flatMap((d) =>
-      committedRaws(d).map((b) => {
+    return (docs ?? []).flatMap((d) => {
+      const lineId = lineOf(d)?.id;
+      return committedRaws(d).map((b) => {
         const position = placeInRegion(b.category!, 'raw', placed);
         placed.push({ ...b, position });
-        return { bubble: b, position, keeper: b.id === d.keeperId };
-      }),
-    );
+        return { bubble: b, position, isLine: b.id === lineId };
+      });
+    });
   }, [docs]);
   const R = RINGS.raw.outer;
 
@@ -101,22 +104,22 @@ export function Corpus({ onBack }: { onBack: () => void }) {
       {!docs && !error && <div className="readings-empty">reading the corpus…</div>}
       {docs && (
         <div className="corpus-body">
-          {/* Page 1 — the keeper wall. The page that did the work manually. */}
+          {/* Page 1 — the wall: one line per song dug into. */}
           <div className="marginalia corpus-head">
-            the keepers · {rows.length} {rows.length === 1 ? 'song' : 'songs'}
+            the lines · {rows.length} of {docs.length} songs dug into
           </div>
-          <div className="keeper-wall">
+          <div className="corpus-wall">
             {rows.map((r) => (
-              <button key={r.id} className="keeper-wall-row" onClick={() => void openMap(r.id)}>
-                <span className="marginalia">
-                  {r.title}
-                  {!r.chosen && <span className="entry-state"> · keeper not chosen</span>}
-                </span>
-                <span className="keeper-wall-line">{r.line}</span>
+              <button key={r.id} className="corpus-row" onClick={() => void openMap(r.id)}>
+                <span className="marginalia">{r.title}</span>
+                <span className="corpus-line">{r.line}</span>
               </button>
             ))}
             {rows.length === 0 && (
-              <div className="readings-empty">No songs reach RAW yet.</div>
+              <div className="readings-empty">
+                No lines yet. A song earns its line when you dig into it — open one and
+                build an arc from its target.
+              </div>
             )}
           </div>
 
@@ -139,9 +142,9 @@ export function Corpus({ onBack }: { onBack: () => void }) {
                 </text>
               );
             })}
-            {dots.map(({ bubble, position, keeper }) => (
+            {dots.map(({ bubble, position, isLine }) => (
               <g key={bubble.id}>
-                {keeper && (
+                {isLine && (
                   <circle
                     cx={position.x}
                     cy={position.y}

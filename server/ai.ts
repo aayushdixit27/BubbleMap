@@ -5,7 +5,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { nanoid } from 'nanoid';
 import type { Arc, Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../src/types';
-import { ARC_SUFFIX, EXPLAIN_SUFFIX, NOMINATE_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
+import { ARC_SUFFIX, EXPLAIN_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
 // mutation verb. Bubble counts are capped in the schema, not the prompt
@@ -168,65 +168,9 @@ export async function propose(
   };
 }
 
-// D41/D42: the model NOMINATES three existing RAW bubbles as keeper
-// candidates. Not a fifth verb: no new bubbles, no prose — three ids out.
-// The criterion (what a keeper IS) lives in NOMINATE_SUFFIX, §8-grade
-// product copy; the user message carries only plumbing. Invalid or
-// duplicate ids are dropped; the client treats an empty result as "no
-// nominations" and the human can still pick by hand.
-export async function nominateKeeper(doc: BubbleMapDoc): Promise<{ nominations: string[]; model: string }> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is not set. Put it in .env (see .env.example).');
-  }
-  const raws = doc.bubbles.filter((b) => b.tier === 'raw' && b.kind === 'idea');
-  if (raws.length < 4) return { nominations: raws.map((b) => b.id), model: currentModel() };
-
-  const client = new Anthropic({ apiKey });
-  const model = currentModel();
-  const response = await client.messages.create({
-    model,
-    max_tokens: 300,
-    system: `${SYSTEM_PROMPT}\n\n${NOMINATE_SUFFIX}`,
-    tools: [
-      {
-        name: 'nominate',
-        input_schema: {
-          type: 'object',
-          properties: {
-            nominations: { type: 'array', minItems: 3, maxItems: 3, items: { type: 'string' } },
-          },
-          required: ['nominations'],
-        },
-      },
-    ],
-    tool_choice: { type: 'tool', name: 'nominate' },
-    messages: [
-      {
-        role: 'user',
-        content:
-          `Song: ${doc.title}\n\n` +
-          `This map's RAW bubbles:\n` +
-          raws
-            .map((b) => `- id ${b.id}: ${b.label}${b.note ? ` — ${b.note}` : ''}`)
-            .join('\n') +
-          `\n\nRespond by calling the nominate tool with exactly three of the ids above.`,
-      },
-    ],
-  });
-  const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use' && block.name === 'nominate',
-  );
-  const rawIds = new Set(raws.map((b) => b.id));
-  const proposed = ((toolUse?.input as { nominations?: unknown })?.nominations ?? []) as unknown[];
-  const nominations = [...new Set(proposed.filter((id): id is string => typeof id === 'string' && rawIds.has(id)))];
-  for (const id of proposed) {
-    if (typeof id !== 'string' || !rawIds.has(id)) {
-      console.warn('[ai] nominate returned a non-RAW or unknown id (dropped):', JSON.stringify(id));
-    }
-  }
-  return { nominations: nominations.slice(0, 3), model };
-}
+// D48: nominateKeeper (D41/D42) is cut with the keeper. The arc is the
+// choosing act; the song's line now comes from the RAW an arc was built
+// from (see storage.ts listMaps).
 
 // D44 (Q6): the fifth verb — explain a highlighted fragment of a RAW
 // reading, streamed as prose. No tool and no proposal: nothing in the

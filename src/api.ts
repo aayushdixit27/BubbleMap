@@ -10,7 +10,11 @@ export interface MapMeta {
   updatedAt: string;
   descents: number; // kept descents in the saved map (one committed RAW each)
   killed: number;   // killed descents (RAWs in rejected[]) — Q3's kill-rate
-  rawLine?: string; // most recently committed RAW label — the sharpest find
+  rawLine?: string; // D48: the song's LINE — the RAW its most recent arc was
+                    // built from; or, when no arc exists, the most recent RAW
+                    // for identification only (see `dug`)
+  dug?: boolean;    // D48: true when rawLine comes from an arc — a line the
+                    // human dug into, never silently equated with the fallback
 }
 
 export const deleteMap = (id: string): Promise<{ ok: boolean }> =>
@@ -58,15 +62,6 @@ export const saveMap = (doc: BubbleMapDoc): Promise<{ ok: boolean; updatedAt: st
     // this save — without keepalive the browser aborts the in-flight PUT.
     keepalive: true,
   }).then(asJson<{ ok: boolean; updatedAt: string }>);
-
-// D41: three existing RAW ids nominated as keeper candidates. Tiny call,
-// no streaming.
-export const nominateKeeper = (doc: BubbleMapDoc): Promise<{ nominations: string[] }> =>
-  fetch('/api/ai/nominate', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ doc }),
-  }).then(asJson<{ nominations: string[] }>);
 
 // D46: descent and return. One call per arc, opt-in. Streams the model's
 // accumulating passages so the arc view is never silent; resolves to the

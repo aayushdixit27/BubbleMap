@@ -84,7 +84,6 @@ export function Readings() {
   const readOnly = useMapStore((s) => s.readOnly);
   const killDescent = useMapStore((s) => s.killDescent);
   const discarded = useMapStore((s) => s.discarded);
-  const setKeeper = useMapStore((s) => s.setKeeper);
 
   // One reading per RAW bubble, in arrival order (D26 #3 appends serially).
   // A thread-based derivation would hide every descent after the first
@@ -142,30 +141,10 @@ export function Readings() {
 
   if (!doc) return null;
 
-  const keeperBubble = doc.keeperId
-    ? doc.bubbles.find((b) => b.id === doc.keeperId)
-    : undefined;
-
   return (
     <div className="readings">
       {readings.length === 0 && running === 0 && (
         <div className="readings-empty">No complete descents yet — nothing reaches RAW.</div>
-      )}
-      {/* The keeper is visible BEFORE the moment of choosing: a standing
-          frame above the dig. Unchosen, it names what the dig ends with;
-          chosen, it holds the song's answer. */}
-      {(keeperBubble || readings.some((r) => r.raw)) && (
-        <div className="reading keeper-frame">
-          <div className="marginalia">the keeper</div>
-          {keeperBubble ? (
-            <div className="keeper-frame-label">{keeperBubble.label}</div>
-          ) : (
-            <div className="keeper-prose">
-              Not chosen yet. The dig ends when one reading is kept above the rest —
-              the one raw thing this song is really about.
-            </div>
-          )}
-        </div>
       )}
       {readings.map((reading, i) => {
         const raw = reading.raw;
@@ -175,10 +154,6 @@ export function Readings() {
           // reading that streamed in never remounts when it lands.
           <div key={stableKey(raw?.id ?? reading.real?.id ?? String(i))} className="reading">
             <div className="reading-numeral">{NUMERAL[i] ?? String(i + 1)}</div>
-            {/* D41: the human's chosen raw thing carries a quiet mark. */}
-            {raw && doc.keeperId === raw.id && (
-              <div className="marginalia keeper-mark">the keeper</div>
-            )}
             {reading.safe && <Step bubble={reading.safe} repeat={reading.safeRepeat} />}
             {reading.real && <Step bubble={reading.real} parent={reading.safe} repeat={reading.realRepeat} />}
             {raw ? (
@@ -202,14 +177,6 @@ export function Readings() {
             )}
             {killable && (
               <div className="entry-actions reading-actions">
-                {/* Choosing the keeper is the most important act in the
-                    product — it leads, in ink, and never shares register
-                    with the kill. */}
-                {doc.keeperId !== raw!.id && (
-                  <button className="text-action keeper-action" onClick={() => setKeeper(raw!.id)}>
-                    this is the keeper
-                  </button>
-                )}
                 <button
                   className="text-action"
                   onClick={() =>
@@ -223,30 +190,8 @@ export function Readings() {
           </div>
         );
       })}
-      {/* D41/D42: the natural end of a run — the model's nominations, the
-          human's pick. Not a modal; it sits below the readings like one
-          more entry, and disappears once a keeper exists (the mark on the
-          chosen reading carries it from there). Nominations persist on
-          the doc, so a keeperless map reopens with its block, no AI call. */}
-      {running === 0 && !doc.keeperId && (doc.nominatedIds?.length ?? 0) > 0 && (
-        <div className="reading keeper-block">
-          <div className="marginalia">the keeper</div>
-          <div className="keeper-prose">
-            Nominated below — pick the one raw thing this song is about, or hover any
-            reading above and make it the keeper there.
-          </div>
-          {doc.nominatedIds!.map((id) => {
-            const b = doc.bubbles.find((x) => x.id === id);
-            return (
-              b && (
-                <button key={id} className="keeper-option" onClick={() => setKeeper(id)}>
-                  {b.label}
-                </button>
-              )
-            );
-          })}
-        </div>
-      )}
+      {/* D48: no end-of-run nomination block. Choosing moved to where it
+          produces something — building an arc from the Target panel. */}
       {/* While the run generates, the page is never blank: the pasted
           lyrics render as a quiet sheet below whatever has arrived —
           you're about to read about this song, so read the song. New

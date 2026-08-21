@@ -14,7 +14,6 @@ import {
   deleteMap as apiDeleteMap,
   fetchMap,
   fetchMaps,
-  nominateKeeper as apiNominate,
   saveMap,
   streamArc,
   streamVerb,
@@ -173,8 +172,6 @@ interface MapState {
   removeMap: (id: string) => Promise<void>;
   openProbeRun: () => void;
   closeMap: () => void;
-  // D41: choose the song's canonical raw thing. Re-choosable at any time.
-  setKeeper: (id: string) => void;
   // D46: write one descent as a five-beat arc. Opt-in, one call, never
   // automatic. Switches to the arc view and streams.
   buildArc: (rawId: string) => Promise<void>;
@@ -759,33 +756,8 @@ export const useMapStore = create<MapState>((set, get) => {
         if (isOpen()) set({ running: 0 });
         if (stopNote) tick('stopped', stopNote);
         else tick('done');
-
-        // D41/D42: the model nominates three existing RAWs as keeper
-        // candidates; the human picks one (or any reading by hand). With
-        // three or fewer RAWs, every one is a candidate — no call needed.
-        // Nominations PERSIST on the doc: the pick-off-list diagnostic
-        // only answers across sessions, and a keeperless map reopens with
-        // its block and no AI call. Nomination is garnish: a failure
-        // never fails the run.
-        try {
-          if (!run.doc.keeperId) {
-            const rawIds = run.doc.bubbles
-              .filter((b) => b.tier === 'raw' && arrived(b))
-              .map((b) => b.id);
-            if (rawIds.length >= 2) {
-              const noms =
-                rawIds.length <= 3
-                  ? rawIds
-                  : (await apiNominate(run.doc)).nominations
-                      .filter((id) => rawIds.includes(id))
-                      .slice(0, 3);
-              publishDoc({ ...run.doc, nominatedIds: noms });
-              if (isOpen()) scheduleSave();
-            }
-          }
-        } catch (e) {
-          console.warn('[store] keeper nomination failed (ignored):', e);
-        }
+        // D48: no end-of-run nomination. The run just ends; choosing
+        // happens when the human digs — building an arc is the act.
       } catch (e) {
         // May fire before the run exists (map creation failed) — handle
         // both without touching `run` directly.
@@ -821,19 +793,6 @@ export const useMapStore = create<MapState>((set, get) => {
       }
     },
 
-    // D41: the human's pick — the song's canonical raw thing. Guarded to
-    // committed RAWs; writes through to a live run's doc; re-choosable.
-    setKeeper: (id) => {
-      const doc = get().doc;
-      if (!doc || get().readOnly) return;
-      if (!doc.bubbles.some((b) => b.id === id && b.tier === 'raw' && b.status === 'committed')) return;
-      const next: BubbleMapDoc = { ...doc, keeperId: id };
-      if (activeRun?.docId === next.id) activeRun.doc = next;
-      set({ doc: next });
-      scheduleSave();
-      void get().loadMaps();
-    },
-
     // D26 #2: the only gesture. Kills the whole path into rejected[],
     // recording it on the session undo stack first. A SAFE or REAL that
     // another surviving path still hangs off is spared — paths may share
@@ -857,9 +816,7 @@ export const useMapStore = create<MapState>((set, get) => {
         bubbles: doc.bubbles.filter((b) => toPark.has(b.id)),
         links: doc.links.filter((l) => toPark.has(l.source) || toPark.has(l.target)),
       };
-      let next = parkInRejected(doc, toPark);
-      // D41: killing the keeper's descent orphans keeperId — clear it.
-      if (next.keeperId && toPark.has(next.keeperId)) next = { ...next, keeperId: undefined };
+      const next = parkInRejected(doc, toPark);
       // Write through to the active run's doc (D37): when the open map is
       // also the running one, run.doc is the single truth.
       if (activeRun?.docId === next.id) activeRun.doc = next;

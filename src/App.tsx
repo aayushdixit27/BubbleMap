@@ -128,7 +128,12 @@ function Library({ onCompose, onCorpus }: { onCompose: () => void; onCorpus: () 
           <div key={m.id} className="library-row">
             <button className="library-open" onClick={() => void openMap(m.id)}>
               <span className="library-title">{m.title}</span>
-              {m.rawLine && <span className="library-raw">{m.rawLine}</span>}
+              {/* D48: a dug line (from an arc) reads in full ink; the
+                  fallback (most recent RAW, identification only) reads
+                  dim — never silently equate the two. */}
+              {m.rawLine && (
+                <span className={`library-raw${m.dug ? '' : ' undug'}`}>{m.rawLine}</span>
+              )}
               <span className="library-meta">
                 {madeOn(m.createdAt)} · {descents(m.descents, m.killed)}
               </span>
@@ -170,7 +175,7 @@ function Library({ onCompose, onCorpus }: { onCompose: () => void; onCorpus: () 
           a song. Two songs is the minimum for "next to each other". */}
       {maps.length > 1 && (
         <button className="text-action add-song corpus-link" onClick={onCorpus}>
-          The corpus — every keeper on one wall
+          The corpus — every line on one wall
         </button>
       )}
 

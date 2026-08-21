@@ -71,14 +71,11 @@ export interface BubbleMapDoc {
   bubbles: Bubble[];
   links: Link[];
   rejected: Bubble[];         // unpicked candidates: persisted, never rendered (D24).
-  keeperId?: string;          // D41: the song's canonical raw thing — a committed
-                              // RAW bubble's id, chosen by the human from the
-                              // model's nominations (or any reading). Optional,
-                              // backfills undefined, re-choosable at any time.
-  nominatedIds?: string[];    // D42: the model's keeper nominations, persisted.
-                              // Feeds the pick-off-list diagnostic across
-                              // sessions, and lets a keeperless map reopen with
-                              // its block and no AI call (D26 #1). Optional.
+  // D48: `keeperId` and `nominatedIds` are CUT — the keeper asked for a
+  // declared preference; the arc IS the choosing act (judgment happens
+  // when it produces something). Pre-D48 files still carry both fields
+  // on disk, deliberately: unread, unmigrated, unstripped, so a future
+  // session can see what was there.
   arcs?: Arc[];               // D46: descent-and-return arcs, persisted — each
                               // costs an AI call and is the most expensive
                               // artifact the tool makes; losing one on reload

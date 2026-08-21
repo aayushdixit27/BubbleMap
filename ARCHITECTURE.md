@@ -195,10 +195,12 @@ export interface BubbleMapDoc {
   links: Link[];
   rejected: Bubble[];         // D24: killed/unpicked bubbles, persisted as their
                               // own record, never rendered on the map
-  keeperId?: string;          // D41: the song's canonical raw thing (a committed
-                              // RAW's id), human-chosen, re-choosable
-  nominatedIds?: string[];    // D42: the model's keeper nominations, persisted
-  arcs?: Arc[];               // D46: descent-and-return arcs, persisted
+  // keeperId / nominatedIds (D41/D42) were CUT by D48 — the arc is the
+  // choosing act. Pre-D48 files still carry them on disk, deliberately
+  // unread and unmigrated.
+  arcs?: Arc[];               // D46: descent-and-return arcs, persisted. The RAW
+                              // the most recent arc was built from is the song's
+                              // LINE (D48) — library subtitle and corpus wall row
   createdAt: string;
   updatedAt: string;
 }
@@ -392,10 +394,9 @@ where a 15px label renders at ~10px — too small to read. So:
 > | `explain` (D44/D45) | highlight in a RAW reading → "explain this" | descent chain + highlight + dig trail + source | streamed PROSE, ephemeral — never map content. Suffix carries the honest-no clause |
 > | `arc` (D46) | "descent and return" on the Target panel | descent chain + source | exactly 5 passages (schema), tiers assigned by position server-side; persists as `doc.arcs` |
 >
-> Plus one call that is **not a verb** (D41): `nominate` — picks three existing
-> RAW ids as keeper candidates at run end; no new content, persisted as
-> `doc.nominatedIds`. Prompt criteria for nominate/explain/arc live in
-> `server/prompts.ts` as §8-grade suffixes, architect-ratified, verbatim.
+> The `nominate` call (D41/D42) was **cut by D48** with the keeper — the arc is
+> the choosing act. Prompt criteria for explain/arc live in `server/prompts.ts`
+> as §8-grade suffixes, architect-ratified, verbatim.
 
 Four verbs. Every one returns **proposals only**.
 
@@ -704,11 +705,11 @@ DELETE /api/maps/:id          → { ok }
 POST   /api/ai/seed           → { doc }            → proposal (bubbles, links, refs, rejections)
 POST   /api/ai/descend        → { doc, focusId }   → proposal
 POST   /api/ai/interrogate    → { doc, focusId }   → proposal   # unwired client-side
-POST   /api/ai/nominate       → { doc }            → { nominations: string[3] }  # JSON, no stream (D41)
 POST   /api/ai/explain        → { doc, rawId, highlight, trail } → NDJSON {type:'delta'} text stream (D44)
 POST   /api/ai/arc            → { doc, rawId }     → NDJSON snapshots, then {type:'result', arc} (D46)
 ```
-`relink` is cut (D15) — no route.
+`relink` is cut (D15) — no route. `/api/ai/nominate` is cut (D48) — gone with
+the keeper.
 
 - Atomic writes: write `maps/.tmp-<id>.json`, then rename.
 - Filenames `maps/<slug>-<id>.json`; `id` is the nanoid, slug derived from title.

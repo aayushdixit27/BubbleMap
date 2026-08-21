@@ -17,9 +17,12 @@ export interface MapMeta {
   descents: number; // committed RAW bubbles — one per descent (D25/D26)
   killed: number;   // RAW bubbles parked in rejected[] — killed descents.
                     // With descents, this is Q3's kill-rate, per song: the
-                    // number PRODUCT §2 wants measured, and the tripwire
-                    // input for D25 (all-keeps across songs = choice missing).
-  rawLine?: string; // the most recently committed RAW bubble's label — what you found
+                    // number PRODUCT §2 wants measured.
+  rawLine?: string; // D48: the song's LINE — the RAW its most recent arc was
+                    // built from (the human dug there); no arc → the most
+                    // recent RAW, for identification only
+  dug?: boolean;    // D48: rawLine comes from an arc. The UI must keep the
+                    // distinction visible, never silently equate the two.
 }
 
 const slugify = (s: string): string =>
@@ -51,11 +54,21 @@ export function listMaps(): MapMeta[] {
       const doc = JSON.parse(readFileSync(join(MAPS_DIR, f), 'utf8')) as BubbleMapDoc;
       // Files hold committed bubbles only, so raws are the kept descents.
       const raws = doc.bubbles.filter((b) => b.tier === 'raw');
-      // D41: the keeper — the human's chosen raw thing — outranks recency.
-      const keeper = doc.keeperId ? raws.find((b) => b.id === doc.keeperId) : undefined;
-      const latest =
-        keeper ??
-        (raws.length ? raws.reduce((a, b) => (b.createdAt > a.createdAt ? b : a)) : null);
+      // D48: the song's line is the RAW its most recent arc was built
+      // from — the arc is the choosing act. The arc's raw may since have
+      // been killed into rejected[]; its label still names the line.
+      const arcs = doc.arcs ?? [];
+      let dugLine: string | undefined;
+      for (let i = arcs.length - 1; i >= 0 && dugLine === undefined; i--) {
+        const b =
+          doc.bubbles.find((x) => x.id === arcs[i].rawId) ??
+          (doc.rejected ?? []).find((x) => x.id === arcs[i].rawId);
+        if (b) dugLine = b.label;
+      }
+      const latest = raws.length
+        ? raws.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
+        : null;
+      const line = dugLine ?? latest?.label;
       metas.push({
         id: doc.id,
         title: doc.title,
@@ -63,7 +76,7 @@ export function listMaps(): MapMeta[] {
         updatedAt: doc.updatedAt,
         descents: raws.length,
         killed: (doc.rejected ?? []).filter((b) => b.tier === 'raw').length,
-        ...(latest ? { rawLine: latest.label } : {}),
+        ...(line ? { rawLine: line, dug: dugLine !== undefined } : {}),
       });
     } catch (e) {
       console.warn(`[storage] skipping unreadable map file ${f}:`, e);

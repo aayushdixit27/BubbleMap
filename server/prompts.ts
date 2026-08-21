@@ -77,19 +77,9 @@ existing bubble on the map would kill one of these assumptions, add a
 "contradicts" link. Assumptions that survive scrutiny are the path to RAW.`,
 };
 
-// D42: the nomination criterion — what a keeper IS. Product copy, shipped
-// verbatim from the architect. The final clause is load-bearing: without
-// it the model spreads nominations across LIFE for tidiness, and balance
-// is the opposite of what a keeper is.
-export const NOMINATE_SUFFIX = `Nominate three of the RAW readings as candidates for this song's keeper — the
-single raw thing the song is really about.
-
-Choose for weight, not for variety. The keeper is the reading a person would
-repeat to someone else, and the one that would still be true if every other
-reading were deleted.
-
-Do not nominate one per category for balance. If the three strongest all sit in
-the same quadrant, nominate all three.`;
+// D48: NOMINATE_SUFFIX (D42) is retired with the keeper — product copy
+// leaves with its feature rather than sitting orphaned. The text lives in
+// D42's DECISIONS entry if it is ever needed again.
 
 // D44/D45 (Q6): the fifth verb — explain a highlighted fragment of a RAW
 // reading. Product copy, ratified by the architect 20 Aug, ships

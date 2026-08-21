@@ -1,15 +1,13 @@
 # PROGRESS
 
-> **Last updated: 21 Aug 2026. Everything through D47 is built. THE
-> CORPUS VIEW EXISTS — commissioned at n=8 after the architect's manual
-> keeper reading found a real shape (PRODUCT §7: six of eight keepers
-> are the narrator AUTHORING another person's experience — that is the
-> thesis the corpus now tests). EIGHT maps exist. ARC_SUFFIX shipped
-> ratified, cap deleted (amendment 2). Nothing is open on the
-> implementer. ARCHITECTURE §5/§6/§7/§9/§10/§11 were cross-referenced to
-> current truth on 21 Aug (mechanical, per the architect's commission).
-> Numbering rule: the architect assigns decision numbers; if a ruling
-> arrives without one, ask.**
+> **Last updated: 21 Aug 2026. Everything through D48 is built. THE
+> KEEPER IS CUT (D48): the arc is the choosing act — a song's LINE is
+> the RAW its most recent arc was built from; no arc, no line on the
+> corpus (2 of 8 songs dug in). D25's tripwire is CLOSED (noted in D25 —
+> do not reopen). The corpus view exists (D47, built at n=8; PRODUCT §7
+> carries the authorship finding). EIGHT maps. Nothing is open on the
+> implementer. Numbering rule: the architect assigns decision numbers;
+> if a ruling arrives without one, ask.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -128,6 +126,24 @@ descents (the `killed` array is now a union). No word cap: the 500 was
 deleted by D46 amendment 2 (21 Aug — never derived, killed by two runs
 of evidence, same class as D28's dead 20s target); the unequal-length
 clause does the real shaping work.
+
+## D48 — the keeper is cut, built 21 Aug
+
+Gone: `keeperId`/`nominatedIds` (types), the nominate call + route +
+its §8 suffix (retired with the feature, per ruling — text survives in
+D42's entry), the end-of-run nomination block, the keeper frame/mark/
+hover action in Readings, the keeper ring on Target, all keeper CSS.
+**Pre-D48 map files keep both fields on disk — 4 files carry them —
+deliberately unread, unmigrated, unstripped**; every doc mutation uses
+spreads, so autosave round-trips them untouched forever.
+
+Replaced by: the song's LINE = the RAW its most recent arc was built
+from (`storage.ts listMaps` computes it; the arc's raw may be killed
+into `rejected[]` and still names the line). Library rows show a dug
+line in full ink, the no-arc fallback (most recent RAW, identification
+only) dim via `.library-raw.undug` — never silently equated. The corpus
+wall lists ONLY dug songs ("the lines · N of M songs dug into"); the
+disc rings each song's line-dot.
 
 ## D47 — the corpus view, built 21 Aug
 

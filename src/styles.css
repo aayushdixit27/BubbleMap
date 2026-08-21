@@ -255,36 +255,8 @@ html, body, #root {
 }
 .rejection { font-size: 12px; color: var(--ink-dim); }
 
-/* D41: the keeper — mark, end-of-run nomination block, and options. */
-.keeper-mark { color: var(--ink); margin-top: 2px; }
-/* The standing frame: the keeper named before the moment of choosing. */
-.keeper-frame .marginalia { color: var(--ink-mid); }
-.keeper-frame-label { font-family: var(--serif); font-size: 19px; color: var(--ink); margin-top: 6px; }
-/* The choosing gesture leads in ink; killing stays dim. */
-.keeper-action { color: var(--ink-mid); font-weight: 500; }
-.keeper-block .marginalia { color: var(--ink-mid); }
-.keeper-prose {
-  font-family: var(--sans);
-  font-size: 13px;
-  color: var(--ink-dim);
-  margin: 6px 0 4px;
-}
-.keeper-option {
-  display: block;
-  background: none;
-  border: none;
-  padding: 0;
-  margin-top: 14px;
-  cursor: pointer;
-  text-align: left;
-  font-family: var(--serif);
-  font-size: 17px;
-  color: var(--ink);
-}
-.keeper-option:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ink-mid); }
+/* D48: the keeper styles (D41) are gone with the feature. */
 
-/* The waiting sheet: the pasted lyrics, quiet serif, while a run
-   generates. Never a blank screen. */
 .lyric-sheet .marginalia { color: var(--ink-dim); }
 .lyric-text {
   margin-top: 10px;
@@ -509,6 +481,9 @@ html, body, #root {
   color: var(--ink);
   overflow-wrap: break-word;
 }
+/* D48: no arc yet — the most recent RAW, for identification only.
+   Dim and unweighted so it never reads as a chosen line. */
+.library-raw.undug { color: var(--ink-dim); font-weight: 400; }
 /* Delete: quiet, hover-revealed, inline confirm — never a native dialog. */
 .library-actions {
   position: absolute;
@@ -647,7 +622,7 @@ html, body, #root {
 }
 .target-arc-action { margin-top: 20px; }
 
-/* D47 — the corpus: keeper wall + stacked target. Editorial register —
+/* D47/D48 — the corpus: the wall of lines + stacked target. Editorial register —
    the wall is rows and hairlines like the library; the disc reuses the
    target's visual language at corpus density. */
 .corpus { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; }
@@ -658,8 +633,8 @@ html, body, #root {
   padding: 8px 24px 64px;
 }
 .corpus-head { margin: 36px 0 4px; color: var(--ink-mid); }
-.keeper-wall { display: flex; flex-direction: column; }
-.keeper-wall-row {
+.corpus-wall { display: flex; flex-direction: column; }
+.corpus-row {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -673,13 +648,13 @@ html, body, #root {
   font: inherit;
   color: inherit;
 }
-.keeper-wall-row:hover .keeper-wall-line {
+.corpus-row:hover .corpus-line {
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-color: var(--hairline);
 }
 /* The RAW serif at reading size — the wall is a reading surface. */
-.keeper-wall-line {
+.corpus-wall-line {
   font-family: var(--serif);
   font-size: 21px;
   line-height: 1.4;
