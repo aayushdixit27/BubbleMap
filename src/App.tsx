@@ -31,81 +31,29 @@ function useDraft(key: string): [string, (v: string) => void, () => void] {
   return [value, update, clear];
 }
 
-// The COMPOSE SURFACE — its own mode, not the library's fifth row. You
-// arrive with lyrics on the clipboard; the lyrics field is the hero
-// because it is the ground the model digs in (PRODUCT §1: the raw layer
-// is recovered, not invented). "← library" is not a cancel: the draft
-// stays.
-function Compose({ onBack }: { onBack: () => void }) {
+// The landing (crucible A, 21 Aug): input-first, framed as a QUESTION —
+// the excavation register (PRODUCT §1: the raw layer is recovered; the
+// going-down is the product). "What song?" in the serif, the field
+// directly under it, the library at the fold beneath — ordering, not
+// burying (D26 #1's home base is one scroll-free glance away). The
+// compose surface is PROMOTED here, not rebuilt: typing unfolds the
+// lyrics field in place. A labelled form ("Song — Artist" as header) is
+// explicitly banned by the ruling. Drafts survive via localStorage; a
+// kept draft lands expanded, visible immediately.
+function Home({ onCorpus }: { onCorpus: () => void }) {
   const createAndSeed = useMapStore((s) => s.createAndSeed);
   const [title, setTitle, clearTitle] = useDraft('bubblemap.compose.title');
   const [source, setSource, clearSource] = useDraft('bubblemap.compose.source');
-
-  return (
-    <div className="compose">
-      <div className="compose-bar">
-        <button className="text-action" onClick={onBack}>
-          ← library <span className="compose-kept">· your draft keeps</span>
-        </button>
-      </div>
-      <form
-        className="compose-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!title.trim() || !source.trim()) return;
-          void createAndSeed(title, source);
-          clearTitle();
-          clearSource();
-        }}
-      >
-        <label className="field-label" htmlFor="compose-title">Song — Artist</label>
-        <input
-          id="compose-title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Mr. Brightside — The Killers"
-          autoFocus={!title}
-        />
-        <label className="field-label compose-lyrics-label" htmlFor="compose-source">
-          The lyrics
-        </label>
-        <div className="compose-explain">
-          The ground the dig happens in. Paste everything you have — lyrics, your
-          notes, what you already suspect. The model works only from what lands here.
-        </div>
-        <textarea
-          id="compose-source"
-          className="compose-lyrics"
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          placeholder="Paste them here."
-          autoFocus={Boolean(title) && !source}
-        />
-        <button
-          className="text-action start-submit"
-          type="submit"
-          disabled={!title.trim() || !source.trim()}
-        >
-          Map this song
-        </button>
-      </form>
-    </div>
-  );
-}
-
-// D26 #1: home base. The landing screen is the library — your songs, most
-// recent first. "Add a song" is one option on it, not the whole screen.
-// Opening a song only reads what's there; nothing re-runs.
-function Library({ onCompose, onCorpus }: { onCompose: () => void; onCorpus: () => void }) {
+  // Typing is the opt-in: the rest of the compose surface unfolds only
+  // once there is something in either field. No autofocus on the
+  // textarea — it mounts mid-keystroke and would steal the cursor.
+  const engaged = Boolean(title.trim() || source.trim());
   const maps = useMapStore((s) => s.maps);
   const openMap = useMapStore((s) => s.openMap);
   const removeMap = useMapStore((s) => s.removeMap);
   const openProbeRun = useMapStore((s) => s.openProbeRun);
   const error = useMapStore((s) => s.error);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const hasDraft = Boolean(
-    localStorage.getItem('bubblemap.compose.title') || localStorage.getItem('bubblemap.compose.source'),
-  );
 
   // Date AND time — two takes on the same song made minutes apart must
   // read as different rows.
@@ -122,7 +70,50 @@ function Library({ onCompose, onCorpus }: { onCompose: () => void; onCorpus: () 
   };
 
   return (
-    <div className="start">
+    <div className="start home">
+      {/* The question, not a form. Typing unfolds the rest in place. */}
+      <form
+        className="start-form home-ask"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!title.trim() || !source.trim()) return;
+          void createAndSeed(title, source);
+          clearTitle();
+          clearSource();
+        }}
+      >
+        <label className="home-question" htmlFor="home-title">What song?</label>
+        <input
+          id="home-title"
+          className="home-title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Mr. Brightside — The Killers"
+          autoFocus={!title}
+        />
+        {engaged && (
+          <>
+            <div className="compose-explain">
+              The ground the dig happens in. Paste everything you have — lyrics, your
+              notes, what you already suspect. The model works only from what lands here.
+            </div>
+            <textarea
+              id="home-source"
+              className="compose-lyrics home-lyrics"
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              placeholder="Paste them here."
+            />
+            <button
+              className="text-action start-submit"
+              type="submit"
+              disabled={!title.trim() || !source.trim()}
+            >
+              Map this song
+            </button>
+          </>
+        )}
+      </form>
       <div className="library">
         {maps.map((m) => (
           <div key={m.id} className="library-row">
@@ -167,10 +158,6 @@ function Library({ onCompose, onCorpus }: { onCompose: () => void; onCorpus: () 
         {error && <div className="status status-error">{error}</div>}
       </div>
 
-      <button className="text-action add-song" onClick={onCompose}>
-        {hasDraft ? 'Add a song — draft kept' : 'Add a song'}
-      </button>
-
       {/* D47: the view ACROSS maps, reached from here — not from inside
           a song. Two songs is the minimum for "next to each other". */}
       {maps.length > 1 && (
@@ -214,10 +201,8 @@ export default function App() {
   const [nextOpen, setNextOpen] = useState(false);
   const [nextTitle, setNextTitle, clearNextTitle] = useDraft('bubblemap.next.title');
   const [nextSource, setNextSource, clearNextSource] = useDraft('bubblemap.next.source');
-  // The compose surface is its own mode, not a library row.
-  const [composing, setComposing] = useState(false);
-  // D47: the corpus is its own mode too — doc-less, reached from the
-  // library. Opening a song from the wall renders the song (doc wins);
+  // D47: the corpus is its own mode — doc-less, reached from the
+  // landing. Opening a song from the wall renders the song (doc wins);
   // closing it falls back here until "← library".
   const [corpusOpen, setCorpusOpen] = useState(false);
   const [health, setHealth] = useState('server: …');
@@ -369,10 +354,8 @@ export default function App() {
         )
       ) : corpusOpen ? (
         <Corpus onBack={() => setCorpusOpen(false)} />
-      ) : composing ? (
-        <Compose onBack={() => setComposing(false)} />
       ) : (
-        <Library onCompose={() => setComposing(true)} onCorpus={() => setCorpusOpen(true)} />
+        <Home onCorpus={() => setCorpusOpen(true)} />
       )}
     </div>
   );

@@ -371,6 +371,25 @@ html, body, #root {
 }
 .compose-lyrics:focus { border-bottom-color: var(--ink-mid); }
 .start-maps { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 40px; }
+
+/* Crucible A (21 Aug): the landing asks. The question is set in the
+   serif at title scale; the field sits directly under it; the library
+   is at the fold beneath. Typing unfolds the lyrics surface in place. */
+.home-ask { margin-bottom: 44px; }
+.home-question {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.home-title {
+  font-family: var(--serif);
+  font-size: 19px;
+}
+/* Engaged: a generous paste target without the compose page's 46vh —
+   the library stays discoverable one scroll below. */
+.home-lyrics { flex: none; min-height: 32vh; }
 .map-link { font-family: var(--serif); font-size: 15px; }
 
 /* DOI: full notes only on the selected row. Prose is serif. */

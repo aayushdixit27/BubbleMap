@@ -127,6 +127,29 @@ deleted by D46 amendment 2 (21 Aug — never derived, killed by two runs
 of evidence, same class as D28's dead 20s target); the unequal-length
 clause does the real shaping work.
 
+## The landing crucible (21 Aug, DECISION NUMBER PENDING — the ruling
+## arrived unnumbered; per the header rule, ask the architect)
+
+Build A shipped: input-first, framed as the question. "What song?" in
+serif at title scale, the field directly under it (quiet hairline, dim
+placeholder — the ruling bans "Song — Artist" as a header, kept only as
+placeholder), the library at the fold beneath (DOM-measured: top at
+247px of a 573px viewport). Typing UNFOLDS the compose surface in place
+— the single-line-that-expands option; the separate Compose mode and
+the "Add a song" button are gone; drafts keep their localStorage keys,
+and a kept draft lands expanded. No autofocus on the textarea (it
+mounts mid-keystroke and would steal the cursor).
+
+The render-and-look judgment (the ruling's open risk): it does NOT read
+as a search engine to me — the library is the bulk of the screen in
+reading serif and the field is quiet, so the question reads as an
+invitation over a bookshelf, not a query box over emptiness. The thing
+to WATCH in use: the title field autofocuses on load, which is the
+search-engine muscle (arrive → type). If dogfooding shows reflexive
+adding, dropping that autoFocus is the one-line dial to try before
+falling back to B (header-pinned "add a song", parked). C revives on
+its own at ~5 dug songs.
+
 ## D48 — the keeper is cut, built 21 Aug
 
 Gone: `keeperId`/`nominatedIds` (types), the nominate call + route +
