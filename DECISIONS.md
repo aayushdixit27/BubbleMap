@@ -475,6 +475,30 @@ beat the whole form exists to reach. The unequal-length clause is doing the real
 shaping work (the Ariana safe beat is a real breath at ~70 words); the number
 added nothing. Everything else in the suffix stays exactly as ratified. *21 Aug.*
 
+**D47 — Build the corpus view now, at n=8. It is two pages, not an algorithm.**
+
+The "~10 maps" threshold was invented by the architect and never derived — same
+class as the 20-second latency target (D28) and the 500-word arc cap. The cheapest
+disproof of the whole corpus thesis (read the eight keeper lines together, in plain
+text, no build) was available all week, cost nothing, and **found a shape** — see
+PRODUCT §7's n=8 reading.
+
+The view is deliberately dumb. What produced the finding was *putting the lines
+next to each other*, and that is all v1 does.
+
+1. **The keeper wall.** Every song's keeper line, one per row, in the RAW serif at
+   reading size, song title as quiet marginalia. No grouping, no sorting beyond
+   recency, no clustering. This is the page that did the work manually.
+2. **The stacked target.** Every song's RAW dots on one disc, using the existing
+   geometry. Answers whether raw layers cluster by category across songs — the
+   question PRODUCT §7 originally posed.
+
+Reached from the library, not from inside a song — it is the view *across* maps.
+
+**Deliberately not built:** an AI call that reads all keepers and names the shape.
+That is a sixth verb, and a human reading eight lines worked fine. Revisit at twenty
+if the wall stops being legible. *20 Aug.*
+
 ---
 
 ## Open — architect owes an answer

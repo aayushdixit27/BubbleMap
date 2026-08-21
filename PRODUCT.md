@@ -274,6 +274,44 @@ Where this goes if it works, in order of conviction:
    **So the real corpus question is sharper than "does it spread."** It's whether
    twenty keeper lines share a *shape* — and if they do, whether that's a fact about
    hit songs or a fact about which songs this listener chooses.
+
+   ### First corpus reading at n=8 — 20 Aug
+
+   Run as the cheapest possible disproof of the corpus view: read the eight keeper
+   lines together, in plain text, with no view built. If no shape survives that, no
+   visualisation manufactures one.
+
+   > *I need their faces grim so my empty day looks chosen* · *The people here are the
+   > temporary set and they know it* · *I don't want her life, I want to keep singing
+   > about it* · *The lonely day is mine and I put it in her mouth* · *I keep telling
+   > her what's in her eyes so she says it* · *I joke about it first so no one can make
+   > me stop* · *I want proof my wanting can do damage to somebody* · *I'd rather speak
+   > for wronged women than admit he chose otherwise*
+
+   **A shape survived, and it is more specific than expected.**
+
+   **Six of eight are the narrator authoring another person's experience.** Not losing
+   them, not being refused by them — *casting* them. Putting his own lonely day in her
+   mouth. Telling her what is in her eyes so she will say it. Needing strangers' faces
+   grim. Claiming the role of spokesman for wronged women. Filing the room as a
+   temporary set. Joking first so the mockery belongs to him.
+
+   **And none of the eight is about the other person.** Four are love songs. Every raw
+   layer is about the singer's standing.
+
+   **The caveat, which is the IDENTITY trap in a new costume:** §8 says *"if it does
+   not implicate the narrator, it is not raw yet,"* so *the raw layer is about the
+   narrator* may be tautological — forced by the prompt rather than found in the songs.
+
+   **What is not forced:** nothing in §8 asks for *authorship of another person's
+   role*. Six of eight arriving there independently, across four decades and both
+   genders, is a finding rather than an artifact. **That is the thing the corpus view
+   should be built to test at twenty.**
+
+   *Method note: this reading cost nothing and was available at any point in the
+   previous week. The corpus view was deferred behind "~10 maps" — a threshold the
+   architect invented and never derived, same class as the 20-second latency target
+   and the 500-word arc cap.*
 2. **`subject: 'self'`.** Same target, pointed at my own LIFE quadrants. The
    data model already supports it; it's one prompt variant.
 3. **Descent-shape comparison.** Do hits share a path through the rings?
