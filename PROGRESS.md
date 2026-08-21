@@ -1,13 +1,12 @@
 # PROGRESS
 
-> **Last updated: 20 Aug 2026, midday. Everything through D44 is built.
+> **Last updated: 20 Aug 2026, midday. Everything through D45 is built.
 > D43 retired Phases 3–5 (§12 carries the supersession note); the queue
-> is use-discovered now. Q6 ("explain this") is BUILT and verified live —
-> its §8 suffix is an implementer DRAFT awaiting the architect's
-> ratification (D44 requires it; see prompts.ts EXPLAIN_SUFFIX). Six maps
-> exist (Mr. Brightside ran 20 Aug, keeper not yet chosen); the corpus
-> view waits for ~10. The three live questions below still await the
-> human's read.**
+> is use-discovered now. Q6 ("explain this") is BUILT, verified live, and
+> its suffix is RATIFIED (D45 — honest-no clause added; latency accepted,
+> do not tune effort). Six maps exist (Mr. Brightside ran 20 Aug, keeper
+> not yet chosen); the corpus view waits for ~10. The three live
+> questions below still await the human's read. Next: map songs.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -75,8 +74,8 @@ affordance appears at the selection → the answer streams into a hovering
 box → clicking away or Escape dismisses it. Selecting inside the box's
 own answer digs deeper: the prior turn stays visible in muted ink (D32's
 register) and rides along as context (`trail`). Where things live:
-`EXPLAIN_SUFFIX` in `server/prompts.ts` (**DRAFT — architect must ratify
-before it counts as shipped**), `explainHighlight` in `server/ai.ts`,
+`EXPLAIN_SUFFIX` in `server/prompts.ts` (ratified D45, ships verbatim —
+the honest-no clause is load-bearing), `explainHighlight` in `server/ai.ts`,
 `POST /api/ai/explain` (NDJSON delta stream), `streamExplain` in
 `src/api.ts`, `ExplainLayer` in `src/grid/Explain.tsx`.
 
@@ -94,9 +93,9 @@ counts against max_tokens** — a 400 cap starved the call to zero text
 prose. And the offer button needed `z-index` above the box, or a
 selection inside the box could never offer. First text lands ~10–20s
 after the click (thinking time); the box shows "digging…" so it is never
-silent — D17's letter (~15s) is borderline, noted, and the answer quality
-at default effort is worth it. The model also emitted markdown asterisks
-into prose; the draft suffix now ends with a plain-prose clause.
+silent — ruled acceptable by D45 (blocked-time lens, D28): **do not lower
+the effort setting to chase it**. The model also emitted markdown
+asterisks into prose; the suffix ends with a plain-prose clause.
 
 ## Corpus status
 
@@ -328,13 +327,13 @@ mutates the map.
 
 ## Next
 
-**Phases are retired (D43); the queue is use-discovered.** In order per
-D43: get the EXPLAIN_SUFFIX draft ratified (the only open implementer
-item), then songs — the corpus view exists at ~10 maps and there are
-six. **Q5** stays deferred (three-tier paths on the Target; the
-provenance panel was the cheap answer). The three live questions above
-still await the human's read of the Mr. Brightside run. If a ruling
-arrives that isn't in DECISIONS yet, record it there before building.
+**Phases are retired (D43); the queue is use-discovered.** Q6 is done
+and ratified (D45) — nothing is open on the implementer. Next per D43:
+songs — the corpus view exists at ~10 maps and there are six. **Q5**
+stays deferred (three-tier paths on the Target; the provenance panel was
+the cheap answer). The three live questions above still await the
+human's read of the Mr. Brightside run. If a ruling arrives that isn't
+in DECISIONS yet, record it there before building.
 
 ---
 

@@ -397,6 +397,24 @@ PRODUCT §1: it should feel like **digging, not being handed a report** — what
 "explain this" returns must leave the reader somewhere they can push further, not
 close the question. *20 Aug.*
 
+**D45 — The explain suffix is ratified with three additions; the latency stands.**
+The implementer's draft structure held (the three-part ask, "stay inside this
+descent," "do not restate the reading," ending on a question, the plain-prose
+clause). Three changes, all the architect's: *costs the narrator* → **implicates
+the narrator** (matching §8's own criterion); a clause holding the explanation to
+the reading's bar (*"a deeper layer that does not cost the narrator anything is
+not deeper, it is longer"*); and **the honest-no clause** — §8's "padding is
+failure" applied to the new verb. Without it every highlight gets a confident dig
+whether or not there is anything under it: the fabrication risk in a new costume,
+harder to catch because prose sounds like an answer even when it isn't one. Plus
+a 200-word cap, since unbounded prose in a hover box sprawls.
+
+**The 10–20s first-text latency is accepted, not tuned.** D28's standard is
+blocked time, and a reader waiting for an answer they asked for is categorically
+different from a page that hasn't loaded; "digging…" means never silent. **Do not
+lower the effort setting** — depth is the entire product here, and trading it for
+eight seconds on an opt-in action is a bad exchange. *20 Aug.*
+
 ---
 
 ## Open — architect owes an answer
