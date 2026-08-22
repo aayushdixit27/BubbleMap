@@ -336,6 +336,12 @@ Where this goes if it works, in order of conviction:
    findings are suggestive, not evidence, until a majority of songs have been dug
    into.** Do not treat the shape as established. The corpus wall's own counter —
    *"the lines · N of M songs dug into"* — is the number that says when to trust it.
+
+   **Why the ratio is low, stated so nobody misreads it later:** arcs shipped on
+   20 Aug (D46). Nine of the eleven maps predate the feature. Two of eleven is
+   arithmetic, not a signal about the reader's judgment or the gesture's
+   discoverability — and the architect twice read it as the latter. The ratio only
+   becomes informative for songs mapped *after* arcs existed.
 2. **`subject: 'self'`.** Same target, pointed at my own LIFE quadrants. The
    data model already supports it; it's one prompt variant.
 3. **Descent-shape comparison.** Do hits share a path through the rings?

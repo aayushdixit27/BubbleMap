@@ -688,16 +688,41 @@ especially: that column is the emptiest and it is where tracing starts.
 whole lineage across the columns. Ship the visible citation first — it may be
 sufficient alone. *21 Aug.*
 
+**D56 — The target plots all three tiers, with descent paths. Answers Q5.**
+
+**The argument, from use:** at one glance you should see *the surface scatters, the
+raw converges.* A song can present across Fitness and Identity in the outer ring
+while every RAW dot lands in a single quadrant. That is the corpus finding rendered
+per-song, and no existing view shows it.
+
+**Why this is not a reversal of D20 or D30.** Both were right about conditions that
+no longer apply:
+
+- **D20** rejected the three-ring target because it inverts space against content —
+  RAW at the centre has the least area and holds the most text. **That objection was
+  about text.** Dots need no area.
+- **D30** cropped to the RAW disc because the outer rings were empty *by
+  construction*, plotting only RAW. **Plot all three tiers and the rings carry data.**
+
+**Shape:** SAFE outer ring, REAL middle, RAW inner — the original geometry, which
+`geometry.ts` still computes. Each descent draws a path SAFE → REAL → RAW. Shared
+SAFEs mean fewer origin points than descents.
+
+**Q5's stated risk stands: twelve paths may be a hairball.** Do not solve it by
+guessing. Render and look. If it is illegible, the first move is **paths faint by
+default, solid on hover or selection** — the mass reads as convergence, and any
+single descent stays traceable. Do not thin the data to fit the frame.
+
+The cropped RAW-only disc may still be the right *corpus* view, where hundreds of
+dots make paths impossible. Decide that separately, after looking. *21 Aug.*
+
 ---
 
 ## Open — architect owes an answer
 
-**Q5 — Should the Target eventually plot all three tiers as paths?**
-Each descent drawn as a line from the outer ring inward, so cross-category descents
-render as lines swinging across the axes. That may be the Jun Yuh frame fully
-realised — or a hairball at ten descents. **Not to be decided from reasoning.** Build
-the cheap version and look, per D20's lesson. **Deliberately deferred past D26** —
-adding an experiment at a final chunk boundary is how projects stop finishing.
+*(Q5 — three-tier paths on the Target — answered by D56, built and verified
+22 Aug. At ten descents it is not a hairball; the faint-by-default /
+solid-on-selection dial shipped with it.)*
 
 **Q3 — What is the expected keep-rate, in real numbers?** `PRODUCT.md §2` guesses
 ~half for `seed`, ~a third for `interrogate`. Those are priors, not measurements. The

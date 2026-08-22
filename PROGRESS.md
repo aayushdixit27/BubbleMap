@@ -1,12 +1,13 @@
 # PROGRESS
 
-> **Last updated: 21 Aug 2026, pre-clear. ELEVEN maps; everything
-> through D55 is built and verified. The tool is deep in dogfooding:
-> explain (D44/45), arcs (D46), the corpus view (D47), the keeper cut
-> (D48 — the arc is the choosing act), the input-first landing
-> (crucible A, D49), the Kashmir bug fixed three ways (D51/52/53), ceiling
-> 12 (D54), grid citations (D55). Nothing is open on the implementer.
-> Next: songs, arcs, and watch items below.**
+> **Last updated: 22 Aug 2026. THIRTEEN maps; everything through D56
+> is built and verified. The tool is deep in dogfooding: explain
+> (D44/45), arcs (D46), the corpus view (D47), the keeper cut (D48 —
+> the arc is the choosing act), the input-first landing (crucible A,
+> D49), the Kashmir bug fixed three ways (D51/52/53), ceiling 12
+> (D54, verified after the HMR trap below), grid citations (D55),
+> the three-tier target with descent paths (D56, closes Q5). Nothing
+> is open on the implementer. Next: songs, arcs, watch items below.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -38,8 +39,11 @@ beats RAW→REAL→SAFE→REAL→RAW; suffix carries do-not-invent-comfort; no
 word cap, deleted by evidence; persists as `doc.arcs`).
 
 **Views** (each answers a question the others cannot, D55): Target =
-landing view, "where did the raw layer land" (provenance panel per dot;
-arc button lives there). Readings = "what does this descent say" (the
+landing view, now all three tiers with a path per descent — SAFE outer,
+REAL middle, RAW inner: *the surface scatters, the raw converges* (D56,
+answers Q5; paths faint by default, solid on selection; provenance
+panel per RAW dot; arc button lives there; header signature matches).
+The corpus disc stays RAW-only — deliberately undecided until looked at. Readings = "what does this descent say" (the
 judgment surface; explain lives here). Grid = "how is the song's weight
 distributed across its lines" — every entry shows its sourceLine (D55);
 lineage-highlight interaction deferred until scanning proves
@@ -92,9 +96,10 @@ model can't fix — no.
 
 ## Corpus status
 
-**Eleven maps**: Beautiful, Money, Be Her, Go Your Own Way, Been By
+**Thirteen maps**: Beautiful, Money, Be Her, Go Your Own Way, Been By
 Now, Mr. Brightside, stupid song, hate that i made you love me
-(+arc), Kashmir (re-run), Misty Mountain Hop, Going to California.
+(+arc), Kashmir (re-run), Misty Mountain Hop, Going to California,
+Immigrant Song, Whole Lotta Love (first 12-descent run, D54 verified).
 Two songs dug (arcs): Ariana + stupid song. PRODUCT §7 carries the
 n=8 authorship finding and the n=11 update with its fallback caveat —
 read, don't re-derive.
@@ -110,9 +115,15 @@ read, don't re-derive.
   captured by the store** (e.g. `DESCENT_TARGET`): Vite swaps the
   module but the Zustand store keeps the old closure. Any constant
   change needs a hard reload of the tab before it can be verified —
-  "HMR live" is NOT evidence the new value is running. Suspected on
+  "HMR live" is NOT evidence the new value is running. CONFIRMED on
   D54: nine consecutive runs landed on exactly 10 with the const at
-  12. This has probably cost a verification before, unnoticed.
+  12; after a hard reload the next run produced 12. This probably
+  cost a verification before, unnoticed.
+- **The Signature filters to committed** (since D56) — it previously
+  plotted proposed bubbles too, which sit at (0,0) until commit and
+  stack into a phantom centre dot mid-run. The "2 dots vs 10 RAW"
+  observation on Immigrant Song was mid-run state, not a bug: the
+  file holds 10 committed RAWs at distinct positions and renders 10.
 - **Do not edit `src/` or `server/` while a generation runs** — Vite
   HMR reloads the client (killing the in-flight loop: the run is
   CLIENT-side; a refresh also kills it, which truncated Kashmir v1 and
