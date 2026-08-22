@@ -4,7 +4,7 @@
 > through D55 is built and verified. The tool is deep in dogfooding:
 > explain (D44/45), arcs (D46), the corpus view (D47), the keeper cut
 > (D48 — the arc is the choosing act), the input-first landing
-> (crucible A), the Kashmir bug fixed three ways (D51/52/53), ceiling
+> (crucible A, D49), the Kashmir bug fixed three ways (D51/52/53), ceiling
 > 12 (D54), grid citations (D55). Nothing is open on the implementer.
 > Next: songs, arcs, and watch items below.**
 > If today is well past that date, treat everything below as suspect — check
@@ -151,7 +151,7 @@ read, don't re-derive.
   (D52) — don't "simplify" it back to whole-string.
 - **Numbering**: the architect assigns decision numbers; a ruling
   arriving unnumbered → ASK (rule in DECISIONS' header; born of the
-  double-D45). The landing crucible ruling is still unnumbered.
+  double-D45). The landing crucible ruling is recorded as **D49**.
 - Tests: 43 in three files (`ai.test.ts` — invariants, seed split +
   spine, D52 matcher; `storage.test.ts`; `geometry.test.ts` 18). The
   D37 headless-harness recipe: patch fetch to a scratch server on
