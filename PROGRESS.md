@@ -106,6 +106,13 @@ read, don't re-derive.
   human owns them; check `curl 127.0.0.1:8787/api/health`; stop via
   `lsof -ti tcp:8787 | xargs kill`. **Never host them as a session
   background task.**
+- **HMR does not reliably apply changes to module-level constants
+  captured by the store** (e.g. `DESCENT_TARGET`): Vite swaps the
+  module but the Zustand store keeps the old closure. Any constant
+  change needs a hard reload of the tab before it can be verified —
+  "HMR live" is NOT evidence the new value is running. Suspected on
+  D54: nine consecutive runs landed on exactly 10 with the const at
+  12. This has probably cost a verification before, unnoticed.
 - **Do not edit `src/` or `server/` while a generation runs** — Vite
   HMR reloads the client (killing the in-flight loop: the run is
   CLIENT-side; a refresh also kills it, which truncated Kashmir v1 and
