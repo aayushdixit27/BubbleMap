@@ -48,7 +48,13 @@ function proposeTool(verb: Verb): Anthropic.Tool {
           properties: {
             source:    { type: 'string' },  // a ref from above, OR an existing Bubble.id
             target:    { type: 'string' },
-            kind:      { enum: ['refines', 'assumes', 'contradicts', 'evidence'] },
+            // D51: seed's contract has always been the SAFE→REAL spine —
+            // argumentative links are descend's and interrogate's job.
+            // Kashmir's seed emitted zero refines links and the SAFE tier
+            // vanished from every reading; the enum makes that impossible.
+            kind:      verb === 'seed'
+              ? { enum: ['refines'] }
+              : { enum: ['refines', 'assumes', 'contradicts', 'evidence'] },
             rationale: { type: 'string' },
           },
           required: ['source', 'target', 'kind'],
@@ -436,11 +442,19 @@ function normalizeForMatch(s: string): string {
 
 // The D23 fabrication guard: a bubble's sourceLine must occur verbatim
 // (modulo normalisation) in doc.source. Exported for the invariant tests.
+// D52 (amends D23): a "/" joins quoted lines across a line break — the
+// standard lyric convention — so the citation verifies PER SEGMENT: each
+// part must occur in the source. Out-of-order joins pass; every part is
+// still a real line, and the guard's job is fabrication, not citation
+// style. (Kashmir, 21 Aug: five honest couplet citations flagged because
+// the matcher required the concatenation to be contiguous.)
 export function sourceLineOccurs(sourceLine: string, source: string | undefined): boolean {
   if (!source) return false;
-  const needle = normalizeForMatch(sourceLine);
-  if (!needle) return false;
-  return normalizeForMatch(source).includes(needle);
+  const haystack = normalizeForMatch(source);
+  if (!haystack) return false;
+  const segments = sourceLine.split('/').map(normalizeForMatch).filter(Boolean);
+  if (!segments.length) return false;
+  return segments.every((segment) => haystack.includes(segment));
 }
 
 // Resolve model refs ("n1") to nanoids and validate every link against the
@@ -574,6 +588,31 @@ export function resolveProposal(
       origin: 'ai',
       status: 'proposed',
     });
+  }
+
+  // D51 #2: the enum forces the KIND; this forces the SHAPE. A seed must
+  // arrive as a complete spine — exactly three refines links, each REAL
+  // parented by exactly one SAFE (one link, or one SAFE parenting all
+  // three, would break every reading chain again). A wrong spine is a
+  // malformed seed, not six judgeable bubbles — same class as the 3+3
+  // split guard above; the store surfaces the empty seed as a run error.
+  if (verb === 'seed') {
+    const reals = bubbles.filter((b) => b.tier === 'real');
+    const safeIds = new Set(bubbles.filter((b) => b.tier === 'safe').map((b) => b.id));
+    const refines = links.filter((l) => l.kind === 'refines');
+    const spineOk =
+      refines.length === 3 &&
+      reals.every(
+        (real) =>
+          refines.filter((l) => l.target === real.id && safeIds.has(l.source)).length === 1,
+      );
+    if (!spineOk) {
+      rejectItem(
+        'seed spine must be exactly three refines links, one SAFE parent per REAL',
+        raw.links ?? [],
+      );
+      return { bubbles: [], links: [], refs: {}, rejections };
+    }
   }
 
   return { bubbles, links, refs: Object.fromEntries(refToId), rejections };

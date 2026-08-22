@@ -305,6 +305,10 @@ deciding for the human, which we removed from every other path.
 - Links resolve normally, since their endpoints now exist. 14 of 20 fixed for free.
 - The **flag rate becomes the diagnostic** — if it stays high, that's a §8 problem
   about how the model cites, and it belongs to the architect. *18 Aug.*
+  *(Sensor recalibrated 21 Aug by D52: slash-joined couplets now verify per
+  segment, so the flag rate drops for a MECHANICAL reason on that date. Do not
+  read the drop as the prompt improving. Pre-D52 flags on honest couplet
+  citations — five on Kashmir alone — were matcher artifacts, not §8 signal.)*
 
 **D40 — Run-end messages must be true.** The same run said *"no deeper reading found"*
 on two descents whose RAW had been discarded, and *"stopped at 4 — the song ran out
@@ -529,6 +533,110 @@ the most recent RAW for identification only, never presented as a chosen line.
 **D25's tripwire is closed** — not by reverting to 3-candidates, but by the choosing
 act moving to where it produces something. First entry in Phase 5's cut list, and
 evidence for that phase's posture: expect to cut most. *20 Aug.*
+
+**D49 — The landing page is a question, not a list.** Crucible run, 20 Aug; won at
+8.7, nothing cleared 9.5, proceeded eyes-open on the render.
+
+**The problem:** "Add a song" sat below eight library rows and off-screen on load.
+Standard practice is unambiguous — a screen's primary action must be reachable
+regardless of scroll position.
+
+**What shipped:** the page opens with *"What song?"* in the serif at title scale and
+a hairline-underlined field beneath it; typing unfolds the paste target in place.
+The library sits **at the fold**, not below it (measured: first row at 247px of a
+573px viewport). The separate compose route is deleted — this promotes the compose
+surface rather than duplicating it.
+
+**The framing carried more than the layout.** A *question* fits the excavation
+register (PRODUCT §1 — the raw layer is recovered, the going-down is the product).
+A labelled form does not. `Song — Artist` survives only as a dim placeholder and
+must never return as a header.
+
+**The open risk, and the first dial if it fires.** Input-first can train the human
+to always add, quietly demoting the library — the thing PRODUCT §1 calls home base.
+The implementer's render judgment was that it does not read as a search engine,
+because a search engine is a lone box over emptiness and this is a quiet question
+over a bookshelf.
+
+**If dogfooding shows reflexive adding instead of returning, the first change is
+dropping the title field's autofocus — one line — not falling back to B.** The
+autofocus is the arrive-and-type muscle and it is the cheapest thing to turn off.
+
+**Parked:** *B* — "add a song" pinned in the header, always visible, ~20 minutes.
+The fallback if A fails on use rather than on the autofocus dial. *C* — land on the
+corpus wall instead of the library; right idea, precondition unmet, **revives on its
+own at ~5 dug songs.** *20 Aug.*
+
+**D50 — A verify gate on the lyrics. Optional LRCLIB prefill behind it.**
+
+**The gate is the ruling; the fetch is a convenience.** Before a run starts, the
+human sees what landed in `doc.source` and confirms it — *do these lyrics look
+right?* This is valuable with pasting alone: you can paste the wrong song, a live
+version, a partial set, or something with the chorus collapsed to "×2". D7 made
+lyrics human-supplied because a title-only run fabricated; but pasting is not the
+safety, **checking** is, and no moment currently exists for it.
+
+**On fetching — the honest survey:**
+- **Musixmatch** free tier returns ~30% of each lyric; full text requires a paid
+  commercial licence. **Rejected** — partial ground truth would silently degrade
+  every reading and make D23's guard flag almost everything.
+- **Genius** serves metadata and annotations, not lyrics. Not an option.
+- **LRCLIB** — free, community-run, full text, ~3M entries, throttled to one
+  request per 30s. Fine for one human mapping one song. Accuracy varies by song,
+  which is exactly why the gate comes first.
+
+**Amends D7.** The implementer may wire a prefill; the *human still confirms*, so
+D7's purpose — a human is accountable for the ground truth — survives intact. A
+prefill that bypasses the gate would violate it. Empty or failed fetch falls back
+to paste, silently and without ceremony. *20 Aug.*
+
+**D51 — Seed's spine is enforced mechanically. The kind enum *and* a server check.**
+
+**Diagnosis (Kashmir, 21 Aug):** seed produced its three SAFE and three REAL bubbles
+correctly, then emitted five links of which **not one was `refines`** — all
+`contradicts` or `assumes`. Readings walk `refines` parents per D29, so every chain
+stopped at REAL and the SAFE tier vanished from the UI while sitting in the file.
+The links weren't rejected; **they were never proposed.** Nothing constrained them:
+bubble counts are schema-enforced and the 3+3 split is server-checked, but the link
+kind enum is shared across all verbs.
+
+**Two mechanisms, both mechanical, no prompt change — D16's principle:**
+
+1. **Constrain seed's link enum to `['refines']`.** Seed's contract has always been
+   the spine; argumentative links are descend's and interrogate's job (D15 observed
+   they produce cross-links as a side effect). Losing `contradicts` at seed is small.
+2. **Server-validate the spine after resolution:** exactly three `refines` links, and
+   **each REAL has exactly one SAFE parent.** The enum forces the kind; it does not
+   force completeness or prevent one SAFE parenting all three. Same class of check as
+   the 3+3 split guard.
+
+Rejected alternatives, and why: rejecting whole seeds for link sloppiness kills good
+bubbles for a formatting fault; client-side repair is impossible, since only the
+model knows which SAFE each REAL deepens.
+
+**D52 — The citation matcher understands slash-joined couplets. Amends D23.**
+
+Every flagged Kashmir citation was **two genuine lyric lines joined with " / "** —
+the standard convention for quoting across a line break. Verified mechanically: each
+slash-separated segment occurs verbatim in the source. The guard normalised the slash
+away and then required the concatenation to appear *contiguously*, so a couplet only
+passed when its two lines happened to be adjacent and in order. Kashmir's fragmented,
+ad-libbed outro made that almost never true.
+
+**This is not fabrication and not composite invention. The model cited honestly in a
+format the matcher could not read.**
+
+**Fix:** a citation containing `" / "` verifies **per segment** — each part must occur
+in the source. Out-of-order joins will pass; that is acceptable, because every part is
+still a real line and the guard's job is fabrication, not citation style.
+
+**Annotate D39's sensor.** The flag rate is the §8 diagnostic, and this change lowers
+it for a *mechanical* reason on 21 Aug. Record the baseline shift in D39 so a future
+reader does not misread the drop as the prompt improving.
+
+**Kashmir is re-run, not repaired.** Hand-adding the three missing links requires
+guessing pairs the model never stated. Re-running also tests both fixes on the
+material that broke them. *21 Aug.*
 
 ---
 

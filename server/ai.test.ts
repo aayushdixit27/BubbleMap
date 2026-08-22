@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 import type { Bubble, BubbleMapDoc, Link, Tier } from '../src/types';
-import { resolveProposal, type RawProposal } from './ai';
+import { resolveProposal, sourceLineOccurs, type RawProposal } from './ai';
 import type { Verb } from './prompts';
 
 const SOURCE = 'It started out with a kiss\nHow did it end up like this?\nIt was only a kiss';
@@ -220,13 +220,21 @@ describe('resolveProposal — D18 seed split (3 SAFE + 3 REAL)', () => {
       sourceLine: LINE,
     }));
 
-  it('accepts a seed of exactly 3 SAFE + 3 REAL', () => {
+  // D51: a valid seed now carries its spine — 3 refines, one per REAL.
+  const SPINE = [
+    { source: 'n0', target: 'n3', kind: 'refines' as const },
+    { source: 'n1', target: 'n4', kind: 'refines' as const },
+    { source: 'n2', target: 'n5', kind: 'refines' as const },
+  ];
+
+  it('accepts a seed of exactly 3 SAFE + 3 REAL with a full spine', () => {
     const result = propose(
-      { bubbles: seedOf(['safe', 'safe', 'safe', 'real', 'real', 'real']) },
+      { bubbles: seedOf(['safe', 'safe', 'safe', 'real', 'real', 'real']), links: SPINE },
       mkDoc(),
       'seed',
     );
     expect(result.bubbles).toHaveLength(6);
+    expect(result.links).toHaveLength(3);
     expect(result.rejections).toHaveLength(0);
   });
 
@@ -262,5 +270,70 @@ describe('resolveProposal — D18 seed split (3 SAFE + 3 REAL)', () => {
     const result = propose({ bubbles: seedOf(['raw', 'raw', 'raw']) }, mkDoc(), 'descend');
     expect(result.bubbles).toHaveLength(3);
     expect(result.rejections).toHaveLength(0);
+  });
+
+  // D51 #2 (Kashmir): the enum forces the kind; this forces the shape.
+  describe('the seed spine', () => {
+    const SEED = seedOf(['safe', 'safe', 'safe', 'real', 'real', 'real']);
+
+    it('rejects the proposal whole when the spine is missing entirely', () => {
+      const result = propose({ bubbles: SEED, links: [] }, mkDoc(), 'seed');
+      expect(result.bubbles).toHaveLength(0);
+      expect(result.links).toHaveLength(0);
+      expect(result.rejections.map((r) => r.reason)).toEqual([
+        'seed spine must be exactly three refines links, one SAFE parent per REAL',
+      ]);
+    });
+
+    it('rejects a spine that double-parents one REAL and orphans another', () => {
+      const result = propose(
+        {
+          bubbles: SEED,
+          links: [
+            { source: 'n0', target: 'n3', kind: 'refines' },
+            { source: 'n1', target: 'n3', kind: 'refines' }, // n3 twice, n5 never
+            { source: 'n2', target: 'n4', kind: 'refines' },
+          ],
+        },
+        mkDoc(),
+        'seed',
+      );
+      expect(result.bubbles).toHaveLength(0);
+      expect(result.rejections.map((r) => r.reason)).toEqual([
+        'seed spine must be exactly three refines links, one SAFE parent per REAL',
+      ]);
+    });
+
+    it('does not apply the spine to other verbs', () => {
+      const result = propose(
+        { bubbles: [{ ref: 'n1', tier: 'raw', category: 'love', label: 'x', sourceLine: LINE }] },
+        mkDoc(),
+        'descend',
+      );
+      expect(result.bubbles).toHaveLength(1);
+      expect(result.rejections).toHaveLength(0);
+    });
+  });
+});
+
+// D52 (amends D23): slash-joined couplets verify per segment.
+describe('sourceLineOccurs — D52 slash-joined citations', () => {
+  const SRC = 'It started out with a kiss\nsome other line entirely\nIt was only a kiss';
+
+  it('passes a couplet whose halves occur non-adjacently', () => {
+    expect(sourceLineOccurs('It started out with a kiss / It was only a kiss', SRC)).toBe(true);
+  });
+
+  it('passes out-of-order joins — each part is still a real line', () => {
+    expect(sourceLineOccurs('It was only a kiss / It started out with a kiss', SRC)).toBe(true);
+  });
+
+  it('fails when any segment is fabricated', () => {
+    expect(sourceLineOccurs('It started out with a kiss / explain the emails', SRC)).toBe(false);
+  });
+
+  it('still matches plain single-line citations, normalised', () => {
+    expect(sourceLineOccurs('it started out with a KISS!', SRC)).toBe(true);
+    expect(sourceLineOccurs('a line that is not there', SRC)).toBe(false);
   });
 });
