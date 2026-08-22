@@ -638,6 +638,30 @@ reader does not misread the drop as the prompt improving.
 guessing pairs the model never stated. Re-running also tests both fixes on the
 material that broke them. *21 Aug.*
 
+**D53 — D51's spine guard loosened; seeds re-sample before surfacing.** *(Relayed
+ruling, recorded by the implementer.)* The architect overruled the implementer's
+whole-rejection warning in D51 and the implementer was right; this corrects it.
+
+1. **Guard on BREAKAGE, not shape.** The only condition that breaks anything is an
+   **orphaned REAL** — no SAFE refines parent, the original Kashmir bug. "Exactly
+   three links" and "exactly one SAFE parent per REAL" were tidiness; every shape
+   they reject renders fine. New rule: every REAL has at least one SAFE refines
+   parent. Nothing else.
+2. **Retry the seed before surfacing a spine failure** — up to two re-attempts,
+   then fail loudly. A bad spine is a sampling outcome, not a deterministic fault.
+   The line for retryable-vs-not: *would a re-sample plausibly succeed?* 529 —
+   yes. Bad spine — yes. Rejected sourceLine — yes. A malformed request or a
+   schema violation the model cannot fix — no.
+3. **The `['refines']` enum stays.** Working, costs nothing.
+
+**Distinct-SAFEs stays permitted** — one SAFE parenting all three REALs renders
+fine under D32's repeat treatment and arises legitimately mid-run via spawns; the
+implementer flagged rather than adding the stricter rule, and that was right.
+
+If Kashmir still fails after three attempts under the loosened rule, **that is the
+finding** — the material genuinely resists the contract — and it returns to the
+architect as a §8 question, not a code one. *21 Aug.*
+
 ---
 
 ## Open — architect owes an answer

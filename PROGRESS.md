@@ -129,21 +129,23 @@ clause does the real shaping work.
 
 ## D51/D52 — the Kashmir fixes, built 21 Aug
 
-**D51, seed's spine, two mechanisms**: seed's link `kind` enum is
-`['refines']` only (per-verb enum in `proposeTool`), and a post-
-resolution guard rejects the proposal whole unless the spine is exactly
-three refines links with each REAL parented by exactly one SAFE (same
-class as the 3+3 split guard; store surfaces the empty seed as a run
-error). **Note for the architect**: the check AS RULED permits one SAFE
-parenting all three REALs (each REAL still has exactly one parent) —
-implemented as specified, because that shape doesn't break readings and
-happens legitimately mid-run via spawns; say the word if distinct SAFEs
-are wanted. **D52**: `sourceLineOccurs` splits citations on `/` and
-verifies each segment — the couplet convention verifies honestly;
-out-of-order joins pass by ruling. D39's sensor annotated: flag-rate
-baseline shifted 21 Aug for a mechanical reason. 7 new tests (41 total).
-**Kashmir is re-run, not repaired** (architect deletes + re-runs; the
-re-run is the test). The bug's full anatomy is in D51/D52's entries.
+**D51 as loosened by D53**: seed's link `kind` enum is `['refines']`
+only (per-verb enum in `proposeTool`), and the post-resolution guard
+rejects a seed whole ONLY for an **orphaned REAL** (no SAFE refines
+parent — the actual Kashmir breakage). Shared SAFEs and extra links are
+permitted; tidiness is not breakage. On a whole-rejected seed (orphan
+or bad split), `propose` **re-samples up to twice** before failing
+loudly — a retry streams over the prior attempt's ghosts in place. The
+retryable line, for future cases: *would a re-sample plausibly
+succeed?* Edge accepted: the early-overlap descend may have started
+against attempt 1's REAL and lands remapped onto the same ref slot of
+the final attempt — rare, self-healing via the kill gesture. If a seed
+still fails after three attempts, that IS the finding → architect, §8.
+**D52**: `sourceLineOccurs` splits citations on `/` and verifies each
+segment — the couplet convention verifies honestly; out-of-order joins
+pass by ruling. D39's sensor annotated: flag-rate baseline shifted
+21 Aug for a mechanical reason. 43 tests total. **Kashmir is re-run,
+not repaired** (architect deletes + re-runs; the re-run is the test).
 
 ## The landing crucible (21 Aug, DECISION NUMBER PENDING — the ruling
 ## arrived unnumbered; per the header rule, ask the architect)

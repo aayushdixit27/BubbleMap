@@ -272,7 +272,8 @@ describe('resolveProposal — D18 seed split (3 SAFE + 3 REAL)', () => {
     expect(result.rejections).toHaveLength(0);
   });
 
-  // D51 #2 (Kashmir): the enum forces the kind; this forces the shape.
+  // D51 (as loosened by D53): guard on breakage, not shape. Only an
+  // ORPHANED REAL — no SAFE refines parent — rejects the seed.
   describe('the seed spine', () => {
     const SEED = seedOf(['safe', 'safe', 'safe', 'real', 'real', 'real']);
 
@@ -281,11 +282,11 @@ describe('resolveProposal — D18 seed split (3 SAFE + 3 REAL)', () => {
       expect(result.bubbles).toHaveLength(0);
       expect(result.links).toHaveLength(0);
       expect(result.rejections.map((r) => r.reason)).toEqual([
-        'seed spine must be exactly three refines links, one SAFE parent per REAL',
+        'seed spine incomplete — 3 REAL bubbles with no SAFE parent',
       ]);
     });
 
-    it('rejects a spine that double-parents one REAL and orphans another', () => {
+    it('rejects a spine that leaves one REAL orphaned', () => {
       const result = propose(
         {
           bubbles: SEED,
@@ -300,8 +301,45 @@ describe('resolveProposal — D18 seed split (3 SAFE + 3 REAL)', () => {
       );
       expect(result.bubbles).toHaveLength(0);
       expect(result.rejections.map((r) => r.reason)).toEqual([
-        'seed spine must be exactly three refines links, one SAFE parent per REAL',
+        'seed spine incomplete — 1 REAL bubble with no SAFE parent',
       ]);
+    });
+
+    it('permits one SAFE parenting all three REALs (D53 — renders fine, arises mid-run)', () => {
+      const result = propose(
+        {
+          bubbles: SEED,
+          links: [
+            { source: 'n0', target: 'n3', kind: 'refines' },
+            { source: 'n0', target: 'n4', kind: 'refines' },
+            { source: 'n0', target: 'n5', kind: 'refines' },
+          ],
+        },
+        mkDoc(),
+        'seed',
+      );
+      expect(result.bubbles).toHaveLength(6);
+      expect(result.links).toHaveLength(3);
+      expect(result.rejections).toHaveLength(0);
+    });
+
+    it('permits extra links beyond the spine (D53 — tidiness is not breakage)', () => {
+      const result = propose(
+        {
+          bubbles: SEED,
+          links: [
+            { source: 'n0', target: 'n3', kind: 'refines' },
+            { source: 'n1', target: 'n4', kind: 'refines' },
+            { source: 'n2', target: 'n5', kind: 'refines' },
+            { source: 'n0', target: 'n4', kind: 'refines' }, // a second parent
+          ],
+        },
+        mkDoc(),
+        'seed',
+      );
+      expect(result.bubbles).toHaveLength(6);
+      expect(result.links).toHaveLength(4);
+      expect(result.rejections).toHaveLength(0);
     });
 
     it('does not apply the spine to other verbs', () => {

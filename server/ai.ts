@@ -137,41 +137,58 @@ export async function propose(
 
   const client = new Anthropic({ apiKey });
   const model = currentModel();
-  const stream = client.messages.stream({
-    model,
-    max_tokens: 16000,
-    system: `${SYSTEM_PROMPT}\n\n${VERB_SUFFIXES[verb]}`,
-    tools: [proposeTool(verb)],
-    messages: [{ role: 'user', content: buildUserMessage(verb, doc, focus) }],
-  });
-  if (onInputJson) {
-    stream.on('inputJson', (_partial, snapshot) => onInputJson(snapshot));
-  }
-  const response = await stream.finalMessage();
+  // D53: a seed rejected whole (orphaned REAL, bad split) is a SAMPLING
+  // outcome, not a deterministic fault — re-sample up to twice before
+  // failing loudly. The line is "would a re-sample plausibly succeed?":
+  // yes for a bad spine or split; no for a malformed request, which
+  // throws instead. A retry streams over the previous attempt's ghosts
+  // (same runId — replaceRun swaps them in place).
+  const attempts = verb === 'seed' ? 3 : 1;
+  for (let attempt = 1; ; attempt++) {
+    const stream = client.messages.stream({
+      model,
+      max_tokens: 16000,
+      system: `${SYSTEM_PROMPT}\n\n${VERB_SUFFIXES[verb]}`,
+      tools: [proposeTool(verb)],
+      messages: [{ role: 'user', content: buildUserMessage(verb, doc, focus) }],
+    });
+    if (onInputJson) {
+      stream.on('inputJson', (_partial, snapshot) => onInputJson(snapshot));
+    }
+    const response = await stream.finalMessage();
 
-  const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use' && block.name === 'propose',
-  );
-  if (!toolUse) {
-    const text = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-      .map((block) => block.text)
-      .join('\n');
-    throw new Error(
-      `Model did not call the propose tool (stop_reason: ${response.stop_reason}).` +
-        (text ? `\nText output:\n${text}` : ''),
+    const toolUse = response.content.find(
+      (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use' && block.name === 'propose',
     );
-  }
+    if (!toolUse) {
+      const text = response.content
+        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+        .map((block) => block.text)
+        .join('\n');
+      throw new Error(
+        `Model did not call the propose tool (stop_reason: ${response.stop_reason}).` +
+          (text ? `\nText output:\n${text}` : ''),
+      );
+    }
 
-  return {
-    ...resolveProposal(toolUse.input as RawProposal, doc, verb),
-    raw: toolUse.input,
-    model,
-    usage: {
-      input_tokens: response.usage.input_tokens,
-      output_tokens: response.usage.output_tokens,
-    },
-  };
+    const resolved = resolveProposal(toolUse.input as RawProposal, doc, verb);
+    if (verb === 'seed' && resolved.bubbles.length === 0 && attempt < attempts) {
+      console.warn(
+        `[ai] seed attempt ${attempt} of ${attempts} rejected whole — re-sampling:`,
+        resolved.rejections.map((r) => r.reason).join('; '),
+      );
+      continue;
+    }
+    return {
+      ...resolved,
+      raw: toolUse.input,
+      model,
+      usage: {
+        input_tokens: response.usage.input_tokens,
+        output_tokens: response.usage.output_tokens,
+      },
+    };
+  }
 }
 
 // D48: nominateKeeper (D41/D42) is cut with the keeper. The arc is the
@@ -590,25 +607,25 @@ export function resolveProposal(
     });
   }
 
-  // D51 #2: the enum forces the KIND; this forces the SHAPE. A seed must
-  // arrive as a complete spine — exactly three refines links, each REAL
-  // parented by exactly one SAFE (one link, or one SAFE parenting all
-  // three, would break every reading chain again). A wrong spine is a
-  // malformed seed, not six judgeable bubbles — same class as the 3+3
-  // split guard above; the store surfaces the empty seed as a run error.
+  // D51 as loosened by D53: guard on BREAKAGE, not shape. The only
+  // condition that breaks a reading is an ORPHANED REAL — one with no
+  // SAFE refines parent, which is the original Kashmir bug. Extra
+  // links, or one SAFE parenting several REALs, render fine (D32's
+  // repeat treatment; spawns produce the same shape mid-run) and stay
+  // permitted. An orphan rejects the seed whole; the caller re-samples
+  // before surfacing (a bad spine is a sampling outcome).
   if (verb === 'seed') {
-    const reals = bubbles.filter((b) => b.tier === 'real');
     const safeIds = new Set(bubbles.filter((b) => b.tier === 'safe').map((b) => b.id));
-    const refines = links.filter((l) => l.kind === 'refines');
-    const spineOk =
-      refines.length === 3 &&
-      reals.every(
-        (real) =>
-          refines.filter((l) => l.target === real.id && safeIds.has(l.source)).length === 1,
-      );
-    if (!spineOk) {
+    const orphaned = bubbles.filter(
+      (b) =>
+        b.tier === 'real' &&
+        !links.some((l) => l.kind === 'refines' && l.target === b.id && safeIds.has(l.source)),
+    );
+    if (orphaned.length) {
       rejectItem(
-        'seed spine must be exactly three refines links, one SAFE parent per REAL',
+        `seed spine incomplete — ${orphaned.length} REAL bubble${
+          orphaned.length === 1 ? '' : 's'
+        } with no SAFE parent`,
         raw.links ?? [],
       );
       return { bubbles: [], links: [], refs: {}, rejections };
