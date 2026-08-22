@@ -1,489 +1,182 @@
 # PROGRESS
 
-> **Last updated: 21 Aug 2026. Everything through D48 is built. THE
-> KEEPER IS CUT (D48): the arc is the choosing act — a song's LINE is
-> the RAW its most recent arc was built from; no arc, no line on the
-> corpus (2 of 8 songs dug in). D25's tripwire is CLOSED (noted in D25 —
-> do not reopen). The corpus view exists (D47, built at n=8; PRODUCT §7
-> carries the authorship finding). EIGHT maps. Nothing is open on the
-> implementer. Numbering rule: the architect assigns decision numbers;
-> if a ruling arrives without one, ask.**
+> **Last updated: 21 Aug 2026, pre-clear. ELEVEN maps; everything
+> through D55 is built and verified. The tool is deep in dogfooding:
+> explain (D44/45), arcs (D46), the corpus view (D47), the keeper cut
+> (D48 — the arc is the choosing act), the input-first landing
+> (crucible A), the Kashmir bug fixed three ways (D51/52/53), ceiling
+> 12 (D54), grid citations (D55). Nothing is open on the implementer.
+> Next: songs, arcs, and watch items below.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
-**This is the state-reload file.** Read it first, every session. It exists so that
-clearing context at a phase boundary costs ~2k tokens instead of re-reading 40k of
-spec. Fable updates it at every phase boundary, before committing.
+**This is the state-reload file.** Read it first, every session. Fable updates it
+at every boundary, before committing.
 
 ---
 
 ## Where we are
 
-**Phase 2 closed (gate passed on "Beautiful", 18 Aug — flinch test
-cleared, lyric-grounded).** Since then the loop has been hardened
-through live dogfooding, D26–D42 all ruled and built. The current flow:
-
-**Compose** (own mode, not a library row): title + one enormous lyrics
-paste target; drafts survive navigation via localStorage; "Map this
-song" starts the run. → **Seed** (3 SAFE + 3 REAL, schema+server
-enforced) with the first descend overlapping the seed tail →
-**up to 10 serial descents** (`DESCENT_TARGET`, src/store.ts), each
-exactly one RAW, landing committed as they arrive (amended Hard Rule 1
-— opt-out judging; the only gestures are "kill this descent" and, at
-run end, choosing **the keeper**). While generating, the pasted lyrics
-render as a quiet sheet (never a blank screen) and the first-RAW metric
-ticks live. At run end the model **nominates three RAWs** (D41/D42,
-`NOMINATE_SUFFIX` in prompts.ts, persisted as `doc.nominatedIds`); the
-human picks one → `doc.keeperId`, the song's canonical raw thing,
-re-choosable forever, shown in the library row and ringed on the
-Target. **D37 one-ahead**: "next song" starts N+1 while reading N; a
+**The flow**: the landing asks "What song?" (crucible A — typing unfolds
+the compose surface in place; library at the fold beneath; drafts in
+localStorage `bubblemap.compose.*` / `bubblemap.next.*`, cleared only by
+submit). → Seed (3 SAFE + 3 REAL, enum + orphan-guard + up-to-2
+re-samples, D51/D53) with the first descend overlapping the seed tail →
+up to **12** serial descents (`DESCENT_TARGET`, src/store.ts, D54), one
+RAW each, landing committed as they arrive (amended Hard Rule 1;
+gestures: kill descent / kill arc, both session-undoable via one union
+stack). **D37 one-ahead**: next song starts while reading this one; a
 third is structurally impossible.
 
-**Views**: Target (RAW disc, D30) is the LANDING view — it answers
-"what is this song about" at a glance; click a dot for its SAFE→REAL→
-RAW provenance panel. A still-generating map lands on Readings (the dig
-is what there is to watch). Readings: one reading per RAW via its
-ancestor chain (D29), tier named in the marginalia ("safe · Love"),
-repeated ancestors full-text in muted ink (D32), terminal slots that
-never vanish ("no deeper reading found" = declined, persisted D35;
-"discarded — see rejections" = system-caused, D40), keeper frame on
-top. Grid: presentation-only toggle. Rejections surface as a quiet
-toolbar count (D34); the sourceLine guard FLAGS (`citationUnverified`)
-instead of rejecting (D39).
+**Five verbs**: seed, descend (interrogate exists server-side, unwired),
+**explain** (D44/45 — select words in a landed RAW step in Readings →
+"explain this" → streamed prose in a hover box; chained digs carry a
+trail; EPHEMERAL by design; suffix carries the honest-no clause; latency
+10–20s to first text is ACCEPTED, do not lower effort, D45), and **arc**
+(D46 — "descent and return" button on the Target provenance panel; five
+beats RAW→REAL→SAFE→REAL→RAW; suffix carries do-not-invent-comfort; no
+word cap, deleted by evidence; persists as `doc.arcs`).
 
-## The three live questions — the next song answers all of them
+**Views** (each answers a question the others cannot, D55): Target =
+landing view, "where did the raw layer land" (provenance panel per dot;
+arc button lives there). Readings = "what does this descent say" (the
+judgment surface; explain lives here). Grid = "how is the song's weight
+distributed across its lines" — every entry shows its sourceLine (D55);
+lineage-highlight interaction deferred until scanning proves
+insufficient (implementer's call). Arc = "how would this move as a
+piece" (dive profile index, prose beneath, SAFE beat in sans). Corpus
+(from the landing, 2+ maps) = across maps: the wall of DUG lines only +
+all RAW dots on one disc.
 
-1. **Tripwire count three (D25's live clause).** Two songs at ZERO
-   kills. If the third is also all-keeps, D25's own terms say the
-   descent-choice trade was wrong — **but D41 ships first per its own
-   entry**: the keeper restores choose-one at a better level, so do NOT
-   revert to 3-candidates without seeing whether forced keeper
-   preference was the missing choice. The library rows show kills at a
-   glance ("N kept · M killed").
-2. **The keeper's first real outing.** Does the end-of-run nomination
-   block feel like a natural close, does the standing frame read, does
-   choosing feel like the most important act (it is)?
-3. **The first on-list/off-list data point.** `keeperId` vs
-   `nominatedIds` is now persisted; a human picking off-list is the §8
-   diagnostic D41 was built to collect (belongs to the architect if it
-   recurs).
+**D48, load-bearing**: the keeper is cut; *judgment happens when it
+produces something*. A song's LINE = the RAW its most recent arc was
+built from. No arc → no corpus wall row; the library falls back to the
+latest RAW, rendered DIM (`.library-raw.undug`) — never presented as
+chosen. `keeperId`/`nominatedIds` survive on disk in 4 pre-D48 files,
+deliberately unread/unmigrated (spreads round-trip them forever).
 
-## Q6 — "explain this" (D44), built 20 Aug
+## The Kashmir episode (D51/52/53) — the most recent real bug
 
-Select words in a landed RAW step (Readings only) → an "explain this"
-affordance appears at the selection → the answer streams into a hovering
-box → clicking away or Escape dismisses it. Selecting inside the box's
-own answer digs deeper: the prior turn stays visible in muted ink (D32's
-register) and rides along as context (`trail`). Where things live:
-`EXPLAIN_SUFFIX` in `server/prompts.ts` (ratified D45, ships verbatim —
-the honest-no clause is load-bearing), `explainHighlight` in `server/ai.ts`,
-`POST /api/ai/explain` (NDJSON delta stream), `streamExplain` in
-`src/api.ts`, `ExplainLayer` in `src/grid/Explain.tsx`.
+One run, three faults: (1) seed emitted ZERO refines links — all
+contradicts/assumes — so every reading chain stopped at REAL and the
+SAFE tier vanished from the UI while sitting in the file; (2) the
+citation matcher couldn't read slash-joined couplets ("line A / line B"
+— the standard lyric quoting convention), flagging five honest
+citations; (3) the first spine guard (exactly-3, one-parent-each) was
+too strict — the implementer warned whole-rejection kills good bubbles,
+was overruled, and was right. Fixes: seed's link enum is `['refines']`
+(D51); the guard rejects ONLY orphaned REALs — breakage, not tidiness
+(D53); whole-rejected seeds re-sample up to twice before failing loudly
+(D53); citations verify per slash segment (D52, D39's sensor annotated
+— flag-rate baseline shifted 21 Aug mechanically). **Verified: Kashmir
+re-ran clean — full spine, 10 kept, a line the broken version never
+produced.**
 
-Implementer decisions under D36, reported: answers are **ephemeral** —
-persisting them would put AI prose on the doc (a data-model change, an
-escalation area) and turn the dig into a report that accretes. Scope is
-RAW steps only, v1 (the gap was "the raw section just ends there"); the
-Target provenance panel has no explain yet. Nothing in the path can touch
-the doc — read aid only, Hard Rule 1 untouched.
+**The retryable test (D53), the rule for ALL future error handling:**
+*would a re-sample plausibly succeed?* 529 — yes. Bad spine — yes.
+Rejected sourceLine — yes. Malformed request / schema violation the
+model can't fix — no.
 
-Traps found live (specifier-inspects-the-artifact, again — neither was in
-any report): **Opus 5 runs adaptive thinking by default and thinking
-counts against max_tokens** — a 400 cap starved the call to zero text
-(`stop_reason: max_tokens`); the cap is 3000 and must hold thinking AND
-prose. And the offer button needed `z-index` above the box, or a
-selection inside the box could never offer. First text lands ~10–20s
-after the click (thinking time); the box shows "digging…" so it is never
-silent — ruled acceptable by D45 (blocked-time lens, D28): **do not lower
-the effort setting to chase it**. The model also emitted markdown
-asterisks into prose; the suffix ends with a plain-prose clause.
+## Watch items — no action until use decides
 
-## D46 — Descent and Return, built 20 Aug (suffix ratified, shipped)
-
-One chosen descent rewritten as a five-beat arc, RAW → REAL → SAFE →
-REAL → RAW. Opt-in: the "descent and return" button on the Target
-provenance panel; one call per arc; disabled while a run owns the doc.
-The fourth view renders a **dive profile as index** (RAW at the bottom,
-hairline curve, ink dots, roman numerals) with prose linear beneath; the
-crescendo carries the beats — RAW 20px serif, REAL 16px serif, **SAFE
-14px SANS** (the typeface relaxes; that's the breath). The arc view
-joins the toolbar only when a song has an arc or one is streaming.
-
-Where things live: `ARC_SUFFIX` in `server/prompts.ts` (ratified — the
-do-not-invent-comfort clause is this verb's honesty valve), `writeArc` +
-`ARC_TIERS` in `server/ai.ts` (5 passages schema-enforced per D16, tiers
-assigned by position, never trusted to the model), `POST /api/ai/arc`
-(NDJSON snapshots), `streamArc` in `src/api.ts`, `buildArc`/`killArc` in
-`src/store.ts`, `src/arc/ArcView.tsx`.
-
-Implementer decisions under D36, reported: `Arc = { id, rawId, beats:
-{tier, text}[5], createdAt }` — the beat boundaries exist for the
-display; the ruling specified only "arcs referencing the RAW". Arcs
-persist via normal autosave (verified on disk); if the human navigates
-away mid-write, the finished arc lands on disk directly — never dropped.
-Killing an arc is one gesture, undoable via the same session stack as
-descents (the `killed` array is now a union). No word cap: the 500 was
-deleted by D46 amendment 2 (21 Aug — never derived, killed by two runs
-of evidence, same class as D28's dead 20s target); the unequal-length
-clause does the real shaping work.
-
-## D54 + the grid's citations, built 21 Aug
-
-**D54**: `DESCENT_TARGET` is **12** (was 10) — nine songs of evidence
-that ten reads comfortably; the inventory concern in field-guides/
-systems_that_worked.md §3 carries an override note so it doesn't read
-as live advice. **Kashmir re-ran clean** under D51/D52/D53: full spine,
-10 kept, a line that didn't exist in the broken version. Corpus is TEN
-songs (Going to California ran 21 Aug).
-
-**The grid shows sourceLine on every entry, every tier** — same
-treatment as Readings (italic serif under the label, unverified marker
-where it applies). The grid's purpose is tracing a lyric downward; on
-Going to California one couplet visibly feeds the SAFE, two REALs and
-two RAWs. Deferred, mine under D36: hover/click-to-highlight a
-citation's lineage across columns — ship-if-scanning-isn't-enough; the
-visible citation may suffice.
-
-**Observation (architect's, recorded)**: most library lines are now
-FALLBACKS (latest RAW, dim) rather than dug — only two songs have arcs
-— and Been By Now's line already changed for that mechanical reason.
-The same caveat is being recorded by the architect against PRODUCT §7's
-n=8 finding, which was read from keeper lines that no longer surface.
-
-## D51/D52 — the Kashmir fixes, built 21 Aug
-
-**D51 as loosened by D53**: seed's link `kind` enum is `['refines']`
-only (per-verb enum in `proposeTool`), and the post-resolution guard
-rejects a seed whole ONLY for an **orphaned REAL** (no SAFE refines
-parent — the actual Kashmir breakage). Shared SAFEs and extra links are
-permitted; tidiness is not breakage. On a whole-rejected seed (orphan
-or bad split), `propose` **re-samples up to twice** before failing
-loudly — a retry streams over the prior attempt's ghosts in place. The
-retryable line, for future cases: *would a re-sample plausibly
-succeed?* Edge accepted: the early-overlap descend may have started
-against attempt 1's REAL and lands remapped onto the same ref slot of
-the final attempt — rare, self-healing via the kill gesture. If a seed
-still fails after three attempts, that IS the finding → architect, §8.
-**D52**: `sourceLineOccurs` splits citations on `/` and verifies each
-segment — the couplet convention verifies honestly; out-of-order joins
-pass by ruling. D39's sensor annotated: flag-rate baseline shifted
-21 Aug for a mechanical reason. 43 tests total. **Kashmir is re-run,
-not repaired** (architect deletes + re-runs; the re-run is the test).
-
-## The landing crucible (21 Aug, DECISION NUMBER PENDING — the ruling
-## arrived unnumbered; per the header rule, ask the architect)
-
-Build A shipped: input-first, framed as the question. "What song?" in
-serif at title scale, the field directly under it (quiet hairline, dim
-placeholder — the ruling bans "Song — Artist" as a header, kept only as
-placeholder), the library at the fold beneath (DOM-measured: top at
-247px of a 573px viewport). Typing UNFOLDS the compose surface in place
-— the single-line-that-expands option; the separate Compose mode and
-the "Add a song" button are gone; drafts keep their localStorage keys,
-and a kept draft lands expanded. No autofocus on the textarea (it
-mounts mid-keystroke and would steal the cursor).
-
-The render-and-look judgment (the ruling's open risk): it does NOT read
-as a search engine to me — the library is the bulk of the screen in
-reading serif and the field is quiet, so the question reads as an
-invitation over a bookshelf, not a query box over emptiness. The thing
-to WATCH in use: the title field autofocuses on load, which is the
-search-engine muscle (arrive → type). If dogfooding shows reflexive
-adding, dropping that autoFocus is the one-line dial to try before
-falling back to B (header-pinned "add a song", parked). C revives on
-its own at ~5 dug songs.
-
-## D48 — the keeper is cut, built 21 Aug
-
-Gone: `keeperId`/`nominatedIds` (types), the nominate call + route +
-its §8 suffix (retired with the feature, per ruling — text survives in
-D42's entry), the end-of-run nomination block, the keeper frame/mark/
-hover action in Readings, the keeper ring on Target, all keeper CSS.
-**Pre-D48 map files keep both fields on disk — 4 files carry them —
-deliberately unread, unmigrated, unstripped**; every doc mutation uses
-spreads, so autosave round-trips them untouched forever.
-
-Replaced by: the song's LINE = the RAW its most recent arc was built
-from (`storage.ts listMaps` computes it; the arc's raw may be killed
-into `rejected[]` and still names the line). Library rows show a dug
-line in full ink, the no-arc fallback (most recent RAW, identification
-only) dim via `.library-raw.undug` — never silently equated. The corpus
-wall lists ONLY dug songs ("the lines · N of M songs dug into"); the
-disc rings each song's line-dot.
-
-## D47 — the corpus view, built 21 Aug
-
-Reached from the library ("The corpus — every keeper on one wall",
-shown at 2+ maps; `src/corpus/Corpus.tsx`, mode state in App like
-Compose). Two pages, one scroll, deliberately dumb per the ruling:
-the **keeper wall** (every song's keeper line, RAW serif 21px, title as
-marginalia, recency order; a keeperless song falls back to its latest
-RAW marked "keeper not chosen" — same rule as the library row; rows
-open their song) and the **stacked target** (every song's committed RAW
-dots on one disc, keeper dots ringed). Read-only — fetches all maps per
-open, writes nothing. No AI call, by ruling; revisit at twenty.
-
-**Trap found live**: stored positions are computed per-map by the same
-deterministic placement, so across songs the i-th RAW lands on the SAME
-spot — 62 corpus dots collapsed to 16 visible. The disc re-places every
-dot with the existing `placeInRegion` against the accumulated corpus
-(display only, nothing written back). If a future view stacks maps, it
-must do the same.
-
-First look at n=8: the corpus raw mass sits in the upper half — LOVE
-and IDENTITY dense, FITNESS/EARNINGS sparse. The wall reads exactly
-like PRODUCT §7's plain-text reading, which is the point.
+- **Landing autofocus**: the title field autofocuses on load — the
+  arrive-and-type muscle. If dogfooding shows reflexive adding over
+  returning, drop the autoFocus (one line) before falling back to
+  parked option B (header-pinned "add a song"). Option C (land on the
+  corpus wall) revives itself at ~5 dug songs; there are 2.
+- **Corpus caveat (architect's, in PRODUCT §7 n=11)**: most library
+  lines are fallbacks, not choices, since D48 — findings read off the
+  wall are suggestive, not evidence, until more songs are dug.
+- **Q5** (three-tier paths on Target) stays deferred; the provenance
+  panel was the cheap answer. **Q3** (kill-rate numbers) still open.
 
 ## Corpus status
 
-**Eight maps**: Beautiful, Money, Be Her, Go your own way, Been By Now,
-Mr. Brightside (20 Aug midday — with lyrics, closing the loop on the
-Phase 0 title-only comparison), stupid song (Olivia Rodrigo, 20 Aug
-evening), hate that i made you love me (Ariana Grande, 21 Aug).
-PRODUCT §7 carries the n=8 keeper reading — do not re-derive it.
-The corpus view is worth building at **~10**; it then costs about a
-day. **D38 standing bias until then: build only what makes the next
-songs cheaper to get through** — say so out loud if anything else is
-proposed. PRODUCT §7 carries the architect's five-song corpus reading
-(19 Aug), including a corrected architect error about IDENTITY
-plurality — **do not re-derive it, read it**. PRODUCT §1 carries the
-excavation reframe (raw is recovered, not invented; it should feel
-like digging) — design register for everything.
+**Eleven maps**: Beautiful, Money, Be Her, Go Your Own Way, Been By
+Now, Mr. Brightside, stupid song, hate that i made you love me
+(+arc), Kashmir (re-run), Misty Mountain Hop, Going to California.
+Two songs dug (arcs): Ariana + stupid song. PRODUCT §7 carries the
+n=8 authorship finding and the n=11 update with its fallback caveat —
+read, don't re-derive.
 
-**Known facts not written anywhere else (operational traps first):**
+## Known facts not written anywhere else (operational traps first)
 
-- **Dev servers run DETACHED** (started 19 Aug with `nohup … & disown`
-  at the user's request, after session-owned background tasks died with
-  their sessions twice). **Never host the servers as a session
-  background task** — they die when the session does. The human owns
-  them; check `curl 127.0.0.1:8787/api/health`; stop via
-  `lsof -ti tcp:8787 | xargs kill`.
-- **Compose drafts** live in localStorage keys `bubblemap.compose.*`
-  and `bubblemap.next.*`; cleared only by successful submit. Input
-  protection, not judgment — no D10 conflict.
-- **View landing rules**: finished map → `target`; still-generating map
-  → `readings`; probe run → `readings`; otherwise the view is
-  human-only state in the store — nothing that mutates doc may touch
-  it (a run must never move the human off the kill gesture).
-- **The nominate call** reuses §8 + `NOMINATE_SUFFIX` (architect copy,
-  verbatim — as product-copy as the §8 prompt itself). Skipped when a
-  map has ≤3 RAWs (all become candidates locally). Failure never fails
-  a run. Killing the keeper's descent clears `keeperId`.
-- **Pre-D39/D42 maps carry scars**: "Be Her" lost 6 bubbles to the old
-  rejecting guard (not recoverable); maps run before D42 have no
-  `nominatedIds`, so they reopen without a nomination block — the hover
-  gesture ("this is the keeper") is their path. Money contains one
-  hand-authored `repair:` link (descent v, 19 Aug).
-
-- **Centring fix** (`src/styles.css`): the centred columns are flex
-  children with auto margins, which disables stretch and shrink-wraps
-  the box to its content — the column drifted with content width. Fix =
-  explicit `width: 100%` under each `max-width` (`.start`, `.reading`,
-  `.readings-empty`). Any new centred view needs the same pair.
-- **Descend's input includes all existing bubbles** (labels only,
-  D17 #2) — ratified as **D27**. Dedup is load-bearing once one SAFE
-  parents several REALs.
-- **Latency standard is D28** (blocked time, not first-RAW time — the
-  20s target was killed as underived): readable content within ~10s,
-  page never silent, first RAW under 60s. Currently met; the first-RAW
-  metric ticks live and freezes at the true number.
-- **Readings derive one reading per RAW bubble** via its own ancestor
-  chain (`parentOf` walk), NOT per thread — one SAFE now parents
-  several descents, and a thread-based derivation hides all but the
-  first.
-- **Do not edit `src/` or `server/` while a generation runs.** Vite HMR
-  reloads the client (killing the in-flight loop mid-run); tsx watch
-  restarts the server under its API calls.
-- **`maps/` is gitignored — no VCS safety net.** Copy a map to the
-  scratchpad before any risky operation on it (that's how kill/undo was
-  tested against the real Beautiful map).
-- **D37 one-ahead buffer** (`src/store.ts`): the active run OWNS its doc
-  (module-level `activeRun`); every run mutation targets `run.doc` and
-  publishes to the store only while that map is open. Unopened arrivals
-  queue as `proposed` (nothing on disk); `openMap` adopts — commits the
-  queue in the frame it first renders. The loop keys off ARRIVED (final
-  id), not committed, so an unopened run never stalls. Kill/undo write
-  through to `run.doc` — one truth. One run total; a third song is
-  structurally impossible. **Verified live** by a headless harness
-  (scratchpad `d37-harness.mts` pattern: patch fetch to a scratch server
-  on `BUBBLEMAP_PORT=8899`, `BUBBLEMAP_MAPS_DIR` scratch, cheap
-  `BUBBLEMAP_MODEL`, drive the real store, assert gate/adoption/
-  no-orphans/disk-parity). Rebuild it from this note if needed.
-- **One owner per mutable resource** (field-guides/systems #5, written
-  down as instructed): dev servers — **the human**, implementer never
-  relaunches; map files — **the running app exclusively**, no hand-edits
-  while any tab has the map open (a stale tab's autosave clobbers them;
-  the 19 Aug descent-v repair was done file-first and only survived
-  because the tab was reloaded after).
-- **No native dialogs** (`window.confirm` etc.) — they hang browser
-  automation and read as chrome; use inline two-step confirms (see the
-  library delete).
-- Killed paths park in `rejected[]` with their committed status;
-  `readMap` backfills `rejected: []` for pre-D24 files;
-  `BUBBLEMAP_MAPS_DIR` env redirects storage for tests.
-- The probe run (`src/loadProbeRun.ts`) is read-only design-test data,
-  pre-D23 (no sourceLines) — lyric-line slots render empty there only.
-- Autosave is immediate/serialized/coalescing with `keepalive` PUTs —
-  the 800ms debounce starved under rapid clicks and lost whole maps.
-  Do not reintroduce a debounce.
-- **Never measure layout from screenshot pixels** (D31) — browser-
-  extension screenshots compound device-pixel scaling, page zoom, and
-  side-panel width, and on 18 Aug the capture path also served stale
-  frames that contradicted the live DOM. Measure with
-  `getBoundingClientRect` against `window.innerWidth/Height`; use
-  screenshots for *feel*, and when the two disagree, trust the DOM and
-  confirm with human eyes.
-- **descend's parent link is guaranteed client-side** (`ensureParentLink`
-  in `src/store.ts`): the focus is the parent by construction, so a
-  model-fumbled link can no longer orphan a RAW or make the loop
-  re-descend the same focus (Money descent v, 19 Aug — one wasted
-  descent). Underlying gap still open: the server console.warns link
-  rejections but the client ignores `proposal.rejections`; surfacing
-  them in the UI is unowned.
-- **Streamed content must neither move nor remount once visible**:
-  `replaceRun` swaps a run's ghosts in place, and readings keep their
-  ghost-era React key (`stableKey`). Don't reintroduce filter+append on
-  `doc.bubbles` — tail-appending re-sorted readings mid-run.
-- A synthetic map for view-testing is ~20 lines: import `placeInRegion`
-  from `src/canvas/geometry.ts` under `tsx`, emit committed bubbles into
-  `maps/<slug>-<id>.json` — the filename **must** end `-<id>.json` or
-  `storage.ts` can't find it. Delete the file when done (`maps/` is
-  gitignored; the library shows it immediately).
-
-Superseded today: D24's per-bubble flow (→ D25), ARCHITECTURE §7's verb
-table (amended in place, note at §7 top).
-
-Earlier state, still true underneath:
-
-**Phase 1 — D20 thread grid with the D22 editorial treatment, verified in
-Chrome. Phase 0 closed (gate passed, D11–D17).**
-
-What runs: `npm run dev` → Express on `127.0.0.1:8787` (`/api/health` green,
-reports the model) + Vite on `127.0.0.1:5173`, proxied. The Phase 0 chain
-output (`probe-runs/mr-brightside.json`) renders as the D20 grid: threads as
-rows (derived from the doc's links in `src/grid/threads.ts` — refines >
-assumes > evidence parenting, contradicts never parents), tiers as columns
-with RAW widest and flowing multi-column. DOI: clicking a row expands every
-entry in it to full notes; other rows stay labels-only. Overlap is
-structurally impossible.
-
-Visual layer is D22 (supersedes ARCHITECTURE §9): paper `#f6f3ec`, ink
-`#1a1814`, no dark mode. Tier is typographic — SAFE 13px grey sans, REAL
-15px darker sans, RAW 21px Source Serif 4 near-black with 14px serif notes.
-Category is small-caps marginalia in muted inks; cross-category reads
-`Identity → Love` in the marginalia, no pills. Hairline rules `#ddd7ca`
-between rows; nothing is a card — no radius, shadow, or glow. The signature
-is hairline circles + category-ink dots. Font ships locally via
-`@fontsource/source-serif-4` (no CDN). The old §9.1 tokens are deleted.
-
-React Flow and the canvas components are **deleted** (D21) — grid + static
-SVG need neither. `src/canvas/geometry.ts` + 18 passing tests untouched.
-
-Carry-overs done earlier: relink cut (D15), interrogate schema-capped (D16),
-streaming + context trim (D17 #1–2). D17 #3 (parallel descends) and D18
-(spine-not-bush verb counts, ~9-bubble maps) apply at Phase 2 with the verbs.
-The grid currently shows the unfiltered firehose; Phase 2's keep-1-of-3 thins it.
-
-### The gate — one question
-
-Read the RAW bubbles. **Does any of them make you uncomfortable to have written
-down?** Binary. That's PRODUCT §2's flinch test and it is the whole reason the
-project exists.
-
-Read in this order, because judgment degrades and the most important question
-deserves the freshest attention:
-
-1. RAW bubbles only. Ignore everything else.
-2. What tier `interrogate` assigned its assumption bubbles — see open questions below.
-3. Everything else, **only if 1 and 2 went well.**
-
-If RAW is soft, that is a §8 prompt problem and it belongs to the architect. Do not
-fix it in code.
-
----
-
-## What the superseded run taught us
-
-The first probe (commit `a106b70`, six songs, `seed` only, title-only) is kept as
-evidence but does **not** clear the gate — `seed` stops at REAL by contract, so it
-could never test RAW. Three things survive from it:
-
-- **Categories spread.** love 11, identity 11, fitness 10, earnings 9 across 41
-  bubbles; every song touched at least three quadrants. Nothing collapsed into LOVE.
-  PRODUCT §4 #2 is provisionally cleared.
-- **SAFE→REAL is not paraphrase.** Human read: 9 of 12 descents add information
-  that could be wrong. This is the *easy* jump, so treat it as a ceiling estimate
-  for RAW, not a floor.
-- **Probable fabrication under title-only running.** "Explain the emails" appeared
-  in a Runaway descent; there are no emails in that song. This is why the rebuilt
-  probe requires lyrics. ARCHITECTURE §7.3.
-
-Mr. Brightside was run title-only in that batch, so re-running it with lyrics gives
-an **unplanned controlled comparison on identical material** — the cleanest way to
-separate "weak prompt" from "model working off recall."
-
----
-
-## Open architectural questions — architect owns these, do not patch
-
-- **`interrogate`'s assumption bubbles have no defined tier.** An assumption isn't
-  SAFE, REAL or RAW; it's orthogonal to the axis. The schema forces a tier anyway,
-  so the model picks arbitrarily. Geometry makes it worse: a RAW quadrant holds 2–3
-  bubbles and `interrogate` can produce twelve for one song. **Deliberately left
-  unresolved so the raw behaviour is visible in this run.** Outcome decides whether
-  assumptions get their own tier, sit outside the rings, or get cut.
-- **The target canvas: cheap to build, expensive to undo.** The architect first
-  argued against it on build cost — "2–3 sessions" — which was wrong. Agent build
-  time is hours, so *construction* cost is not a reason to defer anything, and any
-  future argument resting on it should be rejected.
-
-  What remains is lock-in, not labour. Ring capacity (2–3 RAW per quadrant), a
-  forced `tier` on every bubble including assumptions, and drag-to-reassign
-  semantics are **data-model commitments**. Once maps exist in that shape, changing
-  them means migrating maps — a cost that does not fall as codegen gets faster.
-  So: build the canvas, but settle the assumption-tier question above *first*,
-  because it's the one that would force a migration.
-
----
-
-## Decisions reversed on 17 Aug — do not restore without reading why
-
-- Phase 0 was `seed`-only → now all four verbs. A partial chain cannot test RAW.
-- Phase 0 was six songs → **one**. ~27 bubbles is readable; ~160 is not, and an
-  unread pass that says "fine" is worse than no pass.
-- Phase 0 was title-only → **lyrics required**, enforced mechanically.
-- `interrogate` input was "focus + source" → **focus + all committed bubbles +
-  source**. It cannot propose `contradicts` links against bubbles it cannot see.
-  (Caught by the implementer, not the architect.)
-
-## Decisions holding — do not relitigate
-
-React Flow v12 over tldraw/Excalidraw. Local Express proxy holding the key. JSON
-files in `maps/`, no database. Build order driven by the pre-mortem. AI never
-mutates the map.
-
----
+- **Dev servers run DETACHED** (`nohup … & disown`); their stdout goes
+  to a pipe — THERE IS NO SERVER LOG FILE to read after the fact. The
+  human owns them; check `curl 127.0.0.1:8787/api/health`; stop via
+  `lsof -ti tcp:8787 | xargs kill`. **Never host them as a session
+  background task.**
+- **Do not edit `src/` or `server/` while a generation runs** — Vite
+  HMR reloads the client (killing the in-flight loop: the run is
+  CLIENT-side; a refresh also kills it, which truncated Kashmir v1 and
+  wiped the session-scoped rejections counter — neither was a bug);
+  tsx watch restarts the server under its API calls.
+- **One owner per mutable resource**: dev servers — the human; map
+  files — the running app exclusively (no hand-edits while a tab has
+  the map open; a stale tab's autosave clobbers). Creating a NEW file
+  in `maps/` is safe (synthetic-map recipe: emit committed bubbles via
+  `placeInRegion` under tsx into `maps/<slug>-<id>.json` — filename
+  MUST end `-<id>.json` — delete when done; `maps/` is gitignored, no
+  VCS net; copy to scratchpad before risky ops).
+- **Opus 5 thinks by default and thinking counts against max_tokens.**
+  A 400 cap starved explain to zero text (`stop_reason: max_tokens`).
+  Caps: explain 3000, arc 8000, verbs 16000. Never starve a cap; never
+  lower effort to chase latency (D45).
+- **Any view stacking multiple maps' dots must re-place them**:
+  per-map `placeInRegion` is deterministic, so the i-th RAW of every
+  song lands on the SAME coordinates — 62 corpus dots drew as 16 until
+  the corpus disc re-placed at corpus scope (display only).
+- **Seed re-samples stream over the prior attempt's ghosts** (same
+  runId, `replaceRun` swaps in place). Edge: the early-overlap descend
+  may start against attempt 1's REAL and remap onto the final
+  attempt's same ref slot — rare, self-heals via the kill gesture.
+- **Explain UI**: offer button needs z-index above the box (31 vs 30);
+  selections inside the box dig deeper with a trail; readOnly (probe
+  run) disables explain and arcs entirely.
+- **Arc plumbing**: `Arc.rawId` resolution falls back to `rejected[]`
+  (a killed descent's arc still names the song's line); if the human
+  navigates away mid-write the finished arc lands on disk directly
+  (fetch+PUT) — never dropped; killing the keeper... (gone); killing
+  an arc goes on the same session undo stack as descents (union type).
+- **Never measure layout from screenshot pixels** (D31): browser
+  scaling lies; use `getBoundingClientRect` vs `window.innerWidth/
+  Height`; screenshots are for feel. (Re-proven on the corpus panel.)
+- **Autosave is immediate/serialized/coalescing with keepalive PUTs**
+  — do not reintroduce a debounce (one lost a whole map).
+- **Streamed content must neither move nor remount once visible**
+  (`replaceRun` + `stableKey`); don't filter+append on `doc.bubbles`.
+- `descend`'s parent link is guaranteed client-side
+  (`ensureParentLink`); descend receives all bubble labels (D27).
+- `sourceLineOccurs` splits citations on `/` and verifies per segment
+  (D52) — don't "simplify" it back to whole-string.
+- **Numbering**: the architect assigns decision numbers; a ruling
+  arriving unnumbered → ASK (rule in DECISIONS' header; born of the
+  double-D45). The landing crucible ruling is still unnumbered.
+- Tests: 43 in three files (`ai.test.ts` — invariants, seed split +
+  spine, D52 matcher; `storage.test.ts`; `geometry.test.ts` 18). The
+  D37 headless-harness recipe: patch fetch to a scratch server on
+  `BUBBLEMAP_PORT=8899`, `BUBBLEMAP_MAPS_DIR` scratch, cheap model,
+  drive the real store.
+- ARCHITECTURE was cross-referenced to current truth 21 Aug (§5 types,
+  §6/§9 live-dead notes, §7 verb roster, §10/§12 supersession notes,
+  §11 routes). `probe-runs/*.json` stays out of context (content
+  filter, twice).
 
 ## Next
 
-**Phases are retired (D43); the queue is use-discovered.** Nothing is
-open on the implementer. Next: songs — the corpus view exists at ~10
-maps and there are seven. **Q5**
-stays deferred (three-tier paths on the Target; the provenance panel was
-the cheap answer). The three live questions above still await the
-human's read. If a ruling arrives that isn't in DECISIONS yet, record it
-there before building.
+**Songs and arcs (D38's bias, still standing).** The corpus instrument
+exists; what it needs is dug songs — arcs are the choosing act and only
+two exist. The three watch items above decide themselves in use. If a
+ruling arrives that isn't in DECISIONS yet, record it there (numbered
+by the architect; ask if unnumbered).
 
 ---
 
-## Phase log
+## Phase log (historical)
 
 | phase | status | commit | note |
 |---|---|---|---|
-| 0 — probe v1 | superseded | `a106b70`, `6dda483` | seed-only, 6 songs, title-only. Category spread cleared; RAW untestable by construction |
-| 0 — probe v2 | **closed — gate passed** | `d2a95d1` | RAW implicates the narrator, lyrics grounding worked, no fabrications (architect read). Decisions D11–D18 |
-| 1 — walking skeleton | **built (D20 grid, D22 editorial)** | `474051d`, `bb280b0`, + D22 commit | geometry + 18 tests kept; thread grid + signature (D20/D21); React Flow deleted; editorial restyle (D22). Renders pre-filter firehose; thins at Phase 2 |
-| 2 — the loop | **closed — gate passed** | `1df5aad` + gate run | D25 descent flow; "Beautiful" (Carole King) cleared the flinch test, lyric-grounded, RAW in 53s. D26 supersedes the judgment model next |
-| 3 — authoring | not started | — | |
-| 4 — depth | not started | — | |
-| 5 — cut list | not started | — | expect to cut most |
+| 0 — probe v2 | closed — gate passed | `d2a95d1` | RAW implicates the narrator, lyrics-grounded. D11–D18 |
+| 1 — walking skeleton | built | `474051d`+ | D20 grid, D22 editorial; React Flow deleted |
+| 2 — the loop | closed — gate passed | `1df5aad`+ | "Beautiful" cleared the flinch test; D26 amended HR1 |
+| 3–5 | retired (D43) | — | phases are dead as a planning device; the queue is use-discovered |
