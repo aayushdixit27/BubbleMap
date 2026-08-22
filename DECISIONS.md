@@ -662,6 +662,32 @@ If Kashmir still fails after three attempts under the loosened rule, **that is t
 finding** — the material genuinely resists the contract — and it returns to the
 architect as a §8 question, not a code one. *21 Aug.*
 
+**D54 — Descent ceiling raised from 10 to 12.** Requested after reading ten descents
+comfortably across nine songs. **Overrides** the architect's concern in
+`field-guides/systems_that_worked.md` §3 that raising output in front of the reading
+constraint dumps inventory — that was a theory; nine songs of use is evidence
+against it. The guide's entry is annotated accordingly. *21 Aug.*
+
+**D55 — The grid shows `sourceLine` on every entry. It is the grid's whole purpose.**
+
+Readings shows the citation under every entry; the grid shows none, on any tier, and
+expanding a row gives the note rather than the line. That guts what the grid is *for*.
+
+**Each view must answer a question the others cannot.** Readings answers *what does
+this descent say*. Target answers *where did the raw layer land*. Arc answers *how
+would this move as a piece*. The grid's unique question is **how is the song's weight
+distributed across its lines** — which lyric spawned four REALs and three RAWs, and
+where those went. Without citations visible it cannot answer that, and it degrades
+into a worse Readings.
+
+Every grid entry renders its `sourceLine` in the Readings treatment — italic serif
+beneath the label, with the `citation unverified` marker where it applies. SAFE
+especially: that column is the emptiest and it is where tracing starts.
+
+**Optional, implementer's call:** hovering or clicking a citation highlighting its
+whole lineage across the columns. Ship the visible citation first — it may be
+sufficient alone. *21 Aug.*
+
 ---
 
 ## Open — architect owes an answer

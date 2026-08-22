@@ -127,6 +127,29 @@ deleted by D46 amendment 2 (21 Aug — never derived, killed by two runs
 of evidence, same class as D28's dead 20s target); the unequal-length
 clause does the real shaping work.
 
+## D54 + the grid's citations, built 21 Aug
+
+**D54**: `DESCENT_TARGET` is **12** (was 10) — nine songs of evidence
+that ten reads comfortably; the inventory concern in field-guides/
+systems_that_worked.md §3 carries an override note so it doesn't read
+as live advice. **Kashmir re-ran clean** under D51/D52/D53: full spine,
+10 kept, a line that didn't exist in the broken version. Corpus is TEN
+songs (Going to California ran 21 Aug).
+
+**The grid shows sourceLine on every entry, every tier** — same
+treatment as Readings (italic serif under the label, unverified marker
+where it applies). The grid's purpose is tracing a lyric downward; on
+Going to California one couplet visibly feeds the SAFE, two REALs and
+two RAWs. Deferred, mine under D36: hover/click-to-highlight a
+citation's lineage across columns — ship-if-scanning-isn't-enough; the
+visible citation may suffice.
+
+**Observation (architect's, recorded)**: most library lines are now
+FALLBACKS (latest RAW, dim) rather than dug — only two songs have arcs
+— and Been By Now's line already changed for that mechanical reason.
+The same caveat is being recorded by the architect against PRODUCT §7's
+n=8 finding, which was read from keeper lines that no longer surface.
+
 ## D51/D52 — the Kashmir fixes, built 21 Aug
 
 **D51 as loosened by D53**: seed's link `kind` enum is `['refines']`

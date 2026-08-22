@@ -72,6 +72,13 @@ constraint — the reader. It felt like a generosity. It's a queue.
 > output ahead of the bottleneck doesn't raise throughput, it raises inventory —
 > and unread output is inventory.
 
+*Override, 21 Aug (D54): the ceiling rose 10 → 12 at the reader's own request,
+after ten descents read comfortably across nine songs. The concern above was a
+theory about the reading constraint; nine songs of use is evidence against it at
+this scale. The PRINCIPLE stands — watch what a faster producer feeds — but do
+not cite this entry against the current ceiling; the constraint was measured,
+not guessed.*
+
 ### 4. Suppressed feedback is a broken sensor (Hughes Johnson)
 
 The reading you're most afraid to report is the one the system most needs.

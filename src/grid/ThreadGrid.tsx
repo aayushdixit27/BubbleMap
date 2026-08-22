@@ -49,6 +49,18 @@ function Entry({
         </div>
       )}
       <div className="entry-label">{bubble.label}</div>
+      {/* D54's grid fix: the citation renders on every entry, every
+          tier — the grid's whole point is tracing a lyric downward
+          (one SAFE line spawning four REALs), and that was invisible
+          without the sourceLine. Same treatment as Readings. */}
+      {bubble.sourceLine && (
+        <div className="reading-line">
+          {bubble.sourceLine}
+          {bubble.citationUnverified && (
+            <span className="citation-flag"> · citation unverified</span>
+          )}
+        </div>
+      )}
       {expanded && bubble.note && <div className="entry-note">{bubble.note}</div>}
     </div>
   );

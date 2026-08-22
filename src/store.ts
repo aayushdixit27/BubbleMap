@@ -63,7 +63,10 @@ const replaceRun = <T extends { id: string }>(items: T[], runId: string, next: T
 };
 
 // D26 #3: up to this many descents per song, generated one at a time.
-const DESCENT_TARGET = 10;
+// D54 raised 10 → 12 on nine songs of evidence that ten reads
+// comfortably (overriding the inventory concern in
+// field-guides/systems_that_worked.md §3 — noted there).
+const DESCENT_TARGET = 12;
 
 // ── D37: "one song ahead, never more." ─────────────────────────────────
 // The active run OWNS its doc. Everything the run does mutates run.doc,

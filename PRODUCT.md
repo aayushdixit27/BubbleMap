@@ -312,6 +312,30 @@ Where this goes if it works, in order of conviction:
    previous week. The corpus view was deferred behind "~10 maps" — a threshold the
    architect invented and never derived, same class as the 20-second latency target
    and the 500-word arc cap.*
+
+   ### Update at n=11 — 21 Aug. The shape held, but generalised.
+
+   Three Led Zeppelin maps joined the corpus. **None of the three fits the
+   *authoring-another-person* pattern.** They are about the narrator's own machinery
+   — training himself not to hear, never moving until made to move, becoming someone
+   who has to leave anyone who knows him long enough.
+
+   **What covers all eleven is broader: every line is a self-protective arrangement
+   the narrator built and refuses to dismantle.** Not *I was hurt* but *I set this up
+   so I can't be, and I know it.* Authorship-of-another was a subset that happened to
+   dominate the first eight.
+
+   ### The caveat that weakens both readings
+
+   **Most of these lines are fallbacks, not choices.** D48 cut the keeper, so a
+   library line is the RAW an *arc* was built from — and only two or three songs have
+   arcs. Everything else shows its most recent RAW. *Been By Now*'s line already
+   changed for this mechanical reason alone.
+
+   So the n=8 reading was also built on lines that were mostly fallbacks. **Both
+   findings are suggestive, not evidence, until a majority of songs have been dug
+   into.** Do not treat the shape as established. The corpus wall's own counter —
+   *"the lines · N of M songs dug into"* — is the number that says when to trust it.
 2. **`subject: 'self'`.** Same target, pointed at my own LIFE quadrants. The
    data model already supports it; it's one prompt variant.
 3. **Descent-shape comparison.** Do hits share a path through the rings?
