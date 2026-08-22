@@ -6,8 +6,9 @@
 > the arc is the choosing act), the input-first landing (crucible A,
 > D49), the Kashmir bug fixed three ways (D51/52/53), ceiling 12
 > (D54, verified after the HMR trap below), grid citations (D55),
-> the three-tier target with descent paths (D56, closes Q5). Nothing
-> is open on the implementer. Next: songs, arcs, watch items below.**
+> descent paths on the header signature, RAW disc back on the Target
+> (D56 + amendment, closes Q5). Nothing is open on the implementer.
+> Next: songs, arcs, watch items below.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -39,11 +40,12 @@ beats RAW→REAL→SAFE→REAL→RAW; suffix carries do-not-invent-comfort; no
 word cap, deleted by evidence; persists as `doc.arcs`).
 
 **Views** (each answers a question the others cannot, D55): Target =
-landing view, now all three tiers with a path per descent — SAFE outer,
-REAL middle, RAW inner: *the surface scatters, the raw converges* (D56,
-answers Q5; paths faint by default, solid on selection; provenance
-panel per RAW dot; arc button lives there; header signature matches).
-The corpus disc stays RAW-only — deliberately undecided until looked at. Readings = "what does this descent say" (the
+landing view, the cropped RAW disc titled "the raw" (D56 amendment —
+twelve paths rendered as a hairball on a surface read deliberately, so
+the three-tier path view moved to the HEADER SIGNATURE, where density
+is texture; two surfaces, two treatments — do not re-unify).
+Provenance panel per RAW dot; arc button lives there. The corpus disc
+stays RAW-only — deliberately undecided until looked at. Readings = "what does this descent say" (the
 judgment surface; explain lives here). Grid = "how is the song's weight
 distributed across its lines" — every entry shows its sourceLine (D55);
 lineage-highlight interaction deferred until scanning proves

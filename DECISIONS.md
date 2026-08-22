@@ -716,13 +716,31 @@ single descent stays traceable. Do not thin the data to fit the frame.
 The cropped RAW-only disc may still be the right *corpus* view, where hundreds of
 dots make paths impossible. Decide that separately, after looking. *21 Aug.*
 
+*Amendment after rendering, 21 Aug — the outcome D56 asked for.* **Twelve paths read
+as a hairball.** The resolution is not to thin the data but to place the dense
+version where density is acceptable:
+
+- **Header signature: keep the three-ring path view, hairball permitted.** It is
+  peripheral — glanced at while doing something else — so it works as *texture*. A
+  dense tangle still says *this song has a lot of movement*, which is all a
+  signature needs to say.
+- **Main Target view: the cropped RAW disc, as before D56.** A view you deliberately
+  switch to must answer one question cleanly, and that question is *where did the raw
+  land*. D30's original reasoning applies again at this surface: plot only RAW and
+  the outer rings are empty by construction.
+- **Title it.** Something like *the raw*. Nothing on screen currently states that the
+  dots are RAW; that was only knowable by having built it.
+
+Neither D30 nor D56 was wrong. The mistake was assuming one treatment had to serve
+both surfaces.
+
 ---
 
 ## Open — architect owes an answer
 
-*(Q5 — three-tier paths on the Target — answered by D56, built and verified
-22 Aug. At ten descents it is not a hairball; the faint-by-default /
-solid-on-selection dial shipped with it.)*
+*(Q5 — three-tier paths on the Target — answered by D56 and settled by its
+amendment after rendering: the paths live on the header signature, where
+density is texture; the Target view is the cropped RAW disc, titled.)*
 
 **Q3 — What is the expected keep-rate, in real numbers?** `PRODUCT.md §2` guesses
 ~half for `seed`, ~a third for `interrogate`. Those are priors, not measurements. The

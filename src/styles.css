@@ -63,6 +63,7 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative; /* anchors .target-title */
 }
 /* The SVG fills whatever height the view has; preserveAspectRatio keeps the
    circle whole. Sizing from the container, not vmin — vmin overflowed and
@@ -74,17 +75,26 @@ html, body, #root {
   height: 100%;
   max-height: 640px;
 }
-/* Marginalia scale (D22): sizes are SVG user units — 24 units reads as
-   ~11–13px in the corpus disc's 960-unit viewBox; the Target's D56 viewBox
-   is 2120 units, so its labels rescale below to keep the same visual size. */
+/* Marginalia scale (D22): sizes are SVG user units in the 960-unit viewBox,
+   so ~24 units reads as ~11–13px across the panel's size range. */
 .target-dot { cursor: pointer; }
-.target-view .target-label { font-size: 53px; letter-spacing: 9px; }
-/* D56 descent paths: faint by default so the mass reads as convergence;
-   solid on selection so any single descent stays traceable (Q5's dial). */
+/* D56 amendment: the three-tier descent-path view lives on the header
+   signature only, where a dense tangle reads as texture. Faint paths,
+   muted SAFE/REAL context dots. */
 .target-path { opacity: 0.35; pointer-events: none; }
-.target-path-selected { opacity: 1; }
-/* SAFE/REAL dots are context, not controls — muted, never clickable. */
 .target-dot-outer { opacity: 0.55; pointer-events: none; }
+/* The view's title (D56 amendment): nothing else on screen says the dots
+   are RAW. Quiet small caps, out of the disc's way. */
+.target-title {
+  position: absolute;
+  top: 20px;
+  left: 28px;
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
 /* Provenance: the SAFE → REAL → RAW chain behind a clicked dot — the
    cheap answer to Q5. A panel beside the disc, hairline-bounded on the
    left, reusing the readings' type crescendo. */
