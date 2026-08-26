@@ -83,6 +83,23 @@ html, body, #root {
    muted SAFE/REAL context dots. */
 .target-path { opacity: 0.35; pointer-events: none; }
 .target-dot-outer { opacity: 0.55; pointer-events: none; }
+/* D57 #1 — hover pulls the label out on a leader line; the disc reads by
+   sweeping. Ring and leader are hairlines (D22); the label is HTML so it
+   wraps instead of clipping (hard rule 7). */
+.target-hover-ring, .target-leader { opacity: 0.6; pointer-events: none; }
+.target-hover-label {
+  position: absolute;
+  max-width: 250px;
+  pointer-events: none;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink);
+  transform: translateY(-50%);
+  padding: 0 10px;
+}
+.target-hover-label.side-left { transform: translate(-100%, -50%); text-align: right; }
+
 /* The view's title (D56 amendment): nothing else on screen says the dots
    are RAW. Quiet small caps, out of the disc's way. */
 .target-title {

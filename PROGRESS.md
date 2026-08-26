@@ -7,8 +7,10 @@
 > D49), the Kashmir bug fixed three ways (D51/52/53), ceiling 12
 > (D54, verified after the HMR trap below), grid citations (D55),
 > descent paths on the header signature, RAW disc back on the Target
-> (D56 + amendment, closes Q5). Nothing is open on the implementer.
-> Next: songs, arcs, watch items below.**
+> (D56 + amendment, closes Q5). OPEN: D57 discoverability pass —
+> items 1 (hover labels, BUILT) and 2 (disc clip, COULD NOT REPRODUCE
+> — see below) await the human's look; items 3–7 gated behind it.
+> Fifteen maps. Next: D57 tail, songs, arcs, watch items below.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 
@@ -121,6 +123,20 @@ read, don't re-derive.
   D54: nine consecutive runs landed on exactly 10 with the const at
   12; after a hard reload the next run produced 12. This probably
   cost a verification before, unnoticed.
+- **D57 #2 (disc clipped at ~630px) does not reproduce against the
+  committed code.** Measured via getBoundingClientRect across
+  simulated 380–630px viewports: the Target svg tracks its container
+  at every height (scale 0.24→0.50), ring and labels always inside
+  the viewport; the corpus disc sits in `.corpus`, which scrolls.
+  Meet-scaled square viewBox + `height:100%` cannot clip vertically
+  by construction. Likeliest cause of the observation: a stale-HMR
+  tab holding pre-amendment target code (the D54 trap again). Await
+  a hard-reload re-check; if it still clips, get exact window size
+  AND browser zoom (the observing browser runs 125% — dpr 2.5).
+- **Screenshot-tool coordinates are raw-capture px = CSS × ~1.27 at
+  this zoom.** Two false "the disc is clipped" readings and one
+  false "label overflows" came from eyeballing captures this
+  session; every one dissolved under getBoundingClientRect. D31.
 - **The Signature filters to committed** (since D56) — it previously
   plotted proposed bubbles too, which sit at (0,0) until commit and
   stack into a phantom centre dot mid-run. The "2 dots vs 10 RAW"

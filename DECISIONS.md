@@ -734,6 +734,50 @@ version where density is acceptable:
 Neither D30 nor D56 was wrong. The mistake was assuming one treatment had to serve
 both surfaces.
 
+**D57 — Discoverability and feedback pass. Norman, Cooper, Krug applied to the app.**
+
+The build is strong on typography and restraint and weak on **signifiers and
+feedback** — capabilities exist with no perceivable cue, and two states have no
+explanation. Ranked by value.
+
+1. **Target dots have no hover state and no click cue.** They open the provenance
+   panel; hovering one produces nothing — no cursor change, no highlight. *An
+   affordance nobody can perceive does not exist* (Norman). The architect only knows
+   it is clickable because it commissioned it.
+
+   **The fix does more than signal.** Hover reveals the dot's label on a leader line,
+   so **the disc becomes readable by sweeping rather than clicking.** That converts
+   the Target from a picture into something you can actually read, and it is worth
+   more than the rest of this entry combined.
+
+2. **The disc is clipped at the bottom and the page does not scroll.** At a ~630px
+   viewport the FITNESS and EARNINGS labels and the lower dots are unreachable. This
+   is a correctness bug on the one view whose job is *one glance* — the Gulf of
+   Evaluation, in Norman's terms. "Fits if the window is tall enough" is not a design.
+
+3. **A category legend.** Four colours mean four categories and nothing says so.
+   Quadrant labels give position, not the colour mapping, and the colour is what the
+   eye is actually reading.
+
+4. **The title belongs to the disc.** `THE RAW` sits alone top-left while the disc is
+   centred, so they do not read as one object. Krug's grouping principle.
+
+5. **`Loser by Tame Impala — no descents yet` is a dead end.** A map with nothing in
+   it, no retry, no explanation, no indication whether a run failed or never started.
+   A state the app can reach and has no answer for.
+
+6. **`next song` is greyed with no reason given.** Disabled without explanation is a
+   question mark (Krug).
+
+7. **Full ink vs dim ink in the library means dug vs fallback** — a genuinely
+   meaningful distinction, encoded in a contrast difference, with no legend anywhere.
+
+**Considered and deliberately not ruled:** the view names (`readings · grid · arc ·
+target`) are implementation vocabulary rather than goal vocabulary — Cooper's
+represented model. Real by his standard, but the human has internalised them and
+there is no evidence it costs anything. **Becomes live if this is ever pointed at
+`subject: 'self'`.** *25 Aug.*
+
 ---
 
 ## Open — architect owes an answer

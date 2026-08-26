@@ -76,8 +76,29 @@ function ProvenanceStep({ bubble, parent }: { bubble: Bubble; parent?: Bubble })
   );
 }
 
+// D57 #1: hover pulls the dot's label out on a leader line, so the disc is
+// readable by sweeping rather than clicking. The leader runs radially from
+// the dot's edge to just outside the disc; the label is an HTML overlay
+// anchored there (HTML so long labels wrap — SVG text can't, and hard rule
+// 7 forbids clipping them). Click-for-provenance is unchanged underneath.
+const LEADER_END = 26; // units past the disc edge where the label anchors
+
+interface Hover {
+  id: string;
+  left: number; // px within .target-view
+  top: number;
+  side: 'left' | 'right'; // which way the label grows from the anchor
+}
+
+// Radial unit vector for a dot; a dot at dead centre points up.
+const radialUnit = (p: { x: number; y: number }) => {
+  const len = Math.hypot(p.x, p.y);
+  return len < 1 ? { x: 0, y: -1 } : { x: p.x / len, y: p.y / len };
+};
+
 export function Target({ doc }: { doc: BubbleMapDoc }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [hovered, setHovered] = useState<Hover | null>(null);
   // D46: the opt-in trigger for descent and return lives here, on the
   // provenance panel — one click, one call, never automatic.
   const buildArc = useMapStore((s) => s.buildArc);
@@ -91,6 +112,27 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
   const selected = raws.find((b) => b.id === selectedId) ?? null;
   const chain = selected ? chainOf(doc, selected) : null;
   const R = RINGS.raw.outer;
+
+  // Anchor the hover label at the leader's outer end, converted to px via
+  // the live CTM (D31: positions come from the DOM, never from guessed
+  // scale factors). Computed on entry — the geometry is stable mid-hover.
+  const enterDot = (b: Bubble) => (e: React.MouseEvent<SVGGElement>) => {
+    const svg = e.currentTarget.ownerSVGElement;
+    const host = svg?.parentElement;
+    const ctm = svg?.getScreenCTM();
+    if (!svg || !host || !ctm) return;
+    const u = radialUnit(b.position);
+    const a = { x: u.x * (R + LEADER_END), y: u.y * (R + LEADER_END) };
+    const hostRect = host.getBoundingClientRect();
+    const side = a.x < 0 ? 'left' : 'right';
+    // Clamp so the label box (max 250px + padding) stays inside the view —
+    // it must never clip against the container edge or the open panel.
+    const raw = ctm.a * a.x + ctm.e - hostRect.left;
+    const left =
+      side === 'right' ? Math.min(raw, hostRect.width - 270) : Math.max(raw, 270);
+    setHovered({ id: b.id, left, top: ctm.d * a.y + ctm.f - hostRect.top, side });
+  };
+  const hoveredBubble = hovered ? (raws.find((b) => b.id === hovered.id) ?? null) : null;
 
   return (
     <div className="target-view">
@@ -112,6 +154,23 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
             </text>
           );
         })}
+        {/* Leader line, under the dots: dot edge → just past the disc rim. */}
+        {hoveredBubble &&
+          (() => {
+            const u = radialUnit(hoveredBubble.position);
+            const p = hoveredBubble.position;
+            return (
+              <line
+                className="target-leader"
+                x1={p.x + u.x * (DOT + 8)}
+                y1={p.y + u.y * (DOT + 8)}
+                x2={u.x * (R + LEADER_END)}
+                y2={u.y * (R + LEADER_END)}
+                stroke={`var(--ink-${hoveredBubble.category})`}
+                strokeWidth={HAIRLINE}
+              />
+            );
+          })()}
         {raws.map((b) => (
           <g
             key={b.id}
@@ -120,9 +179,24 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
               e.stopPropagation();
               setSelectedId(b.id === selectedId ? null : b.id);
             }}
+            onMouseEnter={enterDot(b)}
+            onMouseLeave={() => setHovered(null)}
           >
             {/* invisible hit area */}
             <circle cx={b.position.x} cy={b.position.y} r={HIT} fill="transparent" />
+            {b.id === hovered?.id && b.id !== selectedId && (
+              // Hover cue: the selection ring's quieter sibling (D22 — a
+              // hairline, never a glow).
+              <circle
+                className="target-hover-ring"
+                cx={b.position.x}
+                cy={b.position.y}
+                r={DOT + 12}
+                fill="none"
+                stroke="var(--ink-mid)"
+                strokeWidth={HAIRLINE}
+              />
+            )}
             {b.id === selectedId && (
               // Selection is a hairline ring in ink — never a glow (D22).
               <circle
@@ -138,6 +212,14 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
           </g>
         ))}
       </svg>
+      {hovered && hoveredBubble && (
+        <div
+          className={`target-hover-label side-${hovered.side}`}
+          style={{ left: hovered.left, top: hovered.top }}
+        >
+          {hoveredBubble.label}
+        </div>
+      )}
       {chain && (
         <div className="target-panel">
           {chain.map((b, i) => (
