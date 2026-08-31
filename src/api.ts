@@ -21,7 +21,7 @@ export const deleteMap = (id: string): Promise<{ ok: boolean }> =>
   fetch(`/api/maps/${id}`, { method: 'DELETE' }).then(asJson<{ ok: boolean }>);
 
 export interface Snapshot {
-  bubbles?: { ref?: string; tier?: string; category?: string; label?: string; sourceLine?: string; note?: string }[];
+  bubbles?: { ref?: string; tier?: string; category?: string; label?: string; sourceLine?: string; note?: string; move?: string }[];
   links?: { source?: string; target?: string; kind?: LinkKind; rationale?: string }[];
 }
 

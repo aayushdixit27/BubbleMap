@@ -256,6 +256,7 @@ export const useMapStore = create<MapState>((set, get) => {
         label: raw.label,
         sourceLine: raw.sourceLine,
         ...(raw.note ? { note: raw.note } : {}),
+        ...(raw.move && raw.tier === 'raw' ? { move: raw.move } : {}),
         position: { x: 0, y: 0 },
         origin: 'ai',
         status: 'proposed',

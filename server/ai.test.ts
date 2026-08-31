@@ -272,6 +272,24 @@ describe('resolveProposal — D18 seed split (3 SAFE + 3 REAL)', () => {
     expect(result.rejections).toHaveLength(0);
   });
 
+  // D58: the move belongs to the RAW bubble. Kept there, dropped silently
+  // anywhere else, and never required — omission is the honest no.
+  it('keeps a move on a RAW bubble and drops one on any other tier', () => {
+    const withMoves = seedOf(['raw', 'real']).map((b) => ({ ...b, move: 'he does a thing' }));
+    const result = propose({ bubbles: withMoves }, mkDoc(), 'descend');
+    expect(result.bubbles).toHaveLength(2);
+    expect(result.bubbles[0].move).toBe('he does a thing');
+    expect(result.bubbles[1].move).toBeUndefined();
+    expect(result.rejections).toHaveLength(0);
+  });
+
+  it('accepts a RAW bubble with no move — omission is the honest no', () => {
+    const result = propose({ bubbles: seedOf(['raw']) }, mkDoc(), 'descend');
+    expect(result.bubbles).toHaveLength(1);
+    expect(result.bubbles[0].move).toBeUndefined();
+    expect(result.rejections).toHaveLength(0);
+  });
+
   // D51 (as loosened by D53): guard on breakage, not shape. Only an
   // ORPHANED REAL — no SAFE refines parent — rejects the seed.
   describe('the seed spine', () => {

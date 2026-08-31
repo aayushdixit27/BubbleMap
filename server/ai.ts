@@ -37,6 +37,12 @@ function proposeTool(verb: Verb): Anthropic.Tool {
             label:      { type: 'string' },
             sourceLine: { type: 'string' },                  // verbatim lyric fragment (D23)
             note:       { type: 'string' },
+            // D58: descend only. Deliberately NOT in `required` — a descent
+            // may honestly find no move (omission is the honest no), and a
+            // descend can land a REAL, where the field does not apply.
+            // Rejecting a good bubble over a missing meta-field is the
+            // D51/D53 mistake again. What a move IS lives in the §8 suffix.
+            ...(verb === 'descend' ? { move: { type: 'string' } } : {}),
           },
           required: ['ref', 'tier', 'category', 'label', 'sourceLine'],
         },
@@ -78,6 +84,7 @@ interface RawBubble {
   label: string;
   sourceLine: string;
   note?: string;
+  move?: string; // D58: descend's RAW bubbles only
 }
 
 interface RawLink {
@@ -539,6 +546,9 @@ export function resolveProposal(
       sourceLine: rawBubble.sourceLine,
       ...(citationUnverified ? { citationUnverified: true } : {}),
       ...(rawBubble.note ? { note: rawBubble.note } : {}),
+      // D58: the move belongs to the RAW bubble; one emitted anywhere else
+      // is dropped silently — it has no surface and no meaning there.
+      ...(rawBubble.move && rawBubble.tier === 'raw' ? { move: rawBubble.move } : {}),
       // Placeholder — Phase 1's placeInRegion assigns real positions.
       position: { x: 0, y: 0 },
       origin: 'ai',

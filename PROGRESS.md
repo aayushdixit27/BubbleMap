@@ -16,7 +16,17 @@
 > themselves and offer "run it again" (#5, createAndSeed accepts an
 > existing doc), "next song" wears live ink (#6 — it was never
 > disabled, only styled dim), library ink key (#7). Fourteen maps.
-> Nothing is open on the implementer. Next: songs, arcs, watch items.**
+> OPEN: D58 ("the move") — plumbing BUILT and dormant (types, schema,
+> passthroughs, Readings foot; the field flows but nothing emits it),
+> suffix DRAFTED and sent up for ratification. It ships as an ADDITION
+> to descend's suffix only after the architect ratifies — do not wire
+> unratified copy (hard rule 2). Schema keeps `move` optional:
+> omission is the honest no, and a descend landing a REAL has no move
+> — requiring it would be D51/D53's whole-rejection mistake again.
+> Moves attach to RAW only (server drops them elsewhere; 2 tests pin
+> this). EXPERIMENTAL: if filler after three songs, cut field, clause
+> and render together. Next: D58 ratification, songs, arcs, watch
+> items.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 

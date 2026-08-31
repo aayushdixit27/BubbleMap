@@ -175,6 +175,16 @@ export function Readings() {
                 </div>
               </div>
             )}
+            {/* D58: the move — one sentence naming what the writer DID,
+                at the foot of the descent. Absent = no move found (the
+                honest no) or a pre-D58 map; nothing renders either way.
+                EXPERIMENTAL — cut with the field if it reads as filler. */}
+            {raw?.move && (
+              <div className="reading-move">
+                <span className="move-label">the move</span>
+                {raw.move}
+              </div>
+            )}
             {killable && (
               <div className="entry-actions reading-actions">
                 <button

@@ -778,6 +778,43 @@ represented model. Real by his standard, but the human has internalised them and
 there is no evidence it costs anything. **Becomes live if this is ever pointed at
 `subject: 'self'`.** *25 Aug.*
 
+**D58 — "The move": one sentence per descent naming what the writer did.
+Experimental, killable.**
+
+Every existing surface says *what the song is about*. None says *what the writer
+did*. PRODUCT §2's outcome is not understanding songs — it is recognising the shape
+well enough to aim at it in one's own work, and **content does not transfer;
+technique does.** This is the first feature pointed at that.
+
+**It rides on `descend`, not a new call.** A required field on the RAW bubble,
+generated with the full descent in context. No extra latency, no sixth verb, and
+removable by deleting one field if it doesn't earn its place.
+
+**The failure mode, guarded from the start.** *"Why it works"* invites appreciation
+— *this lands because it's so relatable* — which is vacuous and will read as insight.
+The suffix must require **a move the writer made, not an effect on the listener**:
+
+- ✗ *It works because the listener sees themselves in it.*
+- ✓ *He puts the confession inside a line that scans as a boast, so it can be sung
+  in a stadium.*
+
+**Requirements for the suffix** (implementer drafts, architect ratifies, per the
+nominate/explain/arc pattern):
+
+1. **One sentence.** Hard. A second sentence turns it into another note.
+2. **Names a technique, not an effect.** The test: could a songwriter *do* it?
+3. **Explains this descent**, not the song in general.
+4. **Honest no.** If the descent reveals no technique, say so rather than
+   manufacture one — §8's *padding is failure*, applied to the new field.
+
+**Renders at the foot of each descent in Readings.** Label is the implementer's
+call; consider *the move* or *what the writer did* over *why it works*, since the
+first two set the expectation the criterion demands and the third invites praise.
+
+**Experimental by explicit agreement.** If it reads as filler after three songs, cut
+it — the field, the suffix clause, and the render together. Say so plainly rather
+than defending it. *25 Aug.*
+
 ---
 
 ## Open — architect owes an answer
