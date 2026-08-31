@@ -181,7 +181,17 @@ interface MapState {
   killArc: (id: string) => void;
   // openNow=false is D37's "start the next song while reading this one":
   // the run generates against its own doc and the current map stays open.
-  createAndSeed: (title: string, source: string, opts?: { openNow?: boolean }) => Promise<void>;
+  // existing (D57 #5) re-runs the dig against an already-created map —
+  // the retry for a map whose run failed before anything landed. The doc
+  // is created BEFORE the seed by design (D10: judgment lives in a file),
+  // so a failed or interrupted run legitimately leaves an empty map;
+  // retry is the answer, per D53's test (a re-sample would plausibly
+  // succeed).
+  createAndSeed: (
+    title: string,
+    source: string,
+    opts?: { openNow?: boolean; existing?: BubbleMapDoc },
+  ) => Promise<void>;
   killDescent: (path: DescentPath) => void;
   undoKill: () => void;
 }
@@ -507,7 +517,7 @@ export const useMapStore = create<MapState>((set, get) => {
       };
 
       try {
-        const doc = await apiCreateMap(title, source);
+        const doc = opts?.existing ?? (await apiCreateMap(title, source));
         run = {
           docId: doc.id,
           title,

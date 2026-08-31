@@ -155,6 +155,13 @@ function Home({ onCorpus }: { onCorpus: () => void }) {
           </div>
         ))}
         {maps.length === 0 && <div className="library-empty">No songs yet.</div>}
+        {/* D57 #7: the ink difference carries meaning (D48), so it gets a
+            key — one quiet line, shown only while both kinds are present. */}
+        {maps.some((m) => m.rawLine && m.dug) && maps.some((m) => m.rawLine && !m.dug) && (
+          <div className="library-key">
+            full ink — a line chosen by digging · dim — the latest RAW, standing in
+          </div>
+        )}
         {error && <div className="status status-error">{error}</div>}
       </div>
 
@@ -267,7 +274,11 @@ export default function App() {
           ) : (
             running === 0 &&
             !readOnly && (
-              <button className="text-action ahead-chip" onClick={() => setNextOpen((s) => !s)}>
+              // D57 #6: this is a live control, so it wears live ink. It
+              // was styled with the ahead-chip's dim — a working button
+              // signifying disabled. The dim chip variant above carries
+              // its own explanation ("· 4 of 12"); this one doesn't.
+              <button className="text-action" onClick={() => setNextOpen((s) => !s)}>
                 next song
               </button>
             )
@@ -343,7 +354,35 @@ export default function App() {
       )}
 
       {doc ? (
-        view === 'readings' ? (
+        running === 0 && !readOnly && !doc.bubbles.some((b) => b.kind === 'idea') ? (
+          // D57 #5: a map with nothing in it is a run that failed or was
+          // interrupted before anything landed — the doc is created before
+          // the seed by design (D10), so the state can't be made
+          // unrepresentable; it can be made honest and recoverable. D40:
+          // we cannot know retroactively WHICH failure, so don't claim one.
+          <div className="map-empty">
+            {doc.source ? (
+              <>
+                <div className="map-empty-note">
+                  Nothing landed here — the run failed or was interrupted before its
+                  first descent. The lyrics are kept.
+                </div>
+                <button
+                  className="text-action"
+                  onClick={() => void createAndSeed(doc.title, doc.source!, { existing: doc })}
+                >
+                  run it again
+                </button>
+              </>
+            ) : (
+              // D7: no stored lyrics means no re-run — paste it fresh.
+              <div className="map-empty-note">
+                Nothing landed here, and this map holds no lyrics to re-run against.
+                Delete it and paste the song again.
+              </div>
+            )}
+          </div>
+        ) : view === 'readings' ? (
           <Readings />
         ) : view === 'grid' ? (
           <ThreadGrid />

@@ -90,6 +90,12 @@ which means nothing but this file enforces them. That is exactly when standards 
   built; they cannot carry what it feels like. Every significant UI defect in this
   project — the empty RAW column, the invisible descend link, the off-centre column —
   was found by opening the app, and none appeared in any written report.
+- **The architect reports impressions; the implementer reports measurements.** Not a
+  discipline, a division of labour — D31 wrote the rule and the architect broke it
+  twice more anyway, reporting pixel figures read off screenshots scaled by browser
+  zoom. Both the off-centre column and the clipped disc were phantoms produced this
+  way, and each cost a round trip. *This reads cramped* is a valid architect finding.
+  *This is 410px from the left* is not; that number comes from the DOM or not at all.
 - **Write the runbook on the first failure, not the second.** The API content filter
   killed two long generations before anyone wrote down what to do about it.
 

@@ -136,6 +136,11 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
 
   return (
     <div className="target-view">
+      {/* D57 #4: the title belongs to the disc, not the corner — one
+          column, title centred over the circle, so they read as one
+          object. The hover label lives in here too: it is positioned
+          against the svg's parent (enterDot), which is this wrapper. */}
+      <div className="target-disc">
       <div className="target-title">the raw</div>
       <svg
         viewBox="-480 -480 960 960"
@@ -220,6 +225,7 @@ export function Target({ doc }: { doc: BubbleMapDoc }) {
           {hoveredBubble.label}
         </div>
       )}
+      </div>
       {chain && (
         <div className="target-panel">
           {chain.map((b, i) => (

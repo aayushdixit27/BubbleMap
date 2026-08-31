@@ -7,10 +7,16 @@
 > D49), the Kashmir bug fixed three ways (D51/52/53), ceiling 12
 > (D54, verified after the HMR trap below), grid citations (D55),
 > descent paths on the header signature, RAW disc back on the Target
-> (D56 + amendment, closes Q5). OPEN: D57 discoverability pass —
-> items 1 (hover labels, BUILT) and 2 (disc clip, COULD NOT REPRODUCE
-> — see below) await the human's look; items 3–7 gated behind it.
-> Fifteen maps. Next: D57 tail, songs, arcs, watch items below.**
+> (D56 + amendment, closes Q5), the D57 discoverability pass — CLOSED:
+> hover-and-leader labels (#1), #2 closed not-a-bug (stale tab; the
+> impressions-vs-measurements rule in CLAUDE.md came from it), #3
+> SKIPPED as redundant (quadrant labels already sit in category ink
+> at the point of use; hover names the reading — a legend would
+> restate both), title attached to the disc (#4), empty maps explain
+> themselves and offer "run it again" (#5, createAndSeed accepts an
+> existing doc), "next song" wears live ink (#6 — it was never
+> disabled, only styled dim), library ink key (#7). Fourteen maps.
+> Nothing is open on the implementer. Next: songs, arcs, watch items.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 

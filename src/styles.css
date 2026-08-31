@@ -65,14 +65,25 @@ html, body, #root {
   overflow: hidden;
   position: relative; /* anchors .target-title */
 }
-/* The SVG fills whatever height the view has; preserveAspectRatio keeps the
-   circle whole. Sizing from the container, not vmin — vmin overflowed and
-   clipped the bottom quadrants on a short window. flex + min-width lets it
-   yield room to the provenance panel instead of pushing it off-screen. */
-.target-view svg {
+/* D57 #4: title + disc are one column, one object. The wrapper is the
+   positioning context for the hover label (Target's enterDot anchors
+   against the svg's parent). */
+.target-disc {
   flex: 1;
   min-width: 0;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+/* The SVG fills whatever height remains under the title; preserveAspectRatio
+   keeps the circle whole. Sizing from the container, not vmin — vmin
+   overflowed and clipped the bottom quadrants on a short window. */
+.target-disc svg {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
   max-height: 640px;
 }
 /* Marginalia scale (D22): sizes are SVG user units in the 960-unit viewBox,
@@ -96,21 +107,50 @@ html, body, #root {
   line-height: 1.35;
   color: var(--ink);
   transform: translateY(-50%);
-  padding: 0 10px;
+  padding: 2px 10px;
+  /* Paper ground: a transient foreground label may land on a quadrant
+     label or a dot — it reads over them rather than colliding. */
+  background: var(--paper);
 }
 .target-hover-label.side-left { transform: translate(-100%, -50%); text-align: right; }
 
-/* The view's title (D56 amendment): nothing else on screen says the dots
-   are RAW. Quiet small caps, out of the disc's way. */
+/* The view's title (D56 amendment, placed by D57 #4): nothing else on
+   screen says the dots are RAW. Quiet small caps, centred over the disc. */
 .target-title {
-  position: absolute;
-  top: 20px;
-  left: 28px;
   font-family: var(--sans);
   font-size: 12px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--ink-mid);
+  padding-top: 18px;
+}
+
+/* D57 #5: the empty map explains itself and offers the way out. */
+.map-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 0 28px;
+}
+.map-empty-note {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-dim);
+  max-width: 440px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* D57 #7: the library ink difference (dug vs stand-in, D48) gets a key. */
+.library-key {
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: var(--ink-dim);
+  padding: 14px 0 4px;
 }
 /* Provenance: the SAFE → REAL → RAW chain behind a clicked dot — the
    cheap answer to Q5. A panel beside the disc, hairline-bounded on the
