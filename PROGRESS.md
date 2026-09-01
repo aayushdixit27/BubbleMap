@@ -16,17 +16,19 @@
 > themselves and offer "run it again" (#5, createAndSeed accepts an
 > existing doc), "next song" wears live ink (#6 — it was never
 > disabled, only styled dim), library ink key (#7). Fourteen maps.
-> OPEN: D58 ("the move") — plumbing BUILT and dormant (types, schema,
-> passthroughs, Readings foot; the field flows but nothing emits it),
-> suffix DRAFTED and sent up for ratification. It ships as an ADDITION
-> to descend's suffix only after the architect ratifies — do not wire
-> unratified copy (hard rule 2). Schema keeps `move` optional:
-> omission is the honest no, and a descend landing a REAL has no move
-> — requiring it would be D51/D53's whole-rejection mistake again.
-> Moves attach to RAW only (server drops them elsewhere; 2 tests pin
-> this). EXPERIMENTAL: if filler after three songs, cut field, clause
-> and render together. Next: D58 ratification, songs, arcs, watch
-> items.**
+> D58 as AMENDED is BUILT and verified end-to-end: "the move" is
+> ON-DEMAND (its own call + ratified MOVE_SUFFIX, shipped verbatim —
+> not baked into descend; generation is automatic, depth is opt-in,
+> same act as arcs/explain). Per descent in Readings: hover-revealed
+> "why does this work?" → "naming the move…" → an always-visible
+> ▸/▾ "the move" toggle; the sentence persists to `move?` on the RAW
+> bubble (rejected[] entries keep theirs too — paid output is never
+> dropped). The honest no is SAID in a sentence, never omitted —
+> on-demand, silence is a broken button. Moves attach to RAW only;
+> descend's schema still offers-not-requires (both survive the
+> amendment; tests pin them). NO per-move kill: the experiment's kill
+> is D58's cut (field+suffix+render together, if filler after three
+> songs). Next: ask it on the eleven maps; songs, arcs, watch items.**
 > If today is well past that date, treat everything below as suspect — check
 > `git log --oneline` for the real state before trusting this file.
 

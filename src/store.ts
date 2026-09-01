@@ -10,6 +10,7 @@
 
 import { create } from 'zustand';
 import {
+  apiNameMove,
   createMap as apiCreateMap,
   deleteMap as apiDeleteMap,
   fetchMap,
@@ -179,6 +180,10 @@ interface MapState {
   // automatic. Switches to the arc view and streams.
   buildArc: (rawId: string) => Promise<void>;
   killArc: (id: string) => void;
+  // D58 (amended): name the move of one descent, on demand. One call,
+  // one sentence, persisted to the RAW bubble's `move` field.
+  movePending: { docId: string; rawId: string } | null;
+  nameMove: (rawId: string) => Promise<void>;
   // openNow=false is D37's "start the next song while reading this one":
   // the run generates against its own doc and the current map stays open.
   // existing (D57 #5) re-runs the dig against an already-created map —
@@ -347,6 +352,7 @@ export const useMapStore = create<MapState>((set, get) => {
     running: 0,
     killed: [],
     arcDraft: null,
+    movePending: null,
     rejections: [],
     discarded: [],
     ahead: null,
@@ -868,6 +874,48 @@ export const useMapStore = create<MapState>((set, get) => {
     // the human's click on the Target panel, never automatic. Streams
     // passages into the arc view; the finished Arc commits to doc.arcs
     // and autosaves (it is the most expensive artifact the tool makes).
+    // D58 (amended): one call, one sentence, persisted like any other
+    // judgment. Same ownership rules as the arc: the run owns a
+    // generating doc, and a paid answer is never dropped — if the human
+    // navigates away mid-call it lands on disk directly.
+    nameMove: async (rawId) => {
+      const doc = get().doc;
+      if (!doc || get().readOnly || get().movePending) return;
+      if (get().running > 0) {
+        set({ error: 'the song is still generating — name the move when it finishes' });
+        return;
+      }
+      if (!doc.bubbles.some((b) => b.id === rawId && b.tier === 'raw' && b.status === 'committed')) {
+        return;
+      }
+      const docId = doc.id;
+      const setMove = (d: BubbleMapDoc, move: string): BubbleMapDoc => ({
+        ...d,
+        bubbles: d.bubbles.map((b) => (b.id === rawId ? { ...b, move } : b)),
+        // A descent killed mid-call still keeps its paid sentence — the
+        // rejected entry round-trips forever (D48 note), so it rides there.
+        rejected: (d.rejected ?? []).map((b) => (b.id === rawId ? { ...b, move } : b)),
+      });
+      set({ movePending: { docId, rawId }, error: null });
+      try {
+        const move = await apiNameMove(doc, rawId);
+        const open = get().doc;
+        if (open?.id === docId) {
+          const next = setMove(open, move);
+          if (activeRun?.docId === next.id) activeRun.doc = next;
+          set({ doc: next });
+          scheduleSave();
+        } else {
+          const fresh = await fetchMap(docId);
+          await saveMap(setMove(fresh, move));
+        }
+      } catch (e) {
+        set({ error: `move failed: ${e instanceof Error ? e.message : String(e)}` });
+      } finally {
+        set({ movePending: null });
+      }
+    },
+
     buildArc: async (rawId) => {
       const doc = get().doc;
       if (!doc || get().readOnly || get().arcDraft) return;

@@ -109,6 +109,27 @@ dig, not a verdict — leave the reader somewhere they can keep pushing.
 
 Two hundred words at most. Plain prose: no markdown, no asterisks, no lists.`;
 
+// D58 (amended): the move — one sentence naming what the WRITER DID in
+// one descent. On-demand, its own call (the amendment moved it off
+// descend: generation is automatic, depth is opt-in — arcs and explain
+// set the pattern). Product copy, ratified by the architect 1 Sep, ships
+// verbatim. The honest no must be SAID, not omitted — on-demand, the
+// reader clicked a button, and silence is a broken button.
+export const MOVE_SUFFIX = `You are given one complete descent — a safe reading, the real reading beneath it,
+and the raw reading beneath that — and asked to name the move.
+
+A move is what the writer DID: the technique that carries this song from its safe
+surface down to this raw floor. "He puts the confession inside a line that scans as
+a boast" is a move. "It works because the listener sees themselves in it" is an
+effect. If you can only name what the listener feels, you have not found the move.
+
+Name the move of this descent, not the song's craft in general.
+
+One sentence. A second sentence makes it a note.
+
+If this descent reveals no deliberate technique, say so plainly in one sentence and
+do not invent one. A manufactured move is the padding failure wearing a work shirt.`;
+
 // D46 (amended): descent and return — one chosen descent rewritten as a
 // narrative arc. Product copy, ratified by the architect 20 Aug, ships
 // verbatim. The do-not-invent-comfort clause is this verb's honesty

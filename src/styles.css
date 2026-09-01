@@ -537,23 +537,48 @@ html, body, #root {
 /* Descent-level keep/kill (D25) — one decision per reading, surfacing on
    hover or keyboard focus like every other control. */
 .reading-actions { margin-top: 18px; }
-/* D58: the move — meta-commentary on the descent, not reading payload,
-   so it sits apart: quieter ink, a small-caps label, serif for the
-   sentence itself (it is still prose). */
-.reading-move {
-  margin-top: 14px;
-  font-family: var(--serif);
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--ink-mid);
+/* D58 (amended): the move — on-demand meta-commentary at the foot of a
+   descent. Three states, distinguishable without reading: the ask is an
+   underlined action that surfaces on hover like kill (a quiet control);
+   generating is dim italic, no underline; generated is a small always-
+   visible arrow that expands to the sentence. */
+.reading-move { margin-top: 14px; }
+.reading-move .move-ask { opacity: 0; pointer-events: none; }
+.reading:hover .reading-move .move-ask,
+.reading-move .move-ask:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
-.reading-move .move-label {
+.move-pending {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-dim);
+}
+.move-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.move-toggle .move-arrow { font-size: 11px; color: var(--ink-dim); }
+.move-label {
   font-family: var(--sans);
   font-size: 10.5px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--ink-dim);
-  margin-right: 10px;
+}
+.move-text {
+  margin-top: 8px;
+  font-family: var(--serif);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-mid);
+  max-width: 560px;
 }
 .reading:hover .entry-actions,
 .reading .entry-actions:focus-within {

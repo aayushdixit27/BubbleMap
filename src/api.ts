@@ -63,6 +63,21 @@ export const saveMap = (doc: BubbleMapDoc): Promise<{ ok: boolean; updatedAt: st
     keepalive: true,
   }).then(asJson<{ ok: boolean; updatedAt: string }>);
 
+// D58 (amended): name the move of one descent, on demand. One sentence
+// back — no stream; the caller renders its own pending state.
+export async function apiNameMove(doc: BubbleMapDoc, rawId: string): Promise<string> {
+  const res = await fetch('/api/ai/move', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ doc, rawId }),
+  });
+  const body = (await res.json().catch(() => null)) as { move?: string; error?: string } | null;
+  if (!res.ok || !body?.move) {
+    throw new Error(body?.error ?? `${res.status} ${res.statusText}`);
+  }
+  return body.move;
+}
+
 // D46: descent and return. One call per arc, opt-in. Streams the model's
 // accumulating passages so the arc view is never silent; resolves to the
 // finished, server-built Arc (ids and beat tiers assigned there).

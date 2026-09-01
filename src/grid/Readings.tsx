@@ -16,7 +16,7 @@
 // The lyric line renders only when sourceLine is non-empty — pre-D23 data
 // (the probe run) has none; every post-D23 map fills it.
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { stableKey, useMapStore } from '../store';
 import type { Bubble } from '../types';
 import { ExplainLayer } from './Explain';
@@ -24,6 +24,49 @@ import { CATEGORY_LABEL } from './ThreadGrid';
 import { buildGrid } from './threads';
 
 const NUMERAL = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x'];
+
+// D58 (amended): the foot of a descent. Three states, distinguishable
+// without reading (the amendment's constraint): an ungenerated descent
+// shows the question as an underlined action; a generating one shows a
+// dim italic line, no underline; a generated one shows a small arrow
+// that expands and collapses the sentence — always available, never in
+// the reader's face. The honest no arrives as a sentence like any other
+// (on-demand, silence is a broken button), so it renders identically.
+function MoveFoot({ raw }: { raw: Bubble }) {
+  const nameMove = useMapStore((s) => s.nameMove);
+  const movePending = useMapStore((s) => s.movePending);
+  const [open, setOpen] = useState(false);
+  const pending = movePending?.rawId === raw.id;
+
+  if (raw.move) {
+    return (
+      <div className="reading-move">
+        <button className="move-toggle" onClick={() => setOpen((o) => !o)}>
+          <span className="move-arrow">{open ? '▾' : '▸'}</span>
+          <span className="move-label">the move</span>
+        </button>
+        {open && <div className="move-text">{raw.move}</div>}
+      </div>
+    );
+  }
+  if (pending) {
+    return <div className="reading-move move-pending">naming the move…</div>;
+  }
+  return (
+    <div className="reading-move">
+      <button
+        className="text-action move-ask"
+        disabled={movePending !== null}
+        onClick={() => {
+          setOpen(true);
+          void nameMove(raw.id);
+        }}
+      >
+        why does this work?
+      </button>
+    </div>
+  );
+}
 
 const isProvisional = (id: string) => id.startsWith('p:');
 
@@ -175,16 +218,9 @@ export function Readings() {
                 </div>
               </div>
             )}
-            {/* D58: the move — one sentence naming what the writer DID,
-                at the foot of the descent. Absent = no move found (the
-                honest no) or a pre-D58 map; nothing renders either way.
+            {/* D58 (amended): the move — on-demand, one call, persisted.
                 EXPERIMENTAL — cut with the field if it reads as filler. */}
-            {raw?.move && (
-              <div className="reading-move">
-                <span className="move-label">the move</span>
-                {raw.move}
-              </div>
-            )}
+            {raw && !readOnly && !isProvisional(raw.id) && <MoveFoot raw={raw} />}
             {killable && (
               <div className="entry-actions reading-actions">
                 <button

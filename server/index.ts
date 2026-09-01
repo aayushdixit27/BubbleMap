@@ -7,7 +7,7 @@
 import express from 'express';
 import { nanoid } from 'nanoid';
 import type { BubbleMapDoc } from '../src/types';
-import { currentModel, explainHighlight, propose, writeArc, type ExplainTurn } from './ai';
+import { currentModel, explainHighlight, nameMove, propose, writeArc, type ExplainTurn } from './ai';
 import type { Verb } from './prompts';
 import { deleteMap, listMaps, readMap, writeMap } from './storage';
 
@@ -209,6 +209,37 @@ app.post('/api/ai/explain', async (req, res) => {
     writeLine({ type: 'error', error: message });
   }
   res.end();
+});
+
+// D58 (amended): name the move of one descent, on demand. One sentence
+// back as plain JSON — no stream; the client renders its own pending
+// state. Persisting to the RAW bubble is the client's act (autosave),
+// same ownership as every other judgment.
+app.post('/api/ai/move', async (req, res) => {
+  const { doc, rawId } = req.body as { doc?: BubbleMapDoc; rawId?: string };
+  if (!doc || !rawId) {
+    res.status(400).json({ error: 'doc and rawId are required' });
+    return;
+  }
+  const started = Date.now();
+  try {
+    const result = await Promise.race([
+      nameMove(doc, rawId),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`move exceeded ${AI_TIMEOUT_MS / 1000}s`)), AI_TIMEOUT_MS),
+      ),
+    ]);
+    console.log(
+      `[ai] move raw=${rawId} ` +
+        `${result.usage.input_tokens}in/${result.usage.output_tokens}out ` +
+        `${((Date.now() - started) / 1000).toFixed(1)}s`,
+    );
+    res.json({ move: result.text });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[ai] move failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${message}`);
+    res.status(502).json({ error: message });
+  }
 });
 
 app.post('/api/ai/seed', (req, res) => streamVerb('seed', req, res));

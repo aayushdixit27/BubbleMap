@@ -5,7 +5,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { nanoid } from 'nanoid';
 import type { Arc, Bubble, BubbleMapDoc, Category, Link, LinkKind, Tier } from '../src/types';
-import { ARC_SUFFIX, EXPLAIN_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
+import { ARC_SUFFIX, EXPLAIN_SUFFIX, MOVE_SUFFIX, SYSTEM_PROMPT, VERB_SUFFIXES, type Verb } from './prompts';
 
 // §7.1 — one tool, strict schema. The model proposes; it never gets a
 // mutation verb. Bubble counts are capped in the schema, not the prompt
@@ -212,6 +212,65 @@ export async function propose(
 export interface ExplainTurn {
   highlight: string;
   answer: string;
+}
+
+// D58 (amended): name the move of one descent — one sentence on what the
+// writer DID, generated on demand and persisted to the RAW bubble's
+// `move` field by the client. The whole chain rides along with notes
+// (same argument as explain: the rest of the map is irrelevant to one
+// descent). No streaming — the answer is one sentence; the client shows
+// its own pending state.
+export async function nameMove(
+  doc: BubbleMapDoc,
+  rawId: string,
+): Promise<{ text: string; model: string; usage: { input_tokens: number; output_tokens: number } }> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY is not set. Put it in .env (see .env.example).');
+  }
+  const raw = doc.bubbles.find((b) => b.id === rawId);
+  if (!raw || raw.tier !== 'raw') {
+    throw new Error(`move requires the id of a RAW bubble on the map (got: ${rawId}).`);
+  }
+
+  const descent = [...ancestorChain(doc, raw), raw].map((b) => describeBubble(b, true)).join('\n');
+  const source = doc.source
+    ? `\n\nSource material (lyrics / notes / analysis):\n${doc.source}`
+    : '';
+
+  const client = new Anthropic({ apiKey });
+  const model = currentModel();
+  const response = await client.messages.create({
+    model,
+    // One sentence of prose — but Opus 5 thinks by default and thinking
+    // counts against max_tokens. Never starve a cap (found live 20 Aug).
+    max_tokens: 3000,
+    system: `${SYSTEM_PROMPT}\n\n${MOVE_SUFFIX}`,
+    messages: [
+      {
+        role: 'user',
+        content:
+          `Song: ${doc.title}\n\n` +
+          `The descent, surface to raw:\n${descent}${source}`,
+      },
+    ],
+  });
+  const text = response.content
+    .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+    .map((block) => block.text)
+    .join('\n')
+    .trim();
+  if (!text) {
+    throw new Error(`move returned no text (stop_reason: ${response.stop_reason}).`);
+  }
+  return {
+    text,
+    model,
+    usage: {
+      input_tokens: response.usage.input_tokens,
+      output_tokens: response.usage.output_tokens,
+    },
+  };
 }
 
 export async function explainHighlight(
