@@ -1,8 +1,7 @@
 # Cold Review
 
 *Reusable skeleton for reviewing a document, a spec, or a piece of output.
-Extracted from the NEVER-SHIP review (see `COLD-REVIEW-worked-example.md`), with
-that review's two self-refutations fixed.*
+Extracted from a worked review, with that review's two self-refutations fixed.*
 
 **Run it cold.** Fresh context, no source material, no author present. If a claim
 isn't defensible from the artifact alone, it isn't defensible for the reader either.

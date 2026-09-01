@@ -69,7 +69,6 @@ Phase boundaries are `/clear` points by construction. What makes clearing cheap:
 - Clear on **task boundaries, not token counts**. Degradation is cliff-shaped, and
   spent context that resembles current work is the worst kind.
 
-See `reference/THE-AMNESIAC-CONTRACTOR.md`.
 
 ## Reporting back
 
