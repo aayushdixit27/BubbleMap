@@ -128,8 +128,8 @@ source — a fabrication guard. On one song it deleted six readings, including t
 strongest ones, because the model had cited a real couplet joined across a line break
 and the matcher required contiguity. **The guard was checking form and not truth.** It
 now flags instead of rejecting: the reading survives, marked *citation unverified*,
-and the human decides. Flag rate went from six deletions to one flag in thirty
-bubbles. ([D39](DECISIONS.md), [D52](DECISIONS.md))
+and the human decides. Flag rate went from six deletions to one flag across the
+twenty-three readings of the next song. ([D39](DECISIONS.md), [D52](DECISIONS.md))
 
 **The interface lied about its own state, in three places at once.** A run reported
 "no deeper reading found" on descents whose output had been discarded, and "the song

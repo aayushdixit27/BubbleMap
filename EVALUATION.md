@@ -79,7 +79,7 @@ against the source text.
 | run | outcome | what it meant |
 |---|---|---|
 | *Be Her* | **6 readings deleted** | Guard rejected on mismatch. All six were strong; none was a fabrication. |
-| *Go Your Own Way* | **1 flag / ~30 bubbles** | After the fix. The one flag was a real composite citation. |
+| *Go Your Own Way* | **1 flag / 23 kept readings** | After the fix. The one flag was a real composite citation. |
 | *Kashmir* (first run) | **5 flags** | All five were genuine couplets joined with a line break the matcher couldn't parse. |
 
 **Two changes came out of this**, and they're the substance of the section:
