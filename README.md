@@ -186,6 +186,10 @@ are still marked as suggestive rather than evidence**, because most of the lines
 sampled were defaults rather than choices — [the caveat is written into the file](PRODUCT.md)
 next to the finding.
 
+The raw results behind these figures — per-item blind-test verdicts, the citation
+flag counts run by run, and a plain statement of what is *not* measured — are in
+[`EVALUATION.md`](EVALUATION.md).
+
 ---
 
 ## Feedback, and what changed
