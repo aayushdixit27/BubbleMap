@@ -7,7 +7,7 @@
 import express from 'express';
 import { nanoid } from 'nanoid';
 import type { BubbleMapDoc } from '../src/types';
-import { currentModel, explainHighlight, nameMove, propose, writeArc, type ExplainTurn } from './ai';
+import { currentModel, explainHighlight, nameMove, plainApiError, propose, writeArc, type ExplainTurn } from './ai';
 import type { Verb } from './prompts';
 import { deleteMap, listMaps, readMap, writeMap } from './storage';
 
@@ -113,8 +113,9 @@ async function streamVerb(verb: Verb, req: express.Request, res: express.Respons
         `${((Date.now() - started) / 1000).toFixed(1)}s`,
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[ai] ${verb} failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${message}`);
+    const raw = error instanceof Error ? error.message : String(error);
+    const message = plainApiError(error);
+    console.error(`[ai] ${verb} failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${raw}`);
     if (res.headersSent) {
       writeLine({ type: 'error', error: message });
     } else {
@@ -158,8 +159,9 @@ app.post('/api/ai/arc', async (req, res) => {
         `${((Date.now() - started) / 1000).toFixed(1)}s`,
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[ai] arc failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${message}`);
+    const raw = error instanceof Error ? error.message : String(error);
+    const message = plainApiError(error);
+    console.error(`[ai] arc failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${raw}`);
     writeLine({ type: 'error', error: message });
   }
   res.end();
@@ -204,8 +206,9 @@ app.post('/api/ai/explain', async (req, res) => {
         `${((Date.now() - started) / 1000).toFixed(1)}s`,
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[ai] explain failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${message}`);
+    const raw = error instanceof Error ? error.message : String(error);
+    const message = plainApiError(error);
+    console.error(`[ai] explain failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${raw}`);
     writeLine({ type: 'error', error: message });
   }
   res.end();
@@ -236,8 +239,9 @@ app.post('/api/ai/move', async (req, res) => {
     );
     res.json({ move: result.text });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[ai] move failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${message}`);
+    const raw = error instanceof Error ? error.message : String(error);
+    const message = plainApiError(error);
+    console.error(`[ai] move failed after ${((Date.now() - started) / 1000).toFixed(1)}s: ${raw}`);
     res.status(502).json({ error: message });
   }
 });

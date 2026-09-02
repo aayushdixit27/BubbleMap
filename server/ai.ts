@@ -77,6 +77,34 @@ export function currentModel(): string {
   return process.env.BUBBLEMAP_MODEL ?? 'claude-opus-5';
 }
 
+// A person saw `400 {"type":"error",...}` in the toolbar twice — once in
+// the overload episode, once on an empty credit balance. Every AI route
+// funnels its caught error through here: known failures become a sentence
+// that says what to DO; anything else at least sheds the JSON wrapper.
+export function plainApiError(e: unknown): string {
+  const msg = e instanceof Error ? e.message : String(e);
+  const status = e instanceof Anthropic.APIError ? e.status : undefined;
+  if (/credit balance is too low/i.test(msg)) {
+    return (
+      'Anthropic says the credit balance is too low. Top up at ' +
+      'console.anthropic.com (Billing), then try again — a partly-run song ' +
+      'resumes from its toolbar; nothing already landed is lost.'
+    );
+  }
+  if (status === 529 || /overloaded/i.test(msg)) {
+    return 'Anthropic is overloaded right now. Wait a minute and try again.';
+  }
+  if (status === 401 || /authentication_error|invalid x-api-key/i.test(msg)) {
+    return 'The API key was rejected. Check ANTHROPIC_API_KEY in .env and restart the server.';
+  }
+  if (status === 429 || /rate[ _-]?limit/i.test(msg)) {
+    return 'Rate-limited by Anthropic. Wait a minute and try again.';
+  }
+  // The SDK embeds the raw JSON body in its message — surface the human
+  // part of it when present, the message untouched when not.
+  return /"message"\s*:\s*"([^"]*)"/.exec(msg)?.[1] ?? msg;
+}
+
 interface RawBubble {
   ref: string;
   tier: Tier;

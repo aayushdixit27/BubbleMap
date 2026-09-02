@@ -103,6 +103,24 @@ produced.**
 Rejected sourceLine — yes. Malformed request / schema violation the
 model can't fix — no.
 
+## Resume and plain errors (1 Sep, post-publish)
+
+- **Resume-from-partial exists**: a map whose run died externally
+  (credit balance was the second occurrence; API overload the first)
+  shows `resume · N of 12` in its toolbar. It re-enters the serial
+  loop against the existing doc — no re-seed, no duplicates (the loop
+  was resume-safe by construction; the button just exposes it). The
+  loop now also honors the PERSISTED `exhausted` flag (D35), so a
+  resumed run never re-asks a REAL that declined before the kill.
+  Deliberate: the button also appears on pre-D54 maps stopped at the
+  old ceiling of ten — they can honestly continue to twelve. Opt-in.
+- **AI-route errors are sentences now** (`plainApiError`, server/ai.ts,
+  all four routes): credit-balance says top up and resume; overload/
+  rate-limit say wait; bad key says check .env. Unknown API errors
+  shed the JSON wrapper; non-API errors pass through. Raw message
+  still goes to the server log. The overload episode's "fix" was the
+  D53 retry, never message shaping — this closes the actual gap.
+
 ## Watch items — no action until use decides
 
 - **Landing autofocus**: the title field autofocuses on load — the

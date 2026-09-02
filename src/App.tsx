@@ -5,7 +5,7 @@ import { Readings } from './grid/Readings';
 import { ThreadGrid } from './grid/ThreadGrid';
 import { Signature } from './signature/Signature';
 import { Target } from './target/Target';
-import { useMapStore, type View } from './store';
+import { canResume, committedRawCount, useMapStore, type View } from './store';
 
 // D26 #4: the toolbar renders the views you are NOT in, so every label
 // names a destination by construction. The arc view (D46) joins only
@@ -254,6 +254,21 @@ export default function App() {
           {killed.length > 0 && (
             <button className="text-action" onClick={undoKill}>
               undo kill
+            </button>
+          )}
+          {/* Resume-from-partial: a run killed externally (credit, overload)
+              leaves live threads; this re-enters the serial loop against the
+              existing doc — no re-seed, no duplicates, count continues.
+              Deliberately also appears on pre-D54 maps that stopped at the
+              old ceiling of ten: they too can honestly continue to twelve.
+              Opt-in, quiet, and absent on maps the song itself ended
+              (declines persist `exhausted`, D35). */}
+          {running === 0 && !readOnly && !ahead && doc.source && canResume(doc) && (
+            <button
+              className="text-action"
+              onClick={() => void createAndSeed(doc.title, doc.source!, { existing: doc })}
+            >
+              resume · {committedRawCount(doc)} of 12
             </button>
           )}
           {rejections.length > 0 && (

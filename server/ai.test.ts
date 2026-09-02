@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 import type { Bubble, BubbleMapDoc, Link, Tier } from '../src/types';
-import { resolveProposal, sourceLineOccurs, type RawProposal } from './ai';
+import { plainApiError, resolveProposal, sourceLineOccurs, type RawProposal } from './ai';
 import type { Verb } from './prompts';
 
 const SOURCE = 'It started out with a kiss\nHow did it end up like this?\nIt was only a kiss';
@@ -391,5 +391,34 @@ describe('sourceLineOccurs — D52 slash-joined citations', () => {
   it('still matches plain single-line citations, normalised', () => {
     expect(sourceLineOccurs('it started out with a KISS!', SRC)).toBe(true);
     expect(sourceLineOccurs('a line that is not there', SRC)).toBe(false);
+  });
+});
+
+// A person saw the raw SDK JSON in the toolbar twice (overload episode,
+// credit balance). Known failures become a sentence that says what to do;
+// unknown ones at least shed the JSON wrapper; plain errors pass through.
+describe('plainApiError', () => {
+  it('turns the credit-balance error into instructions', () => {
+    const e = new Error(
+      '400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API."}}',
+    );
+    const out = plainApiError(e);
+    expect(out).toContain('credit balance is too low');
+    expect(out).toContain('console.anthropic.com');
+    expect(out).not.toContain('{');
+  });
+
+  it('names the overloaded case', () => {
+    expect(plainApiError(new Error('529 {"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}'))).toContain('overloaded');
+  });
+
+  it('unwraps unknown API JSON to its message', () => {
+    expect(
+      plainApiError(new Error('400 {"type":"error","error":{"type":"weird","message":"something novel"}}')),
+    ).toBe('something novel');
+  });
+
+  it('passes plain errors through untouched', () => {
+    expect(plainApiError(new Error('descend exceeded 60s'))).toBe('descend exceeded 60s');
   });
 });

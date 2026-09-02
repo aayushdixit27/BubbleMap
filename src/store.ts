@@ -69,6 +69,37 @@ const replaceRun = <T extends { id: string }>(items: T[], runId: string, next: T
 // field-guides/systems_that_worked.md §3 — noted there).
 const DESCENT_TARGET = 12;
 
+// Resume-from-partial: how many committed RAWs a doc holds, and whether
+// the serial loop would have anything to do if re-entered. A run killed
+// externally (API overload, credit balance — it has happened twice)
+// leaves live threads: a committed, unexhausted REAL without a raw
+// child, or an unexhausted SAFE to spawn from. An honestly-finished run
+// leaves neither, because declines persist `exhausted` (D35) — so this
+// stays false on maps the song itself ended.
+export function committedRawCount(doc: BubbleMapDoc): number {
+  return doc.bubbles.filter(
+    (b) => b.kind === 'idea' && b.tier === 'raw' && b.status === 'committed',
+  ).length;
+}
+export function canResume(doc: BubbleMapDoc): boolean {
+  const raws = committedRawCount(doc);
+  if (raws === 0 || raws >= DESCENT_TARGET || !doc.source) return false;
+  const hasRawChild = (id: string) =>
+    doc.links.some(
+      (l) =>
+        l.kind === 'refines' &&
+        l.source === id &&
+        doc.bubbles.some((b) => b.id === l.target && b.tier === 'raw'),
+    );
+  return doc.bubbles.some(
+    (b) =>
+      b.kind === 'idea' &&
+      b.status === 'committed' &&
+      !b.exhausted &&
+      (b.tier === 'safe' || (b.tier === 'real' && !hasRawChild(b.id))),
+  );
+}
+
 // ── D37: "one song ahead, never more." ─────────────────────────────────
 // The active run OWNS its doc. Everything the run does mutates run.doc,
 // which is published to the store only while that map is the open one.
@@ -567,47 +598,63 @@ export const useMapStore = create<MapState>((set, get) => {
           if (isOpen()) set({ rejections: run.rejections });
         };
 
+        // Resume-from-partial (D36 call, second externally-killed run):
+        // a doc that already holds a committed seed skips straight to the
+        // serial loop, which is resume-safe by construction — it descends
+        // only arrived REALs without a raw child and counts existing RAWs
+        // toward the target, so nothing re-seeds or duplicates. The seed
+        // commits as one arrival, so committed REALs ⇔ the seed landed.
+        const resuming = doc.bubbles.some(
+          (b) => b.kind === 'idea' && b.tier === 'real' && b.status === 'committed',
+        );
+
         // ── Seed, overlapping the first descend (D26 #3's ~20s target).
         // The moment the first REAL bubble is fully streamed (a later
         // bubble has started), descend it against the provisional doc;
         // its links are remapped to final ids once seed resolves.
         let early: { focusRef: string; promise: Promise<Proposal> } | null = null;
-        const seedProposal = await streamVerb('seed', doc, undefined, (snapshot) => {
-          publishDoc(applySnapshot(run.doc, 'seed', snapshot));
-          if (!early) {
-            const bs = snapshot.bubbles ?? [];
-            const i = bs.findIndex((b) => b.tier === 'real' && b.ref && b.label && b.sourceLine);
-            if (i >= 0 && i < bs.length - 1) {
-              const focusRef = bs[i].ref!;
-              early = {
-                focusRef,
-                promise: streamVerb('descend', run.doc, provisionalId('seed', focusRef), (s) => {
-                  publishDoc(applySnapshot(run.doc, 'descend:first', s));
-                  noteRawGhost(s);
-                }),
-              };
+        let seedProposal: Proposal | null = null;
+        if (!resuming) {
+          seedProposal = await streamVerb('seed', doc, undefined, (snapshot) => {
+            publishDoc(applySnapshot(run.doc, 'seed', snapshot));
+            if (!early) {
+              const bs = snapshot.bubbles ?? [];
+              const i = bs.findIndex((b) => b.tier === 'real' && b.ref && b.label && b.sourceLine);
+              if (i >= 0 && i < bs.length - 1) {
+                const focusRef = bs[i].ref!;
+                early = {
+                  focusRef,
+                  promise: streamVerb('descend', run.doc, provisionalId('seed', focusRef), (s) => {
+                    publishDoc(applySnapshot(run.doc, 'descend:first', s));
+                    noteRawGhost(s);
+                  }),
+                };
+              }
             }
-          }
-        });
-        noteRejections(seedProposal);
-        publishDoc(finalizeRun(run.doc, 'seed', seedProposal));
-        commitArrived(seedProposal);
-        tick();
+          });
+          noteRejections(seedProposal);
+          publishDoc(finalizeRun(run.doc, 'seed', seedProposal));
+          commitArrived(seedProposal);
+          tick();
 
-        if (!seedProposal.bubbles.length) {
-          if (isOpen()) set({ running: 0 });
-          pubError(new Error('seed returned nothing usable — check the server log for rejections'));
-          tick('stopped', 'seed failed');
-          return;
+          if (!seedProposal.bubbles.length) {
+            if (isOpen()) set({ running: 0 });
+            pubError(new Error('seed returned nothing usable — check the server log for rejections'));
+            tick('stopped', 'seed failed');
+            return;
+          }
+        } else {
+          tick(); // the counter starts at the existing RAW count, honestly
         }
 
         // A descend's links may reference bubbles by the ids of the doc
         // snapshot it was called against — remap provisional seed ids to
         // their final ones, dropping anything that no longer resolves.
         const remap = (proposal: Proposal): Proposal => {
+          if (!seedProposal) return proposal; // resume: no provisional seed ids exist
           const mapId = (id: string) => {
             const m = /^p:seed:(.+)$/.exec(id);
-            return m ? seedProposal.refs[m[1]] ?? id : id;
+            return m ? seedProposal!.refs[m[1]] ?? id : id;
           };
           return {
             ...proposal,
@@ -714,7 +761,7 @@ export const useMapStore = create<MapState>((set, get) => {
           }
         };
 
-        if (early !== null) {
+        if (early !== null && seedProposal !== null) {
           const { focusRef, promise } = early as { focusRef: string; promise: Promise<Proposal> };
           const focusId = seedProposal.refs[focusRef];
           try {
@@ -744,9 +791,12 @@ export const useMapStore = create<MapState>((set, get) => {
                 l.source === id &&
                 d.bubbles.some((b) => b.id === l.target && b.tier === 'raw'),
             );
+          // !b.exhausted honors the PERSISTED flag (D35) — on a resumed
+          // run the session set starts empty, and a REAL that declined in
+          // the killed run must not be asked twice.
           const nextReal = d.bubbles.find(
             (b) =>
-              b.tier === 'real' && arrived(b) &&
+              b.tier === 'real' && arrived(b) && !b.exhausted &&
               !hasRawChild(b.id) && !exhausted.has(b.id),
           );
           if (nextReal) {
@@ -756,7 +806,7 @@ export const useMapStore = create<MapState>((set, get) => {
           const childCount = (id: string) =>
             d.links.filter((l) => l.kind === 'refines' && l.source === id).length;
           const safes = d.bubbles
-            .filter((b) => b.tier === 'safe' && arrived(b) && !exhausted.has(b.id))
+            .filter((b) => b.tier === 'safe' && arrived(b) && !b.exhausted && !exhausted.has(b.id))
             .sort((a, b) => childCount(a.id) - childCount(b.id));
           if (!safes.length) {
             // D40: never report system-caused exhaustion as song-caused.
