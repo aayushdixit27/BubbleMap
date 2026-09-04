@@ -50,6 +50,9 @@ and a note on the RAW that does the actual work. From *Money*:
 > greedy bastard at the bar instead of the bloke who tried for something ordinary
 > and came up short.
 
+![The grid view: a song's readings in SAFE, REAL and RAW columns with their citations](docs/images/02.png)
+*The grid view: showing how the meaning and intensity changes the deeper you go into the song.*
+
 There are four views over the same map, each answering a question the others can't.
 The **readings** show one descent at a time. The **grid** shows which lyric spawned
 what. The **target** shows which quadrant the raw layer landed in. The **arc**
@@ -57,6 +60,7 @@ rewrites the song as RAW → REAL → SAFE → REAL → RAW, on the theory that 
 hold raw for eight minutes: you surface for air, then dive again.
 
 ![The target view: one song's RAW readings as dots on a four-quadrant disc](docs/images/01.png)
+*A "target" showing where the core meaning of a song lands on Love, Identity, Fitness, or Earnings. At a glance a song's core meaning becomes explorable. The real interesting bits are those that were on the surface about one category but ended up in another.*
 
 ---
 
@@ -120,6 +124,7 @@ it produces something, not when it labels something.** The keeper was removed an
 arc became the act of choosing. ([D48](DECISIONS.md))
 
 ![An arc's dive profile: five beats from RAW up to SAFE and back down](docs/images/03.png)
+*Raw->Real->Safe->Real->Raw: A deep dive into one particular idea in the song.*
 
 ---
 
