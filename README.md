@@ -56,6 +56,8 @@ what. The **target** shows which quadrant the raw layer landed in. The **arc**
 rewrites the song as RAW → REAL → SAFE → REAL → RAW, on the theory that nobody can
 hold raw for eight minutes: you surface for air, then dive again.
 
+![The target view: one song's RAW readings as dots on a four-quadrant disc](docs/images/01.png)
+
 ---
 
 ## Running it
@@ -116,6 +118,8 @@ you mark the strongest reading. Five consecutive songs produced zero keepers, bu
 arc was built the day arcs shipped, unprompted. The finding: **judgment happens when
 it produces something, not when it labels something.** The keeper was removed and the
 arc became the act of choosing. ([D48](DECISIONS.md))
+
+![An arc's dive profile: five beats from RAW up to SAFE and back down](docs/images/03.png)
 
 ---
 
